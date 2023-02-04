@@ -1,6 +1,7 @@
 const { REST, Routes } = require('discord.js');
 const { general } = require('./assets/config.js');
 const fs = require('node:fs');
+require('dotenv').config();
 
 const commands = [];
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -17,7 +18,7 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 	try {
 		console.log(`Started refreshing ${commands.length} application (/) commands.`);
 		const data = await rest.put(
-			Routes.applicationCommands(general.clientId),
+			Routes.applicationGuildCommands(general.clientId, general.guildId),
 			{ body: commands },
 		);
 		console.log(`Successfully reloaded ${data.length} application (/) commands.`);

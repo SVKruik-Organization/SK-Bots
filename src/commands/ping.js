@@ -3,8 +3,10 @@ const { SlashCommandBuilder } = require('discord.js');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('ping')
-		.setDescription('Replies with Pong!'),
+		.setDescription('Test if the bot responds.'),
 	async execute(interaction) {
-		await interaction.reply('Hello world!');
+		const list = ["Yep!", "Here!", "Ready!", "Awake!", "I'm here!", "Yes!", "Yeah!", "Sure!", "Hello!", "Hey!"];
+		const random = list[Math.floor(Math.random() * list.length)];
+		await interaction.reply(random);
 	},
 };
