@@ -1,9 +1,27 @@
 require('dotenv').config();
 const fs = require('node:fs');
 const path = require('node:path');
+const mysql = require('mysql2');
 const { Client, Events, GatewayIntentBits, Collection } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 module.exports = client;
+
+// Database
+const database = mysql.createPool({
+    host: '127.0.0.1',
+    user: 'root',
+    database: 'discord',
+    password: ''
+});
+
+database.promise()
+.execute("SHOW databases")
+.then(() => {
+	console.log("Database connection established.\n");
+	module.exports = database;
+}).catch(err => {
+	return console.log("Connecting to the database went wrong.")
+});
 
 // Command Handler
 client.commands = new Collection();
