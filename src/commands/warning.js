@@ -8,13 +8,13 @@ module.exports = {
         .addUserOption(option => option.setName('target').setDescription('The person you want to warn.').setRequired(true))
         .addStringOption(option => option.setName('reason').setDescription('The reason for the warning.').setRequired(false)),
     async execute(interaction) {
-        const database = require("..");
+        const modules = require('..');
         const targetRawA = interaction.options.getUser('target');
         const targetRawB = `${targetRawA}`.replace('<@', '');
         const target = `${targetRawB}`.replace('>', '');
         const reason = interaction.options.getString('reason') ?? 'No reason provided';
 
-        database.promise()
+        modules.database.promise()
             .execute(`UPDATE user SET warnings = (warnings + 1) WHERE snowflake = '${target}'`)
             .then(async () => {
                 await interaction.reply(`User ${targetRawA} has been warned for: ` + "`" + reason + "`.");

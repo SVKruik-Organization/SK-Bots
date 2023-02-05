@@ -21,7 +21,11 @@ database.promise()
 	return console.log("Connecting to the database went wrong.")
 });
 
-module.exports = client, database;
+// Modules
+module.exports = {
+	client,
+	database
+}
 
 // Command Handler
 client.commands = new Collection();

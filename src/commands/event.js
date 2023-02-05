@@ -14,8 +14,8 @@ module.exports = {
         .addStringOption(option => option.setName('time').setDescription('Your 4-digit pincode you chose when registering your account.').setRequired(true).setMaxLength(5)),
 
     async execute(interaction) {
-        const client = require('..');
-        const channel = client.channels.cache.get(config.general.eventChannel);
+        const modules = require('..');
+        const channel = modules.client.channels.cache.get(config.general.eventChannel);
 
         const name = interaction.user.username;
         const pfp = interaction.user.avatarURL();
