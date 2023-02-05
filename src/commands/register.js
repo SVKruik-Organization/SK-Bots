@@ -7,32 +7,36 @@ module.exports = {
         .addStringOption(option => option.setName('pincode').setDescription('A 4-digit pincode that you will use for sensitive commands. Save it save!').setRequired(true).setMaxLength(4).setMinLength(4)),
     async execute(interaction) {
         const modules = require('..');
-        const userSnowflake = interaction.user.id;
+        const snowflake = interaction.user.id;
         const userTag = interaction.user.tag;
         const pincode = interaction.options.getString('pincode');
         modules.database.promise()
-            .execute(`INSERT INTO user (snowflake, tag, pincode, created_on) VALUES ('${userSnowflake}', '${userTag}', ${pincode}, CURDATE());`)
+            .execute(`INSERT INTO user (snowflake, tag, pincode, created_on) VALUES ('${snowflake}', '${userTag}', ${pincode}, CURDATE());`)
             .then(() => {
                 modules.database.promise()
-                    .execute(`SELECT id FROM user WHERE snowflake = '${userSnowflake}';`)
+                    .execute(`SELECT id FROM user WHERE snowflake = '${snowflake}';`)
                     .then(async ([data]) => {
                         modules.database.promise()
-                            .execute(`INSERT INTO rank (user_id, level, xp) VALUES (${data[0].id}, 1, 0);`)
+                            .execute(`INSERT INTO tier (user_id, level, xp) VALUES (${data[0].id}, 1, 0);`)
                             .then(async () => {
                                 modules.database.promise()
                                     .execute(`INSERT INTO economy (user_id, wallet, bank) VALUES (${data[0].id}, 0, 0);`)
                                     .then(async () => {
-                                        await interaction.reply('Thank you for your registration! You can now use economy and rank commands.');
+                                        await interaction.reply('Thank you for your registration! You can now use economy and tier commands.');
                                     }).catch(async err => {
+                                        console.log(err)
                                         await interaction.reply('Something went wrong while creating your account. Please try again later.');
                                     });
                             }).catch(async err => {
+                                console.log(err)
                                 await interaction.reply('Something went wrong while creating your account. Please try again later.');
                             });
                     }).catch(async err => {
+                        console.log(err)
                         await interaction.reply('Something went wrong while creating your account. Please try again later.');
                     });
             }).catch(async err => {
+                console.log(err)
                 await interaction.reply('Something went wrong while creating your account. Please try again later.');
             });
     },

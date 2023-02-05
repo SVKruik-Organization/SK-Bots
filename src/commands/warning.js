@@ -10,22 +10,20 @@ module.exports = {
     async execute(interaction) {
         const modules = require('..');
         const snowflake = interaction.user.id;
-        const targetRawA = interaction.options.getUser('target');
-        const targetRawB = `${targetRawA}`.replace('<@', '');
-        const target = `${targetRawB}`.replace('>', '');
+        const target = interaction.options.getUser('target').id;
         const reason = interaction.options.getString('reason') ?? 'No reason provided';
 
         modules.database.promise()
             .execute(`UPDATE user SET warnings = (warnings + 1) WHERE snowflake = '${target}'`)
             .then(async () => {
-                await interaction.reply(`User ${targetRawA} has been warned for: ` + "`" + reason + "`.");
+                await interaction.reply(`User <@${target}> has been warned for: ` + "`" + reason + "`.");
             }).catch(async err => {
                 console.log(err)
                 await interaction.reply('Something went wrong while warning this user.');
             });
 
         modules.database.promise()
-            .execute(`UPDATE user commands_used = commands_used + 1 WHERE snowflake = ${snowflake}`)
+            .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}'`)
             .catch(err => {
 				return console.log("Command usage increase unsuccessful, user do not have an account yet.");
             });

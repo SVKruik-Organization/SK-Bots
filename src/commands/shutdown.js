@@ -11,7 +11,7 @@ module.exports = {
 		await interaction.reply('Logging off. Bye!');
 
 		await modules.database.promise()
-			.execute(`UPDATE user commands_used = commands_used + 1 WHERE snowflake = ${snowflake}`)
+			.execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}'`)
 			.then(async () => {
 				process.exit();
 			}).catch(err => {

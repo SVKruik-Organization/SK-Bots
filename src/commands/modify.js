@@ -7,11 +7,11 @@ module.exports = {
         .addUserOption(option => option.setName('target').setDescription('The account you want to change.').setRequired(true))
         .addStringOption(option =>
             option.setName('section')
-                .setDescription('Choose wheter you want to change their rank or economy.')
+                .setDescription('Choose wheter you want to change their tier or economy.')
                 .setRequired(true)
                 .addChoices(
-                    { name: 'Rank - Level', value: 'rnk-lvl' },
-                    { name: 'Rank - XP', value: 'rnk-xp' },
+                    { name: 'Tier - Level', value: 'rnk-lvl' },
+                    { name: 'Tier - XP', value: 'rnk-xp' },
                     { name: 'Economy - Wallet', value: 'eco-wal' },
                     { name: 'Economy - Bank', value: 'eco-bnk' }
                 ))
@@ -50,10 +50,10 @@ module.exports = {
         let action = undefined;
 
         if (sectionType == "rnk-lvl") {
-            table = "`rank` SET level = "
+            table = "`tier` SET level = "
             row = "`level`";
         } else if (sectionType == "rnk-xp") {
-            table = "`rank` SET xp ="
+            table = "`tier` SET xp ="
             row = "`xp`";
         } else if (sectionType == "eco-wal") {
             table = "`economy` SET wallet ="
@@ -88,7 +88,7 @@ module.exports = {
         }
 
         modules.database.promise()
-            .execute(`UPDATE user commands_used = commands_used + 1 WHERE snowflake = ${snowflake}`)
+            .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}'`)
             .catch(err => {
 				return console.log("Command usage increase unsuccessful, user do not have an account yet.");
             });
