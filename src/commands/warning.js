@@ -6,7 +6,7 @@ module.exports = {
         .setDescription('Warn someone that breakes the rules.')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addUserOption(option => option.setName('target').setDescription('The person you want to warn.').setRequired(true))
-        .addStringOption(option => option.setName('reason').setDescription('The reason for the warning.').setRequired(false)),
+        .addStringOption(option => option.setName('reason').setDescription('The reason for the warning.').setRequired(false).setMaxLength(1000)),
     async execute(interaction) {
         const modules = require('..');
         const snowflake = interaction.user.id;

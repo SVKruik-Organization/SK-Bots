@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('close')
-        .setDescription('Close your account. You can no longer use account specific accounts.')
+        .setDescription('Close your account. You can no longer use account specific commands.')
         .addStringOption(option => option.setName('pincode').setDescription('Your 4-digit pincode you chose when registering your account.').setRequired(true)),
     async execute(interaction) {
         const modules = require('..');
