@@ -12,7 +12,6 @@ module.exports = {
         .addStringOption(option => option.setName('location').setDescription('Your 4-digit pincode you chose when registering your account.').setRequired(true).setMaxLength(50))
         .addStringOption(option => option.setName('date').setDescription('Your 4-digit pincode you chose when registering your account.').setRequired(true).setMaxLength(10))
         .addStringOption(option => option.setName('time').setDescription('Your 4-digit pincode you chose when registering your account.').setRequired(true).setMaxLength(5)),
-
     async execute(interaction) {
         const modules = require('..');
         const channel = modules.client.channels.cache.get(config.general.eventChannel);

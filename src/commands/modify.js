@@ -33,16 +33,15 @@ module.exports = {
         const sectionType = interaction.options.getString('section');
         const actionType = interaction.options.getString('action');
         const amount = interaction.options.getInteger('amount');
-        const snowflake = interaction.options.getUser('target').id;
+        const snowflake = interaction.options.getUser('target');
 
         let userId = undefined;
         await modules.database.promise()
-            .execute(`SELECT id FROM user WHERE snowflake = ${snowflake}`)
+            .execute(`SELECT id FROM user WHERE snowflake = ${snowflake.id}`)
             .then(async ([data]) => {
                 userId = data[0].id
             }).catch(err => {
-                console.log(err)
-                return interaction.reply("This user doesn't have an account yet.");
+                return console.log(`\t${snowflake.username} doesn't have an account.\n`);
             });
 
         let table = undefined;
@@ -75,13 +74,16 @@ module.exports = {
             action = `${row} / ${amount}`
         };
 
-        modules.database.promise()
+        if (userId == undefined) {
+            return interaction.reply("This user doesn't have an account yet.");
+        } else {
+            modules.database.promise()
             .execute(`UPDATE ${table}${action} WHERE user_id = ${userId}`)
             .then(async () => {
                 await interaction.reply("Account data has been succesfully changed.");
             }).catch(err => {
-                console.log(err)
                 return interaction.reply("This user doesn't have an account yet.");
             });
+        }
     },
 };
