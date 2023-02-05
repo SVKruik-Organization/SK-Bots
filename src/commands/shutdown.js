@@ -6,7 +6,7 @@ module.exports = {
 		.setDescription('Turn the bot off.')
 		.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 	async execute(interaction) {
-		await interaction.reply('Shutting down.');
+		await interaction.reply('Logging off. Bye!.');
         process.exit();
 	},
 };
