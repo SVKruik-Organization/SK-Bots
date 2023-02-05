@@ -4,7 +4,6 @@ const path = require('node:path');
 const mysql = require('mysql2');
 const { Client, Events, GatewayIntentBits, Collection } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-module.exports = client;
 
 // Database
 const database = mysql.createPool({
@@ -18,10 +17,11 @@ database.promise()
 .execute("SHOW databases")
 .then(() => {
 	console.log("Database connection established.\n");
-	module.exports = database;
-}).catch(err => {
+}).catch(() => {
 	return console.log("Connecting to the database went wrong.")
 });
+
+module.exports = client, database;
 
 // Command Handler
 client.commands = new Collection();
