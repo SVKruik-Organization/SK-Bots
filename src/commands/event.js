@@ -14,6 +14,7 @@ module.exports = {
         .addStringOption(option => option.setName('time').setDescription('Your 4-digit pincode you chose when registering your account.').setRequired(true).setMaxLength(5)),
     async execute(interaction) {
         const modules = require('..');
+        const snowflake = interaction.user.id;
         const channel = modules.client.channels.cache.get(config.general.eventChannel);
 
         const name = interaction.user.username;
@@ -23,7 +24,6 @@ module.exports = {
         const location = interaction.options.getString('location');
         const date = interaction.options.getString('date');
         const time = interaction.options.getString('time');
-
 
         const embed = new EmbedBuilder()
             .setColor(config.general.color)
@@ -39,9 +39,13 @@ module.exports = {
             .addFields({ name: '----', value: 'Meta:' })
             .setTimestamp()
             .setFooter({ text: 'Embed created by Stelleri' });
-
         channel.send({ embeds: [embed] });
-
         await interaction.reply(`Message created. Check your event here: <#${config.general.eventChannel}>.`);
+
+        modules.database.promise()
+            .execute(`UPDATE user commands_used = commands_used + 1 WHERE snowflake = ${snowflake}`)
+            .catch(err => {
+                return console.log("Command usage increase unsuccessful, user do not have an account yet.");
+            });
     },
 };

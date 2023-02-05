@@ -13,6 +13,8 @@ module.exports = {
                     { name: 'Tails', value: 'tails' }
                 )),
     async execute(interaction) {
+        const modules = require('..');
+        const snowflake = interaction.user.id;
         const winningSide = interaction.options.getString('side');
 
         const list = ["heads", "tails"];
@@ -30,5 +32,11 @@ module.exports = {
         function lose(side) {
             interaction.reply(`:coin: ${side}! -- You lose. :red_circle:`);
         };
+
+        modules.database.promise()
+            .execute(`UPDATE user commands_used = commands_used + 1 WHERE snowflake = ${snowflake}`)
+            .catch(err => {
+                return console.log("Command usage increase unsuccessful, user do not have an account yet.");
+            });
     },
 };

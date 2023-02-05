@@ -1,20 +1,16 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const config = require('../assets/config.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('clear')
-        .setDescription('Bulk delete messages.')
+        .setName('template')
+        .setDescription('Template command.')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-        .addIntegerOption(option => option.setName('amount').setDescription('Amount of messages to delete.').setRequired(true).setMinValue(1).setMaxValue(100)),
+        .addStringOption(option => option.setName('template').setDescription('Template').setRequired(true)),
     async execute(interaction) {
         const modules = require('..');
         const snowflake = interaction.user.id;
-        const amount = interaction.options.getInteger('amount');
-        await interaction.reply("Deleting `" + amount + "` messages . . .");
-
-        setTimeout(async () => {
-            await interaction.channel.bulkDelete(amount + 1)
-        }, 1000);
+        const template = interaction.options.getString('template');
 
         modules.database.promise()
             .execute(`UPDATE user commands_used = commands_used + 1 WHERE snowflake = ${snowflake}`)

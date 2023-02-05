@@ -9,6 +9,7 @@ module.exports = {
         .addStringOption(option => option.setName('reason').setDescription('The reason for the warning.').setRequired(false)),
     async execute(interaction) {
         const modules = require('..');
+        const snowflake = interaction.user.id;
         const targetRawA = interaction.options.getUser('target');
         const targetRawB = `${targetRawA}`.replace('<@', '');
         const target = `${targetRawB}`.replace('>', '');
@@ -21,6 +22,12 @@ module.exports = {
             }).catch(async err => {
                 console.log(err)
                 await interaction.reply('Something went wrong while warning this user.');
+            });
+
+        modules.database.promise()
+            .execute(`UPDATE user commands_used = commands_used + 1 WHERE snowflake = ${snowflake}`)
+            .catch(err => {
+				return console.log("Command usage increase unsuccessful, user do not have an account yet.");
             });
     },
 };

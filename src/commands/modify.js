@@ -33,15 +33,16 @@ module.exports = {
         const sectionType = interaction.options.getString('section');
         const actionType = interaction.options.getString('action');
         const amount = interaction.options.getInteger('amount');
-        const snowflake = interaction.options.getUser('target');
+        const targetSnowflake = interaction.options.getUser('target');
+        const snowflake = interaction.user.id;
 
         let userId = undefined;
         await modules.database.promise()
-            .execute(`SELECT id FROM user WHERE snowflake = ${snowflake.id}`)
+            .execute(`SELECT id FROM user WHERE snowflake = ${targetSnowflake.id}`)
             .then(async ([data]) => {
                 userId = data[0].id
             }).catch(err => {
-                return console.log(`\t${snowflake.username} doesn't have an account.\n`);
+                return console.log(`\t${targetSnowflake.username} doesn't have an account.\n`);
             });
 
         let table = undefined;
@@ -78,12 +79,18 @@ module.exports = {
             return interaction.reply("This user doesn't have an account yet.");
         } else {
             modules.database.promise()
-            .execute(`UPDATE ${table}${action} WHERE user_id = ${userId}`)
-            .then(async () => {
-                await interaction.reply("Account data has been succesfully changed.");
-            }).catch(err => {
-                return interaction.reply("This user doesn't have an account yet.");
-            });
+                .execute(`UPDATE ${table}${action} WHERE user_id = ${userId}`)
+                .then(async () => {
+                    await interaction.reply("Account data has been succesfully changed.");
+                }).catch(err => {
+                    return interaction.reply("This user doesn't have an account yet.");
+                });
         }
+
+        modules.database.promise()
+            .execute(`UPDATE user commands_used = commands_used + 1 WHERE snowflake = ${snowflake}`)
+            .catch(err => {
+				return console.log("Command usage increase unsuccessful, user do not have an account yet.");
+            });
     },
 };

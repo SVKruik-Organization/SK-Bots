@@ -6,9 +6,10 @@ module.exports = {
         .setDescription('Get your Discord Tag from the database.'),
     async execute(interaction) {
         const modules = require('..');
-        const userId = interaction.user.id;
+        const snowflake = interaction.user.id;
+        const targetSnowflake = interaction.user.id;
         modules.database.promise()
-            .execute(`SELECT tag FROM user WHERE snowflake = '${userId}'`)
+            .execute(`SELECT tag FROM user WHERE snowflake = '${targetSnowflake}'`)
             .then(async ([data]) => {
                 await interaction.reply('Your Discord Tag is: `' + data[0].tag + '`');
             }).catch(err => {

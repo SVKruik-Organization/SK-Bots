@@ -28,6 +28,5 @@ module.exports = {
             }).catch(async err => {
                 await interaction.reply('Something went wrong while closing your account. Please try again later.');
             });
-
     },
 };
