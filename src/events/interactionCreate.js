@@ -12,8 +12,14 @@ module.exports = {
 			return;
 		};
 
+		// Timestamp
+		var today = new Date();
+		const m = String(today.getMinutes()).padStart(2, '0');
+		const hh = String(today.getHours()).padStart(2, '0');
+		today = `${hh}:${m}`;
+
 		try {
-			console.log(`${interaction.user.username} used || ${interaction.commandName} ||`)
+			console.log(`${today}  ${interaction.user.username} used || ${interaction.commandName} ||`)
 		} catch (error) {
 			console.error(`Error executing ${interaction.commandName}.`);
 			console.error(error);
