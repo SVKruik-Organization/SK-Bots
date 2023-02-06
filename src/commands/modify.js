@@ -64,15 +64,15 @@ module.exports = {
         };
 
         if (actionType == "set") {
-            action = `${amount};`
+            action = `${amount}`;
         } else if (actionType == "inc") {
-            action = `${row} + ${amount};`
+            action = `${row} + ${amount}`;
         } else if (actionType == "dec") {
-            action = `${row} - ${amount};`
+            action = `${row} - ${amount}`;
         } else if (actionType == "mult") {
-            action = `${row} * ${amount};`
+            action = `${row} * ${amount}`;
         } else if (actionType == "div") {
-            action = `${row} / ${amount};`
+            action = `${row} / ${amount}`;
         };
 
         if (userId == undefined) {

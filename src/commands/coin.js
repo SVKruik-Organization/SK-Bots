@@ -26,11 +26,11 @@ module.exports = {
         };
 
         function win(side) {
-            interaction.reply(`:coin: ${side};! -- You win. :green_circle:`);
+            interaction.reply(`:coin: ${side}! -- You win. :green_circle:`);
         };
 
         function lose(side) {
-            interaction.reply(`:coin: ${side};! -- You lose. :red_circle:`);
+            interaction.reply(`:coin: ${side}! -- You lose. :red_circle:`);
         };
 
         modules.database.promise()

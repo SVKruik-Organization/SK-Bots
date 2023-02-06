@@ -15,7 +15,7 @@ module.exports = {
 		try {
 			console.log(`${interaction.user.username} used || ${interaction.commandName} ||`)
 		} catch (error) {
-			console.error(`Error executing ${interaction.commandName};`);
+			console.error(`Error executing ${interaction.commandName}.`);
 			console.error(error);
 		};
 	},
