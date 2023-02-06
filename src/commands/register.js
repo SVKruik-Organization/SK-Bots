@@ -11,7 +11,7 @@ module.exports = {
         const userTag = interaction.user.tag;
         const pincode = interaction.options.getString('pincode');
         modules.database.promise()
-            .execute(`INSERT INTO user (snowflake, tag, pincode, created_on) VALUES ('${snowflake}', '${userTag}', ${pincode}, CURDATE());`)
+            .execute(`INSERT INTO user (snowflake, tag, pincode, created_on) VALUES ('${snowflake}', '${userTag}', '${pincode}', CURDATE());`)
             .then(() => {
                 modules.database.promise()
                     .execute(`SELECT id FROM user WHERE snowflake = '${snowflake}';`)

@@ -30,7 +30,7 @@ module.exports = {
                 });
         } else if (actionType == "change" && newPincode != null) {
             modules.database.promise()
-                .execute(`UPDATE user SET pincode = ${newPincode} WHERE snowflake = '${snowflake}';`)
+                .execute(`UPDATE user SET pincode = '${newPincode}' WHERE snowflake = '${snowflake}';`)
                 .then(async () => {
                     await interaction.reply("Your pincode has been succesfully changed.");
                 }).catch(err => {
