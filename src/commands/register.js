@@ -22,22 +22,18 @@ module.exports = {
                                 modules.database.promise()
                                     .execute(`INSERT INTO economy (user_id, wallet, bank) VALUES (${data[0].id}, 0, 0);`)
                                     .then(async () => {
-                                        await interaction.reply('Thank you for your registration! You can now use economy and tier commands.');
+                                        await interaction.reply("Thank you for your registration! You can now use economy and tier commands.");
                                     }).catch(async err => {
-                                        console.log(err)
-                                        await interaction.reply('Something went wrong while creating your account. Please try again later.');
+                                        await interaction.reply("Either you already have an account, or something else went wrong.");
                                     });
                             }).catch(async err => {
-                                console.log(err)
-                                await interaction.reply('Something went wrong while creating your account. Please try again later.');
+                                await interaction.reply("Either you already have an account, or something else went wrong.");
                             });
                     }).catch(async err => {
-                        console.log(err)
-                        await interaction.reply('Something went wrong while creating your account. Please try again later.');
+                        await interaction.reply("Either you already have an account, or something else went wrong.");
                     });
             }).catch(async err => {
-                console.log(err)
-                await interaction.reply('Something went wrong while creating your account. Please try again later.');
+                await interaction.reply("Either you already have an account, or something else went wrong.");
             });
     },
 };

@@ -10,23 +10,23 @@ module.exports = {
         const snowflake = interaction.user.id;
         const inputPincode = interaction.options.getString('pincode');
         modules.database.promise()
-            .execute(`SELECT pincode AS 'pin' FROM user WHERE snowflake = '${snowflake}'`)
+            .execute(`SELECT pincode AS 'pin' FROM user WHERE snowflake = '${snowflake}';`)
             .then(async ([data]) => {
                 const dataPincode = data[0].pin;
 
                 if (inputPincode == dataPincode) {
                     modules.database.promise()
-                        .execute(`DELETE FROM user WHERE snowflake = '${snowflake}'`)
+                        .execute(`DELETE FROM user WHERE snowflake = '${snowflake}';`)
                         .then(async ([data]) => {
-                            await interaction.reply('Your account has been succesfully closed. If you change your mind, you can always create a new account with `/register`.');
+                            await interaction.reply("Your account has been succesfully closed. If you change your mind, you can always create a new account with `/register`.");
                         }).catch(async err => {
-                            await interaction.reply('Something went wrong while closing your account. Please try again later.');
+                            await interaction.reply("Something went wrong while closing your account. Please try again later.");
                         });
                 } else {
-                    await interaction.reply('Your pincode is not correct. If you forgot your pincode, you can request it with `/pincode`.');
-                }
+                    await interaction.reply("Your pincode is not correct. If you forgot your pincode, you can request it with `/pincode`.");
+                };
             }).catch(async err => {
-                await interaction.reply('Something went wrong while closing your account. Please try again later.');
+                await interaction.reply("Something went wrong while closing your account. Please try again later.");
             });
     },
 };

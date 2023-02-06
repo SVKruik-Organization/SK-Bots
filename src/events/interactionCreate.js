@@ -10,13 +10,13 @@ module.exports = {
 		if (!command) {
 			console.error(`No command matching ${interaction.commandName} was found.`);
 			return;
-		}
+		};
 
 		try {
-            console.log(`${interaction.user.username} used || ${interaction.commandName} ||`)
+			console.log(`${interaction.user.username} used || ${interaction.commandName} ||`)
 		} catch (error) {
-			console.error(`Error executing ${interaction.commandName}`);
+			console.error(`Error executing ${interaction.commandName};`);
 			console.error(error);
-		}
+		};
 	},
 };

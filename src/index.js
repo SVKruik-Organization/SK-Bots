@@ -7,25 +7,25 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 // Database
 const database = mysql.createPool({
-    host: '127.0.0.1',
-    user: 'root',
-    database: 'discord',
-    password: ''
+	host: '127.0.0.1',
+	user: 'root',
+	database: 'discord',
+	password: ''
 });
 
 database.promise()
-.execute("SHOW databases")
-.then(() => {
-	console.log("Database connection established.\n");
-}).catch(() => {
-	return console.log("Connecting to the database went wrong.")
-});
+	.execute("SHOW databases")
+	.then(() => {
+		console.log("Database connection established.\n");
+	}).catch(() => {
+		return console.log("Connecting to the database went wrong.");
+	});
 
 // Modules
 module.exports = {
 	client,
 	database
-}
+};
 
 // Command Handler
 client.commands = new Collection();
@@ -39,7 +39,7 @@ for (const file of commandFiles) {
 	if ('data' in command && 'execute' in command) {
 		client.commands.set(command.data.name, command);
 	} else {
-		return console.log(`Error at ${filePath}.`);
+		return console.log(`Error at ${filePath};.`);
 	};
 };
 
@@ -51,14 +51,14 @@ client.on(Events.InteractionCreate, async interaction => {
 	if (!command) {
 		console.error(`No command matching ${interaction.commandName} was found.`);
 		return;
-	}
+	};
 
 	try {
 		await command.execute(interaction);
 	} catch (error) {
 		console.error(error);
 		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-	}
+	};
 });
 
 // Event Handler
@@ -72,7 +72,7 @@ for (const file of eventFiles) {
 		client.once(event.name, (...args) => event.execute(...args));
 	} else {
 		client.on(event.name, (...args) => event.execute(...args));
-	}
-}
+	};
+};
 
 client.login(process.env.TOKEN);

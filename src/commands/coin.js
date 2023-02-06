@@ -26,17 +26,17 @@ module.exports = {
         };
 
         function win(side) {
-            interaction.reply(`:coin: ${side}! -- You win. :green_circle:`);
+            interaction.reply(`:coin: ${side};! -- You win. :green_circle:`);
         };
 
         function lose(side) {
-            interaction.reply(`:coin: ${side}! -- You lose. :red_circle:`);
+            interaction.reply(`:coin: ${side};! -- You lose. :red_circle:`);
         };
 
         modules.database.promise()
-            .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}'`)
+            .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
             .catch(err => {
-                return console.log("Command usage increase unsuccessful, user do not have an account yet.");
+                return console.log("Command usage increase unsuccessful, user does not have an account yet.");
             });
     },
 };

@@ -10,17 +10,17 @@ module.exports = {
         const snowflake = interaction.user.id;
         const targetSnowflake = interaction.options.getUser('target').id;
         modules.database.promise()
-            .execute(`SELECT tag FROM user WHERE snowflake = '${targetSnowflake}'`)
+            .execute(`SELECT tag FROM user WHERE snowflake = '${targetSnowflake}';`)
             .then(async ([data]) => {
-                await interaction.reply('The Discord Tag is: `' + data[0].tag + '`.');
+                await interaction.reply("The Discord Tag is: `" + data[0].tag + "`.");
             }).catch(err => {
-                return interaction.reply("User do not have an account yet.");
+                return interaction.reply("User does not have an account yet.");
             });
 
         modules.database.promise()
-            .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}'`)
+            .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
             .catch(err => {
-                return console.log("Command usage increase unsuccessful, user do not have an account yet.");
+                return console.log("Command usage increase unsuccessful, user does not have an account yet.");
             });
     },
 };

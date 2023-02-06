@@ -38,7 +38,7 @@ module.exports = {
 
         let userId = undefined;
         await modules.database.promise()
-            .execute(`SELECT id FROM user WHERE snowflake = ${targetSnowflake.id}`)
+            .execute(`SELECT id FROM user WHERE snowflake = ${targetSnowflake.id};`)
             .then(async ([data]) => {
                 userId = data[0].id
             }).catch(err => {
@@ -61,36 +61,36 @@ module.exports = {
         } else if (sectionType == "eco-bnk") {
             table = "`economy` SET bank ="
             row = "`bank`";
-        }
+        };
 
         if (actionType == "set") {
-            action = `${amount}`
+            action = `${amount};`
         } else if (actionType == "inc") {
-            action = `${row} + ${amount}`
+            action = `${row} + ${amount};`
         } else if (actionType == "dec") {
-            action = `${row} - ${amount}`
+            action = `${row} - ${amount};`
         } else if (actionType == "mult") {
-            action = `${row} * ${amount}`
+            action = `${row} * ${amount};`
         } else if (actionType == "div") {
-            action = `${row} / ${amount}`
+            action = `${row} / ${amount};`
         };
 
         if (userId == undefined) {
             return interaction.reply("This user doesn't have an account yet.");
         } else {
             modules.database.promise()
-                .execute(`UPDATE ${table}${action} WHERE user_id = ${userId}`)
+                .execute(`UPDATE ${table}${action} WHERE user_id = ${userId};`)
                 .then(async () => {
                     await interaction.reply("Account data has been succesfully changed.");
                 }).catch(err => {
                     return interaction.reply("This user doesn't have an account yet.");
                 });
-        }
+        };
 
         modules.database.promise()
-            .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}'`)
+            .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
             .catch(err => {
-				return console.log("Command usage increase unsuccessful, user do not have an account yet.");
+                return console.log("Command usage increase unsuccessful, user does not have an account yet.");
             });
     },
 };

@@ -38,14 +38,14 @@ module.exports = {
             )
             .addFields({ name: '----', value: 'Meta:' })
             .setTimestamp()
-            .setFooter({ text: 'Embed created by Stelleri' });
+            .setFooter({ text: 'Embed created by Stelleri' })
         channel.send({ embeds: [embed] });
-        await interaction.reply(`Message created. Check your event here: <#${config.general.eventChannel}>.`);
+        await interaction.reply(`Message created. Check your event here: <#${config.general.eventChannel};>.`);
 
         modules.database.promise()
-            .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}'`)
+            .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
             .catch(err => {
-                return console.log("Command usage increase unsuccessful, user do not have an account yet.");
+                return console.log("Command usage increase unsuccessful, user does not have an account yet.");
             });
     },
 };
