@@ -35,19 +35,19 @@ module.exports = {
         const amount = interaction.options.getInteger('amount');
         const targetSnowflake = interaction.options.getUser('target');
         const snowflake = interaction.user.id;
-
+        
         let userId = undefined;
+        let table = undefined;
+        let row = undefined;
+        let action = undefined;
+
         await modules.database.promise()
             .execute(`SELECT id FROM user WHERE snowflake = ${targetSnowflake.id};`)
             .then(async ([data]) => {
                 userId = data[0].id
             }).catch(err => {
-                return console.log(`\t${targetSnowflake.username} doesn't have an account.\n`);
+                return console.log(`[INFO] ${targetSnowflake.username} doesn't have an account.\n`);
             });
-
-        let table = undefined;
-        let row = undefined;
-        let action = undefined;
 
         if (sectionType == "rnk-lvl") {
             table = "`tier` SET level = "
@@ -90,7 +90,7 @@ module.exports = {
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
             .catch(err => {
-                return console.log("Command usage increase unsuccessful, user does not have an account yet.");
+                return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
             });
     },
 };

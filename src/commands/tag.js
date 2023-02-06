@@ -14,13 +14,13 @@ module.exports = {
             .then(async ([data]) => {
                 await interaction.reply("The Discord Tag is: `" + data[0].tag + "`.");
             }).catch(err => {
-                return interaction.reply("User does not have an account yet.");
+                return interaction.reply("User does not have an account yet.\n");
             });
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
             .catch(err => {
-                return console.log("Command usage increase unsuccessful, user does not have an account yet.");
+                return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
             });
     },
 };

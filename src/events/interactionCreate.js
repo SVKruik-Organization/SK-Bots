@@ -19,7 +19,7 @@ module.exports = {
 		today = `${hh}:${m}`;
 
 		try {
-			console.log(`${today}  ${interaction.user.username} used || ${interaction.commandName} ||`)
+			console.log(`[INFO] ${today} ${interaction.user.username} used || ${interaction.commandName} ||`)
 		} catch (error) {
 			console.error(`Error executing ${interaction.commandName}.`);
 			console.error(error);

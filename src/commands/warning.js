@@ -19,8 +19,7 @@ module.exports = {
             .then(async () => {
                 await interaction.reply(`User <@${targetSnowflake}> has been warned for: ` + "`" + reason + "`.");
             }).catch(async err => {
-                console.log(err)
-                await interaction.reply("Something went wrong while warning this user.");
+                await interaction.reply("Something went wrong while warning this user. Please try again later.");
             });
 
         await modules.database.promise()
@@ -28,21 +27,19 @@ module.exports = {
             .then(async ([data]) => {
                 userId = data[0].id;
             }).catch(async err => {
-                console.log(err)
-                await interaction.reply("Something went wrong while warning this user.");
+                await interaction.reply("Something went wrong while warning this user. Please try again later.");
             });
 
         await modules.database.promise()
             .execute(`INSERT INTO warning (user_id_receiver, reason, date) VALUES (${userId}, '${reason}', CURDATE())`)
             .catch(async err => {
-                console.log(err)
-                await interaction.reply("Something went wrong while warning this user.");
+                await interaction.reply("Something went wrong while warning this user. Please try again later.");
             });
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
             .catch(err => {
-                return console.log("Command usage increase unsuccessful, user does not have an account yet.");
+                return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
             });
     },
 };

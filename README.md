@@ -26,3 +26,9 @@ Below is a list of available commands. I will update this regularly. Last update
 | `shutdown` | Shutdown the bot remotely. Like with the `close` command, you have to fill in your pincode as a precaution. | `pincode` | `true` |
 | `tag` | Retrieve the Discord tag from the database. This is a misc command used primarily to check if the database is online. This command will fail if the user does not have an account yet. | `target` | `false` |
 | `warn` | Give someone an official warning. This is the administrator version of reporting. Unlike the `report` command, reasoning (`param2`) is optional. | `target` optional: `reason` | `true` |
+
+#### Meta
+- Node.js version: `v18.14.0 LTS`
+- Discord.js version: `v14.7.1`
+- Commands: `15`
+- Project version: `v2.0.0`

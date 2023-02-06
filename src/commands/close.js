@@ -9,11 +9,11 @@ module.exports = {
         const modules = require('..');
         const snowflake = interaction.user.id;
         const inputPincode = interaction.options.getString('pincode');
+        
         modules.database.promise()
             .execute(`SELECT pincode AS 'pin' FROM user WHERE snowflake = '${snowflake}';`)
             .then(async ([data]) => {
                 const dataPincode = data[0].pin;
-
                 if (inputPincode == dataPincode) {
                     modules.database.promise()
                         .execute(`DELETE FROM user WHERE snowflake = '${snowflake}';`)

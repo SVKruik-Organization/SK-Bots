@@ -25,8 +25,7 @@ module.exports = {
                 .then(async ([data]) => {
                     await interaction.reply("Your Pincode is: `" + data[0].pin + "`");
                 }).catch(err => {
-                    console.log(err)
-                    return console.log("You do not have an account yet. Generate an account with the `/register` command.");
+                    return interaction.reply("You do not have an account yet. Create an account with the `/register` command.");
                 });
         } else if (actionType == "change" && newPincode != null) {
             modules.database.promise()
@@ -34,8 +33,7 @@ module.exports = {
                 .then(async () => {
                     await interaction.reply("Your pincode has been succesfully changed.");
                 }).catch(err => {
-                    console.log(err)
-                    return console.log("You do not have an account yet. Generate an account with the `/register` command.");
+                    return interaction.reply("You do not have an account yet. Create an account with the `/register` command.");
                 });
         } else {
             await interaction.reply("You need to give a new pincode.");
@@ -44,7 +42,7 @@ module.exports = {
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
             .catch(err => {
-                return console.log("Command usage increase unsuccessful, user does not have an account yet.");
+                return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
             });
     },
 };

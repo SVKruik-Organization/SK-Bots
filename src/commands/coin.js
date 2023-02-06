@@ -16,9 +16,9 @@ module.exports = {
         const modules = require('..');
         const snowflake = interaction.user.id;
         const winningSide = interaction.options.getString('side');
-
         const list = ["heads", "tails"];
         const random = list[Math.floor(Math.random() * list.length)];
+        
         if (random == "heads") {
             winningSide == "heads" ? win("Heads") : lose("Heads");
         } else if (random == "tails") {
@@ -36,7 +36,7 @@ module.exports = {
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
             .catch(err => {
-                return console.log("Command usage increase unsuccessful, user does not have an account yet.");
+                return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
             });
     },
 };

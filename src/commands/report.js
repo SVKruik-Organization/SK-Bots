@@ -34,8 +34,7 @@ module.exports = {
             .then(async () => {
                 await interaction.reply("Thank you for your report. We will have a look at it ASAP.");
             }).catch(async err => {
-                console.log(err)
-                await interaction.reply("Something went wrong while reporting this user.");
+                await interaction.reply("Something went wrong while reporting this user. Please try again later.");
             });
 
         await modules.database.promise()
@@ -47,25 +46,22 @@ module.exports = {
                     .then(async ([data]) => {
                         userIdReceiver = data[0].id;
                     }).catch(async err => {
-                        console.log(err)
-                        await interaction.reply("Something went wrong while reporting this user.");
+                        await interaction.reply("Something went wrong while reporting this user. Please try again later.");
                     });
             }).catch(async err => {
-                console.log(err)
-                await interaction.reply("Something went wrong while reporting this user.");
+                await interaction.reply("Something went wrong while reporting this user. Please try again later.");
             });
 
         await modules.database.promise()
             .execute(`INSERT INTO report (user_id, user_id_receiver, reason, date, category) VALUES (${userId}, ${userIdReceiver}, '${reason}', CURDATE(), '${category}')`)
             .catch(async err => {
-                console.log(err)
-                await interaction.reply("Something went wrong while reporting this user.");
+                await interaction.reply("Something went wrong while reporting this user. Please try again later.");
             });
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
             .catch(err => {
-                return console.log("Command usage increase unsuccessful, user does not have an account yet.");
+                return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
             });
     },
 };

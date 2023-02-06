@@ -2,23 +2,39 @@ require('dotenv').config();
 const fs = require('node:fs');
 const path = require('node:path');
 const mysql = require('mysql2');
+const config = require('./assets/config.js');
 const { Client, Events, GatewayIntentBits, Collection } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const blockedUsers = ['1'];
+client.login(process.env.TOKEN);
+const guild = client.guilds.fetch(config.general.guildId);
+if (!guild) {
+	console.log("\n[FATAL] Guild not found. Aborting.\n");
+	process.exit();
+};
 
+//		Local database
 // Database
+// const database = mysql.createPool({
+// 	host: '127.0.0.1',
+// 	user: 'root',
+// 	database: 'discord',
+// 	password: ''
+// });
+
 const database = mysql.createPool({
-	host: '127.0.0.1',
-	user: 'root',
-	database: 'discord',
-	password: ''
+	host: 'sql7.freesqldatabase.com',
+	user: 'sql7596278',
+	database: 'sql7596278',
+	password: 'nW8recuEpg'
 });
 
 database.promise()
 	.execute("SHOW databases")
 	.then(() => {
-		console.log("Database connection established.\n");
+		console.log("\nDatabase connection established.\n");
 	}).catch(() => {
-		return console.log("Connecting to the database went wrong.");
+		return console.log("[ERROR] Connecting to the database went wrong.");
 	});
 
 // Modules
@@ -39,12 +55,13 @@ for (const file of commandFiles) {
 	if ('data' in command && 'execute' in command) {
 		client.commands.set(command.data.name, command);
 	} else {
-		return console.log(`Error at ${filePath};.`);
+		return console.log(`[FATAL] Error at ${filePath}.`);
 	};
 };
 
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
+	if (blockedUsers.includes(interaction.user.id)) return;
 
 	const command = interaction.client.commands.get(interaction.commandName);
 
@@ -74,5 +91,3 @@ for (const file of eventFiles) {
 		client.on(event.name, (...args) => event.execute(...args));
 	};
 };
-
-client.login(process.env.TOKEN);
