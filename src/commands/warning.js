@@ -10,14 +10,31 @@ module.exports = {
     async execute(interaction) {
         const modules = require('..');
         const snowflake = interaction.user.id;
-        const target = interaction.options.getUser('target').id;
+        const targetSnowflake = interaction.options.getUser('target').id;
         const reason = interaction.options.getString('reason') ?? 'No reason provided';
+        let userId = undefined;
 
-        modules.database.promise()
-            .execute(`UPDATE user SET warnings = (warnings + 1) WHERE snowflake = '${target}'`)
+        await modules.database.promise()
+            .execute(`UPDATE user SET warnings = (warnings + 1) WHERE snowflake = '${targetSnowflake}'`)
             .then(async () => {
-                await interaction.reply(`User <@${target}> has been warned for: ` + "`" + reason + "`.");
+                await interaction.reply(`User <@${targetSnowflake}> has been warned for: ` + "`" + reason + "`.");
             }).catch(async err => {
+                console.log(err)
+                await interaction.reply('Something went wrong while warning this user.');
+            });
+
+        await modules.database.promise()
+            .execute(`SELECT id FROM user WHERE snowflake = '${targetSnowflake}'`)
+            .then(async ([data]) => {
+                userId = data[0].id;
+            }).catch(async err => {
+                console.log(err)
+                await interaction.reply('Something went wrong while warning this user.');
+            });
+
+        await modules.database.promise()
+            .execute(`INSERT INTO warning (user_id_receiver, reason, date) VALUES (${userId}, '${reason}', CURDATE())`)
+            .catch(async err => {
                 console.log(err)
                 await interaction.reply('Something went wrong while warning this user.');
             });
@@ -25,7 +42,7 @@ module.exports = {
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}'`)
             .catch(err => {
-				return console.log("Command usage increase unsuccessful, user do not have an account yet.");
+                return console.log("Command usage increase unsuccessful, user do not have an account yet.");
             });
     },
 };
