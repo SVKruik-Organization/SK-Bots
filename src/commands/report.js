@@ -1,0 +1,71 @@
+const { SlashCommandBuilder } = require('discord.js');
+
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('report')
+        .setDescription('Report someone for breaking the rules. We will have a look at it.')
+        .addUserOption(option => option.setName('target').setDescription('The person you want to report.').setRequired(true))
+        .addStringOption(option =>
+            option.setName('category')
+                .setDescription('Type of report.')
+                .setRequired(true)
+                .addChoices(
+                    { name: 'Swearing', value: 'Swearing' },
+                    { name: 'Bullying', value: 'Bullying' },
+                    { name: 'Scamming', value: 'Scamming' },
+                    { name: 'Exploiting', value: 'Exploiting' },
+                    { name: 'Dating', value: 'Dating' },
+                    { name: 'Harassment', value: 'Harassment' },
+                    { name: 'Spamming', value: 'Spamming' },
+                    { name: 'Other (Please specify)', value: 'Other' }
+                ))
+        .addStringOption(option => option.setName('reason').setDescription('What did the user do wrong? What rules did they break?').setRequired(true).setMaxLength(1000)),
+    async execute(interaction) {
+        const modules = require('..');
+        const snowflake = interaction.user.id;
+        const targetSnowflake = interaction.options.getUser('target').id;
+        const reason = interaction.options.getString('reason');
+        const category = interaction.options.getString('category');
+        let userId = undefined;
+        let userIdReceiver = undefined;
+
+        await modules.database.promise()
+            .execute(`UPDATE user SET reports = (reports + 1) WHERE snowflake = '${targetSnowflake}'`)
+            .then(async () => {
+                await interaction.reply("Thank you for your report. We will have a look at it ASAP.");
+            }).catch(async err => {
+                console.log(err)
+                await interaction.reply('Something went wrong while reporting this user.');
+            });
+
+        await modules.database.promise()
+            .execute(`SELECT id FROM user WHERE snowflake = '${snowflake}'`)
+            .then(async ([data]) => {
+                userId = data[0].id;
+                await modules.database.promise()
+                    .execute(`SELECT id FROM user WHERE snowflake = '${targetSnowflake}'`)
+                    .then(async ([data]) => {
+                        userIdReceiver = data[0].id;
+                    }).catch(async err => {
+                        console.log(err)
+                        await interaction.reply('Something went wrong while reporting this user.');
+                    });
+            }).catch(async err => {
+                console.log(err)
+                await interaction.reply('Something went wrong while reporting this user.');
+            });
+
+        await modules.database.promise()
+            .execute(`INSERT INTO report (user_id, user_id_receiver, reason, date, category) VALUES (${userId}, ${userIdReceiver}, '${reason}', CURDATE(), '${category}')`)
+            .catch(async err => {
+                console.log(err)
+                await interaction.reply('Something went wrong while reporting this user.');
+            });
+
+        modules.database.promise()
+            .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}'`)
+            .catch(err => {
+                return console.log("Command usage increase unsuccessful, user do not have an account yet.");
+            });
+    },
+};

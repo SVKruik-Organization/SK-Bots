@@ -3,7 +3,7 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('warn')
-        .setDescription('Warn someone that breakes the rules.')
+        .setDescription('Warn someone that breakes the rules. Administrator version of report.')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addUserOption(option => option.setName('target').setDescription('The person you want to warn.').setRequired(true))
         .addStringOption(option => option.setName('reason').setDescription('The reason for the warning.').setRequired(false).setMaxLength(1000)),
