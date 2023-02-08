@@ -4,7 +4,14 @@ const path = require('node:path');
 const mysql = require('mysql2');
 const config = require('./assets/config.js');
 const { Client, Events, GatewayIntentBits, Collection } = require('discord.js');
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.MessageContent,
+		GatewayIntentBits.GuildMembers,
+	],
+});
 const blockedUsers = ['1'];
 client.login(process.env.TOKEN);
 const guild = client.guilds.fetch(config.general.guildId);

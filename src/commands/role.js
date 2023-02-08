@@ -12,7 +12,8 @@ module.exports = {
         const color = await interaction.options.getString('hex');
         const regex = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
         const role = interaction.guild.roles.cache.find(role => role.name === interaction.user.tag);
-        const guild = modules.client.guilds.get(config.general.guildId);
+        const guild = modules.client.guilds.cache.get(config.general.guildId);
+        const position = guild.roles.cache.size - 2
 
         modules.database.promise()
             .execute(`SELECT id FROM user WHERE snowflake = '${snowflake}';`)
@@ -24,13 +25,16 @@ module.exports = {
 
                 if (color.match(regex)) {
                     await interaction.guild.roles.create({
+                        position: position,
                         name: interaction.user.tag,
                         color: color
                     }).then(async () => {
-                        const role = guild.roles.cache.find((r) => r.id === interaction.user.tag);
-                        member.roles.add(role);
+                        const role = guild.roles.cache.find((r) => r.name === interaction.user.tag);
+                        await guild.members.fetch(snowflake).then(async (user) => {
+                            user.roles.add(role);
+                        });
 
-                        await interaction.reply(color + " -- great color! You look awesome!");
+                        await interaction.reply("`" + color + "` -- great color! You look awesome!");
                     }).catch(async err => {
                         console.log(err)
                         await interaction.reply("Something went wrong while creating your role. Please try again later.");
