@@ -11,7 +11,12 @@ module.exports = {
         const snowflake = interaction.user.id;
         const expression = interaction.options.getString('expression');
 
-        interaction.reply(`Expression: \`${expression}\`\n\nResult: \`${math.evaluate(expression).toString()}\``)
+        try {
+            const answer = math.evaluate(expression).toString();
+            await interaction.reply(`Expression: \`${expression}\`\n\nResult: \`${answer}}\``);
+        } catch (err) {
+            await interaction.reply(`Invalid expression.`);
+        };
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)

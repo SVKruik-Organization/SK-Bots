@@ -10,7 +10,7 @@ module.exports = {
 		const list = ["1!", "2!", "3!", "4!", "5!", "6!"];
 		const random = list[Math.floor(Math.random() * list.length)];
 		
-		await interaction.reply("🎲 ", random);
+		await interaction.reply(`🎲 ${random}`);
 
 		modules.database.promise()
 			.execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)

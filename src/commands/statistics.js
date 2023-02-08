@@ -23,7 +23,7 @@ module.exports = {
             .setAuthor({ name: name, iconURL: pfp })
             .addFields({ name: '----', value: 'List' })
             .addFields(
-                { name: 'Name', value: "Stelleri"},
+                { name: 'Name', value: "**Stelleri**"},
                 { name: 'Creator', value: `<@422704748488163332>`},
                 { name: 'Uptime', value: uptime},
                 { name: 'Ping', value: `\`${modules.client.ws.ping}\`ms` },
