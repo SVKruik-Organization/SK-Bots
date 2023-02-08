@@ -13,7 +13,8 @@ module.exports = {
                     { name: 'Tier - Level', value: 'rnk-lvl' },
                     { name: 'Tier - XP', value: 'rnk-xp' },
                     { name: 'Economy - Wallet', value: 'eco-wal' },
-                    { name: 'Economy - Bank', value: 'eco-bnk' }
+                    { name: 'Economy - Bank', value: 'eco-bnk' },
+                    { name: 'Warnings', value: 'warning' }
                 ))
         .addStringOption(option =>
             option.setName('action')
@@ -26,66 +27,71 @@ module.exports = {
                     { name: 'Multiply', value: 'mult' },
                     { name: 'Divide', value: 'div' }
                 ))
-        .addIntegerOption(option => option.setName('amount').setDescription("The amount for the chosen action.").setRequired(true).setMinValue(1))
+        .addIntegerOption(option => option.setName('amount').setDescription("The amount for the chosen action.").setRequired(true).setMinValue(0))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
         const modules = require('..');
         const sectionType = interaction.options.getString('section');
         const actionType = interaction.options.getString('action');
         const amount = interaction.options.getInteger('amount');
-        const targetSnowflake = interaction.options.getUser('target');
+        const targetSnowflake = interaction.options.getUser('target').id;
         const snowflake = interaction.user.id;
-        
+
         let userId = undefined;
         let table = undefined;
         let row = undefined;
         let action = undefined;
+        let where = " WHERE user_id = "
+
 
         await modules.database.promise()
-            .execute(`SELECT id FROM user WHERE snowflake = ${targetSnowflake.id};`)
+            .execute(`SELECT id FROM user WHERE snowflake = ${targetSnowflake};`)
             .then(async ([data]) => {
-                userId = data[0].id
+                userId = data[0].id;
+                let filter = userId
+
+                if (sectionType == "rnk-lvl") {
+                    table = "`tier` SET level = ";
+                    row = "`level`";
+                } else if (sectionType == "rnk-xp") {
+                    table = "`tier` SET xp =";
+                    row = "`xp`";
+                } else if (sectionType == "eco-wal") {
+                    table = "`economy` SET wallet =";
+                    row = "`wallet`";
+                } else if (sectionType == "eco-bnk") {
+                    table = "`economy` SET bank =";
+                    row = "`bank`";
+                } else if (sectionType == "warning") {
+                    table = "`user` SET warnings =";
+                    row = "`warnings`";
+                    where = " WHERE snowflake = '";
+                    filter = `${targetSnowflake}'`;
+                };
+
+                if (actionType == "set") {
+                    action = ` ${amount}`;
+                } else if (actionType == "inc") {
+                    action = ` ${row} + ${amount}`;
+                } else if (actionType == "dec") {
+                    action = ` ${row} - ${amount}`;
+                } else if (actionType == "mult") {
+                    action = ` ${row} * ${amount}`;
+                } else if (actionType == "div") {
+                    action = ` ${row} / ${amount}`;
+                };
+
+                modules.database.promise()
+                    .execute(`UPDATE ${table}${action}${where}${filter};`)
+                    .then(async () => {
+                        await interaction.reply("Account data has been succesfully changed.");
+                    }).catch(err => {
+                        console.log(err)
+                        return interaction.reply("This user doesn't have an account yet.");
+                    });
             }).catch(err => {
                 return console.log(`[INFO] ${targetSnowflake.username} doesn't have an account.\n`);
             });
-
-        if (sectionType == "rnk-lvl") {
-            table = "`tier` SET level = "
-            row = "`level`";
-        } else if (sectionType == "rnk-xp") {
-            table = "`tier` SET xp ="
-            row = "`xp`";
-        } else if (sectionType == "eco-wal") {
-            table = "`economy` SET wallet ="
-            row = "`wallet`";
-        } else if (sectionType == "eco-bnk") {
-            table = "`economy` SET bank ="
-            row = "`bank`";
-        };
-
-        if (actionType == "set") {
-            action = `${amount}`;
-        } else if (actionType == "inc") {
-            action = `${row} + ${amount}`;
-        } else if (actionType == "dec") {
-            action = `${row} - ${amount}`;
-        } else if (actionType == "mult") {
-            action = `${row} * ${amount}`;
-        } else if (actionType == "div") {
-            action = `${row} / ${amount}`;
-        };
-
-        if (userId == undefined) {
-            return interaction.reply("This user doesn't have an account yet.");
-        } else {
-            modules.database.promise()
-                .execute(`UPDATE ${table}${action} WHERE user_id = ${userId};`)
-                .then(async () => {
-                    await interaction.reply("Account data has been succesfully changed.");
-                }).catch(err => {
-                    return interaction.reply("This user doesn't have an account yet.");
-                });
-        };
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)

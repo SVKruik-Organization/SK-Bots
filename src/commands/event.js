@@ -35,7 +35,7 @@ module.exports = {
                 { name: 'Date', value: date, inline: true },
                 { name: 'Time', value: time, inline: true },
             )
-            .addFields({ name: '----', value: 'Meta:' })
+            .addFields({ name: '----', value: 'Meta' })
             .setTimestamp()
             .setFooter({ text: 'Embed created by Stelleri' })
         channel.send({ embeds: [embed] });
