@@ -17,7 +17,7 @@ module.exports = {
         await modules.database.promise()
             .execute(`UPDATE user SET warnings = (warnings + 1) WHERE snowflake = '${targetSnowflake}';`)
             .then(async () => {
-                await interaction.reply(`User <@${targetSnowflake}> has been warned for: ` + "`" + reason + "`.");
+                await interaction.reply(`User <@${targetSnowflake}> has been warned for: \`${reason}\``);
             }).catch(async err => {
                 await interaction.reply("Something went wrong while warning this user. Please try again later.");
             });

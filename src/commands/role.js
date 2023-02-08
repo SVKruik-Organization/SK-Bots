@@ -34,7 +34,7 @@ module.exports = {
                             user.roles.add(role);
                         });
 
-                        await interaction.reply("`" + color + "` -- great color! You look awesome!");
+                        await interaction.reply(`\`${color}\` -- great color! You look awesome!`);
                     }).catch(async err => {
                         console.log(err)
                         await interaction.reply("Something went wrong while creating your role. Please try again later.");

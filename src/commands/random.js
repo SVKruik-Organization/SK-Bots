@@ -10,7 +10,7 @@ module.exports = {
         const snowflake = interaction.user.id;
         const bound = interaction.options.getInteger('maximum');
         const random = Math.floor(Math.random() * bound) + 1;
-        await interaction.reply("Random number: `" + random + "`");
+        await interaction.reply(`Random number: \`${random}\`.`);
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)

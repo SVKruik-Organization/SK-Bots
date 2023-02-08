@@ -23,7 +23,7 @@ module.exports = {
             modules.database.promise()
                 .execute(`SELECT pincode AS pin FROM user WHERE snowflake = '${snowflake}';`)
                 .then(async ([data]) => {
-                    await interaction.reply("Your Pincode is: `" + data[0].pin + "`");
+                    await interaction.reply(`Your Pincode is: \`${data[0].pin}\`.`);
                 }).catch(err => {
                     return interaction.reply("You do not have an account yet. Create an account with the `/register` command.");
                 });
