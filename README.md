@@ -14,8 +14,10 @@ Below is a list of available commands. I will update this regularly. Last update
 | - | - | - | - |
 | `clear` | Bulk delete `param1` amount of messages. | `amount` | `true` |
 | `close` | Close your account. Pincode input for verification. | `pincode` | `false` |
-| `delete` | Remove an old or duplicate slash command. | `id` | `true` |
 | `coin` | Flip a coin. `param1` to choose which side you placed your bet on. | `side` | `false` |
+| `delete` | Remove an old or duplicate slash command. | `id` | `true` |
+| `dice` | Roll the dice. Returns random number. | - | `false` |
+| `economy` | Controls for economy system. Withdraw, deposit or view your balance. | `action` optional: `amount` | `false` |
 | `event` | Create an scheduled event. This can be used for meetings and other gatherings. You can enter various data such as location and time. The bot will then send a fancy embed in a dedicated channel. | `title` `description` `location` `date` `time` | `true` |
 | `modify` | Modify the amount of `param2` a user has. You can increase, decrease, set, multiply and divide. Database editing translated into Discord UI. | `target` `section` `action` `amount` | `true` |
 | `pincode` | Request or change your pincode, depending on `param1`.  | `action` optional: `new-pincode` | `false` |
@@ -23,12 +25,17 @@ Below is a list of available commands. I will update this regularly. Last update
 | `random` | Generate a random number between 1 and `param1`. | `maximum` | `false` |
 | `register` | Create a new account. You will also have to set your pincode, used for sensitive commands like `close`. | `pincode` | `false` |
 | `report` | Report someone for misbehaving and/or breaking the rules of conduct. You can select the type, and then further explain the incident. | `target` `category` `reason` | `false` |
+| `role` | Style yourself with a custom HEX role color. | `hex` | `false` |
+| `server` | Get information about the current server the bot is in. | - | `false` |
 | `shutdown` | Shutdown the bot remotely. Like with the `close` command, you have to fill in your pincode as a precaution. | `pincode` | `true` |
+| `statistics` | Get information about the bot. | - | `false` |
+| `suggestion` | Create a new suggestion in a dedicated channel.  | `title` `description` optional: `when` | `false` |
 | `tag` | Retrieve the Discord tag from the database. This is a misc command used primarily to check if the database is online. This command will fail if the user does not have an account yet. | `target` | `false` |
+| `tier` | Get information about your level progression. | - | `false` |
 | `warn` | Give someone an official warning. This is the administrator version of reporting. Unlike the `report` command, reasoning (`param2`) is optional. | `target` optional: `reason` | `true` |
 
 #### Meta
 - Node.js version: `v18.14.0 LTS`
 - Discord.js version: `v14.7.1`
-- Commands: `15`
-- Project version: `v2.0.0`
+- Commands: `22`
+- Project version: `v2.1.0`
