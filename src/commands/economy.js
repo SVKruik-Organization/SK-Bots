@@ -19,6 +19,7 @@ module.exports = {
     async execute(interaction) {
         const modules = require('..');
         const snowflake = interaction.user.id;
+        const user = interaction.user;
         const actionType = interaction.options.getString('action');
         const amount = interaction.options.getInteger('amount');
 
@@ -28,7 +29,7 @@ module.exports = {
             .then(async ([data]) => {
                 userId = data[0].id
             }).catch(err => {
-                return console.log(`[INFO] ${targetSnowflake.username} doesn't have an account.\n`);
+                return console.log(`[INFO] ${user.username} doesn't have an account.\n`);
             });
 
         if (actionType == "withdraw" && amount != null) {
@@ -37,7 +38,7 @@ module.exports = {
                 .then(async () => {
                     await interaction.reply(`Succesfully withdrew \`${amount}\` bits.`);
                 }).catch(err => {
-                    return interaction.reply("You do not have an account yet. Create an account with the `/register` command.");
+                    return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else if (actionType == "deposit" && amount != null) {
             modules.database.promise()
@@ -45,7 +46,7 @@ module.exports = {
                 .then(async () => {
                     await interaction.reply(`Succesfully deposited \`${amount}\` bits.`);
                 }).catch(err => {
-                    return interaction.reply("You do not have an account yet. Create an account with the `/register` command.");
+                    return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else if (actionType == "balance") {
             modules.database.promise()
@@ -69,11 +70,10 @@ module.exports = {
                         .setFooter({ text: 'Embed created by Stelleri' });
                     await interaction.reply({ embeds: [embed] });
                 }).catch(err => {
-                    console.log(err)
-                    return interaction.reply("You do not have an account yet. Create an account with the `/register` command.");
+                    return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else {
-            await interaction.reply("You need to give the amount to withdraw or deposit.");
+            await interaction.reply({ content: "You need to give the amount to withdraw or deposit.", ephemeral: true });
         };
 
         modules.database.promise()

@@ -26,10 +26,10 @@ module.exports = {
 							return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
 						});
 				} else {
-					await interaction.reply("Your pincode is not correct. If you forgot your pincode, you can request it with `/pincode`.");
+					await interaction.reply({ content: "Your pincode is not correct. If you forgot your pincode, you can request it with `/pincode`.", ephemeral: true });
 				};
 			}).catch(async err => {
-				await interaction.reply("Something went wrong while shutting down the bot. Please try again later.");
+				await interaction.reply({ content: "Something went wrong while shutting down the bot. Please try again later.", ephemeral: true });
 			});
 	},
 };

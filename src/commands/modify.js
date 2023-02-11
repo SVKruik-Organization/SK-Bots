@@ -86,7 +86,6 @@ module.exports = {
                     .then(async () => {
                         await interaction.reply("Account data has been succesfully changed.");
                     }).catch(err => {
-                        console.log(err)
                         return interaction.reply("This user doesn't have an account yet.");
                     });
             }).catch(err => {

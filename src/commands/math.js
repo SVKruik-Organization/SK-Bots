@@ -13,9 +13,9 @@ module.exports = {
 
         try {
             const answer = math.evaluate(expression).toString();
-            await interaction.reply(`Expression: \`${expression}\`\n\nResult: \`${answer}}\``);
+            await interaction.reply(`Expression: \`${expression}\`\n\nResult: \`${answer}\``);
         } catch (err) {
-            await interaction.reply(`Invalid expression.`);
+            await interaction.reply({ content: `Invalid expression.`, ephemeral: true });
         };
 
         modules.database.promise()

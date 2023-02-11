@@ -25,7 +25,7 @@ module.exports = {
                 .then(async ([data]) => {
                     await interaction.reply(`Your Pincode is: \`${data[0].pin}\`.`);
                 }).catch(err => {
-                    return interaction.reply("You do not have an account yet. Create an account with the `/register` command.");
+                    return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else if (actionType == "change" && newPincode != null) {
             modules.database.promise()
@@ -33,10 +33,10 @@ module.exports = {
                 .then(async () => {
                     await interaction.reply("Your pincode has been succesfully changed.");
                 }).catch(err => {
-                    return interaction.reply("You do not have an account yet. Create an account with the `/register` command.");
+                    return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else {
-            await interaction.reply("You need to give a new pincode.");
+            await interaction.reply({ content: "You need to give a new pincode.", ephemeral: true });
         };
 
         modules.database.promise()

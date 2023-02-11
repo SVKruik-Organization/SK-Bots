@@ -40,8 +40,7 @@ module.exports = {
                     .setFooter({ text: 'Embed created by Stelleri' });
                 await interaction.reply({ embeds: [embed] });
             }).catch(err => {
-                console.log(err)
-                return interaction.reply("You do not have an account yet. Create an account with the `/register` command.");
+                return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
             });
 
         modules.database.promise()

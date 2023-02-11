@@ -13,7 +13,7 @@ module.exports = {
 
         await interaction.reply("Deleting `" + amount + "` messages . . .");
         setTimeout(async () => {
-            await interaction.channel.bulkDelete(amount + 1)
+            await interaction.channel.bulkDelete(amount + 1);
         }, 1000);
 
         modules.database.promise()

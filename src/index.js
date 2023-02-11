@@ -21,20 +21,11 @@ if (!guild) {
 	process.exit();
 };
 
-//		Local database
-// Database
-// const database = mysql.createPool({
-// 	host: '127.0.0.1',
-// 	user: 'root',
-// 	database: 'discord',
-// 	password: ''
-// });
-
 const database = mysql.createPool({
-	host: 'sql7.freesqldatabase.com',
-	user: 'sql7596278',
-	database: 'sql7596278',
-	password: 'nW8recuEpg'
+	host: process.env.HOST,
+	user: process.env.USER,
+	database: process.env.DATABASE,
+	password: process.env.PASSWORD
 });
 
 database.promise()

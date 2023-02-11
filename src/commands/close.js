@@ -18,15 +18,15 @@ module.exports = {
                     modules.database.promise()
                         .execute(`DELETE FROM user WHERE snowflake = '${snowflake}';`)
                         .then(async ([data]) => {
-                            await interaction.reply("Your account has been succesfully closed. If you change your mind, you can always create a new account with `/register`.");
+                            await interaction.reply({ content: "Your account has been succesfully closed. If you change your mind, you can always create a new account with `/register`.", ephemeral: true });
                         }).catch(async err => {
-                            await interaction.reply("Something went wrong while closing your account. Please try again later.");
+                            await interaction.reply({ content: "Something went wrong while closing your account. Please try again later.", ephemeral: true });
                         });
                 } else {
-                    await interaction.reply("Your pincode is not correct. If you forgot your pincode, you can request it with `/pincode`.");
+                    await interaction.reply({ content: "Your pincode is not correct. If you forgot your pincode, you can request it with `/pincode`.", ephemeral: true });
                 };
             }).catch(async err => {
-                await interaction.reply("Something went wrong while closing your account. Please try again later.");
+                await interaction.reply({ content: "Something went wrong while closing your account. Please try again later.", ephemeral: true });
             });
     },
 };

@@ -19,7 +19,7 @@ module.exports = {
             .then(async () => {
                 await interaction.reply(`User <@${targetSnowflake}> has been warned for: \`${reason}\``);
             }).catch(async err => {
-                await interaction.reply("Something went wrong while warning this user. Please try again later.");
+                await interaction.reply({ content: "Something went wrong while warning this user. Please try again later.", ephemeral: true });
             });
 
         await modules.database.promise()
@@ -27,13 +27,13 @@ module.exports = {
             .then(async ([data]) => {
                 userId = data[0].id;
             }).catch(async err => {
-                await interaction.reply("Something went wrong while warning this user. Please try again later.");
+                await interaction.reply({ content: "Something went wrong while warning this user. Please try again later.", ephemeral: true });
             });
 
         await modules.database.promise()
             .execute(`INSERT INTO warning (user_id_receiver, reason, date) VALUES (${userId}, '${reason}', CURDATE())`)
             .catch(async err => {
-                await interaction.reply("Something went wrong while warning this user. Please try again later.");
+                await interaction.reply({ content: "Something went wrong while warning this user. Please try again later.", ephemeral: true });
             });
 
         modules.database.promise()

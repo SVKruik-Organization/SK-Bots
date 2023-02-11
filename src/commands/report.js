@@ -34,7 +34,7 @@ module.exports = {
             .then(async () => {
                 await interaction.reply("Thank you for your report. We will have a look at it ASAP.");
             }).catch(async err => {
-                await interaction.reply("Something went wrong while reporting this user. Please try again later.");
+                await interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
             });
 
         await modules.database.promise()
@@ -46,16 +46,16 @@ module.exports = {
                     .then(async ([data]) => {
                         userIdReceiver = data[0].id;
                     }).catch(async err => {
-                        await interaction.reply("Something went wrong while reporting this user. Please try again later.");
+                        await interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
                     });
             }).catch(async err => {
-                await interaction.reply("Something went wrong while reporting this user. Please try again later.");
+                await interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
             });
 
         await modules.database.promise()
             .execute(`INSERT INTO report (user_id, user_id_receiver, reason, date, category) VALUES (${userId}, ${userIdReceiver}, '${reason}', CURDATE(), '${category}')`)
             .catch(async err => {
-                await interaction.reply("Something went wrong while reporting this user. Please try again later.");
+                await interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
             });
 
         modules.database.promise()
