@@ -9,9 +9,11 @@
   "author": "PuffinKwadraat",
   "license": "ISC",
   "dependencies": {
+    "@vscode/vscode-languagedetection": "^1.0.22",
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3",
     "mathjs": "^11.5.1",
-    "mysql2": "^3.1.0"
+    "mysql2": "^3.1.0",
+    "prettier": "^2.8.4"
   }
 }
