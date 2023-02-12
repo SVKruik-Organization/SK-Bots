@@ -16,9 +16,9 @@ module.exports = {
 
         rest.delete(Routes.applicationGuildCommand(config.general.clientId, config.general.guildId, commandId))
             .then(async () => {
-                await interaction.reply("Succesfully deleted the command.");
+                return interaction.reply({ content: "Command succesfully removed.", ephemeral: true });
             }).catch(async () => {
-                await interaction.reply("Command doesn't exist. It may have already been removed.");
+                return interaction.reply({ content: "Command doesn't exist. It may have already been removed.", ephemeral: true });
             });
 
         modules.database.promise()

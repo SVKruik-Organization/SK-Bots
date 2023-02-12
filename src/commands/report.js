@@ -32,7 +32,7 @@ module.exports = {
         await modules.database.promise()
             .execute(`UPDATE user SET reports = (reports + 1) WHERE snowflake = '${targetSnowflake}';`)
             .then(async () => {
-                await interaction.reply("Thank you for your report. We will have a look at it ASAP.");
+                await interaction.reply({ content: "Thank you for your report. We will have a look at it ASAP.", ephemeral: true });
             }).catch(async err => {
                 await interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
             });
@@ -49,7 +49,7 @@ module.exports = {
                         await interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
                     });
             }).catch(async err => {
-                await interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
+                await interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
             });
 
         await modules.database.promise()

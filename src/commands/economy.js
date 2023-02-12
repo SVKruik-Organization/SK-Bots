@@ -19,7 +19,6 @@ module.exports = {
     async execute(interaction) {
         const modules = require('..');
         const snowflake = interaction.user.id;
-        const user = interaction.user;
         const actionType = interaction.options.getString('action');
         const amount = interaction.options.getInteger('amount');
 
@@ -29,14 +28,18 @@ module.exports = {
             .then(async ([data]) => {
                 userId = data[0].id
             }).catch(err => {
-                return console.log(`[INFO] ${user.username} doesn't have an account.\n`);
+                return interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
             });
+
+        if (userId == undefined) {
+            return;
+        };
 
         if (actionType == "withdraw" && amount != null) {
             modules.database.promise()
                 .execute(`UPDATE economy SET wallet = wallet + ${amount}, bank = bank - ${amount} WHERE user_id = '${userId}';`)
                 .then(async () => {
-                    await interaction.reply(`Succesfully withdrew \`${amount}\` bits.`);
+                    await interaction.reply(`Succesfully withdrew \`${amount}\` Bits.`);
                 }).catch(err => {
                     return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
@@ -44,7 +47,7 @@ module.exports = {
             modules.database.promise()
                 .execute(`UPDATE economy SET wallet = wallet - ${amount}, bank = bank + ${amount} WHERE user_id = '${userId}';`)
                 .then(async () => {
-                    await interaction.reply(`Succesfully deposited \`${amount}\` bits.`);
+                    await interaction.reply(`Succesfully deposited \`${amount}\` Bits.`);
                 }).catch(err => {
                     return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });

@@ -17,16 +17,16 @@ module.exports = {
                 if (inputPincode == dataPincode) {
                     modules.database.promise()
                         .execute(`DELETE FROM user WHERE snowflake = '${snowflake}';`)
-                        .then(async ([data]) => {
+                        .then(async () => {
                             await interaction.reply({ content: "Your account has been succesfully closed. If you change your mind, you can always create a new account with `/register`.", ephemeral: true });
-                        }).catch(async err => {
-                            await interaction.reply({ content: "Something went wrong while closing your account. Please try again later.", ephemeral: true });
+                        }).catch(async () => {
+                            await interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
                         });
                 } else {
                     await interaction.reply({ content: "Your pincode is not correct. If you forgot your pincode, you can request it with `/pincode`.", ephemeral: true });
                 };
             }).catch(async err => {
-                await interaction.reply({ content: "Something went wrong while closing your account. Please try again later.", ephemeral: true });
+                await interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
             });
     },
 };

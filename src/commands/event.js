@@ -39,7 +39,7 @@ module.exports = {
             .setTimestamp()
             .setFooter({ text: 'Embed created by Stelleri' })
         channel.send({ embeds: [embed] });
-        await interaction.reply(`Message created. Check your event here: <#${config.general.eventChannel}>.`);
+        await interaction.reply({ content: `Message created. Check your event here: <#${config.general.eventChannel}>.`, ephemeral: true });
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)

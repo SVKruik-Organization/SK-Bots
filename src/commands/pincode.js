@@ -23,7 +23,7 @@ module.exports = {
             modules.database.promise()
                 .execute(`SELECT pincode AS pin FROM user WHERE snowflake = '${snowflake}';`)
                 .then(async ([data]) => {
-                    await interaction.reply(`Your Pincode is: \`${data[0].pin}\`.`);
+                    await interaction.reply({ content: `Your Pincode is: \`${data[0].pin}\`.`, ephemeral: true });
                 }).catch(err => {
                     return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
@@ -31,12 +31,12 @@ module.exports = {
             modules.database.promise()
                 .execute(`UPDATE user SET pincode = '${newPincode}' WHERE snowflake = '${snowflake}';`)
                 .then(async () => {
-                    await interaction.reply("Your pincode has been succesfully changed.");
+                    await interaction.reply({ content: `Your pincode has been succesfully changed. New pincode: \`${newPincode}\`.`, ephemeral: true });
                 }).catch(err => {
                     return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else {
-            await interaction.reply({ content: "You need to give a new pincode.", ephemeral: true });
+            await interaction.reply({ content: "With this actiontype you need to fill in the optional input, the new pincode. Please try again.", ephemeral: true });
         };
 
         modules.database.promise()

@@ -23,7 +23,7 @@ module.exports = {
                                 modules.database.promise()
                                     .execute(`INSERT INTO economy (user_id, wallet, bank) VALUES (${data[0].id}, 0, 0);`)
                                     .then(async () => {
-                                        await interaction.reply("Thank you for your registration! You can now use economy and tier commands.");
+                                        await interaction.reply({ content: "Thank you for your registration! You can now use economy and tier commands.", ephemeral: true });
                                     }).catch(async err => {
                                         await interaction.reply({ content: "Either you already have an account, or something else went wrong.", ephemeral: true });
                                     });

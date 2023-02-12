@@ -32,8 +32,9 @@ database.promise()
 	.execute("SHOW databases")
 	.then(() => {
 		console.log("\nDatabase connection established.\n");
-	}).catch(() => {
-		return console.log("[ERROR] Connecting to the database went wrong.");
+	}).catch((err) => {
+		console.log("[ERROR] Connecting to the database went wrong.", err);
+		process.exit();
 	});
 
 // Modules

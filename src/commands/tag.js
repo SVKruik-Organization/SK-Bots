@@ -3,8 +3,8 @@ const { SlashCommandBuilder } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('tag')
-        .setDescription('Get your Discord Tag from the database.')
-        .addUserOption(option => option.setName('target').setDescription('The user whose username you would like to retrieve.').setRequired(true)),
+        .setDescription('Get a Discord Tag from the database. This command is used as a check for the database status.')
+        .addUserOption(option => option.setName('target').setDescription('The user whose tag you would like to retrieve.').setRequired(true)),
     async execute(interaction) {
         const modules = require('..');
         const snowflake = interaction.user.id;
@@ -14,7 +14,7 @@ module.exports = {
             .then(async ([data]) => {
                 await interaction.reply("The Discord Tag is: `" + data[0].tag + "`.");
             }).catch(err => {
-                return interaction.reply("User does not have an account yet.\n");
+                return interaction.reply({ content: "This user does not have an account yet.", ephemeral: true });
             });
 
         modules.database.promise()

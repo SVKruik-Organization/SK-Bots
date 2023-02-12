@@ -84,11 +84,12 @@ module.exports = {
                 modules.database.promise()
                     .execute(`UPDATE ${table}${action}${where}${filter};`)
                     .then(async () => {
-                        await interaction.reply("Account data has been succesfully changed.");
+                        await interaction.reply({ content: "Account data has been succesfully changed.", ephemeral: true });
                     }).catch(err => {
-                        return interaction.reply("This user doesn't have an account yet.");
+                        return interaction.reply({ content: "This user doesn't have an account yet.", ephemeral: true });
                     });
             }).catch(err => {
+                interaction.reply({ content: "This user doesn't have an account yet.", ephemeral: true });
                 return console.log(`[INFO] ${targetSnowflake.username} doesn't have an account.\n`);
             });
 

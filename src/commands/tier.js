@@ -9,6 +9,7 @@ module.exports = {
     async execute(interaction) {
         const modules = require('..');
         const snowflake = interaction.user.id;
+        const user = interaction.user
 
         let userId = undefined;
         await modules.database.promise()
@@ -16,8 +17,12 @@ module.exports = {
             .then(async ([data]) => {
                 userId = data[0].id
             }).catch(err => {
-                return console.log(`[INFO] ${targetSnowflake.username} doesn't have an account.\n`);
+                return interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
             });
+
+        if (userId == undefined) {
+            return;
+        };
 
         modules.database.promise()
             .execute(`SELECT level, xp FROM tier WHERE user_id = '${userId}';`)
