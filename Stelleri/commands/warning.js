@@ -10,9 +10,10 @@ module.exports = {
     async execute(interaction) {
         const modules = require('..');
         const snowflake = interaction.user.id;
+        const targetName = interaction.options.getUser('target').username
         const targetSnowflake = interaction.options.getUser('target').id;
-        const reason = interaction.options.getString('reason') ?? 'No reason provided';
-        let userId = undefined;
+        let reason = interaction.options.getString('reason') ?? 'No reason provided';
+        let userId;
 
         await modules.database.promise()
             .execute(`UPDATE user SET warnings = (warnings + 1) WHERE snowflake = '${targetSnowflake}';`)
@@ -25,15 +26,23 @@ module.exports = {
         await modules.database.promise()
             .execute(`SELECT id FROM user WHERE snowflake = '${targetSnowflake}';`)
             .then(async ([data]) => {
+                if (!data[0]) {
+                    return await interaction.followUp({ content: "This user does not have an account yet. I stored the reason in the database using my own ID.", ephemeral: true });
+                };
                 userId = data[0].id;
             }).catch(async err => {
-                await interaction.reply({ content: "Something went wrong while warning this user. Please try again later.", ephemeral: true });
+                await interaction.followUp({ content: "Something went wrong while warning this user. Please try again later.", ephemeral: true });
             });
+
+        if (!userId) {
+            userId = 2;
+            reason = `${targetName} - ${reason}`;
+        };
 
         await modules.database.promise()
             .execute(`INSERT INTO warning (user_id_receiver, reason, date) VALUES (${userId}, '${reason}', CURDATE())`)
             .catch(async err => {
-                await interaction.reply({ content: "Something went wrong while warning this user. Please try again later.", ephemeral: true });
+                await interaction.followUp({ content: "Something went wrong while warning this user. Please try again later.", ephemeral: true });
             });
 
         modules.database.promise()
