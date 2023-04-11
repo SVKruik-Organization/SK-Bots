@@ -35,13 +35,13 @@ module.exports = {
                         });
 
                         await interaction.reply(`\`${color}\` -- great color! You look awesome!`);
-                    }).catch(async err => {
+                    }).catch(async () => {
                         await interaction.reply({ content: "Something went wrong while creating your role. Please try again later.", ephemeral: true });
                     });
                 } else {
                     await interaction.reply({ content: "Your color is invalid. Make sure your color is in HEX format, like so: `000000`. Hasthag prefix is not needed.", ephemeral: true });
                 };
-            }).catch(async err => {
+            }).catch(async () => {
                 await interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
             });
     },

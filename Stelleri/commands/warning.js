@@ -19,7 +19,7 @@ module.exports = {
             .execute(`UPDATE user SET warnings = (warnings + 1) WHERE snowflake = '${targetSnowflake}';`)
             .then(async () => {
                 await interaction.reply(`User <@${targetSnowflake}> has been warned for: \`${reason}\``);
-            }).catch(async err => {
+            }).catch(async () => {
                 await interaction.reply({ content: "Something went wrong while warning this user. Please try again later.", ephemeral: true });
             });
 
@@ -30,7 +30,7 @@ module.exports = {
                     return await interaction.followUp({ content: "This user does not have an account yet. I stored the reason in the database using my own ID.", ephemeral: true });
                 };
                 userId = data[0].id;
-            }).catch(async err => {
+            }).catch(async () => {
                 await interaction.followUp({ content: "Something went wrong while warning this user. Please try again later.", ephemeral: true });
             });
 
@@ -41,13 +41,13 @@ module.exports = {
 
         await modules.database.promise()
             .execute(`INSERT INTO warning (user_id_receiver, reason, date) VALUES (${userId}, '${reason}', CURDATE())`)
-            .catch(async err => {
+            .catch(async () => {
                 await interaction.followUp({ content: "Something went wrong while warning this user. Please try again later.", ephemeral: true });
             });
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
-            .catch(err => {
+            .catch(() => {
                 return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
             });
     },

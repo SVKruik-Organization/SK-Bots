@@ -22,13 +22,13 @@ module.exports = {
 						.then(async () => {
 							await interaction.reply("Logging off. Bye!");
 							process.exit();
-						}).catch(err => {
+						}).catch(() => {
 							return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
 						});
 				} else {
 					await interaction.reply({ content: "Your pincode is not correct. If you forgot your pincode, you can request it with `/pincode`.", ephemeral: true });
 				};
-			}).catch(async err => {
+			}).catch(async () => {
 				await interaction.reply({ content: "Something went wrong while shutting down the bot. Please try again later.", ephemeral: true });
 			});
 	},

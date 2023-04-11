@@ -24,7 +24,7 @@ module.exports = {
                 .execute(`SELECT pincode AS pin FROM user WHERE snowflake = '${snowflake}';`)
                 .then(async ([data]) => {
                     await interaction.reply({ content: `Your Pincode is: \`${data[0].pin}\`.`, ephemeral: true });
-                }).catch(err => {
+                }).catch(() => {
                     return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else if (actionType == "change" && newPincode != null) {
@@ -32,7 +32,7 @@ module.exports = {
                 .execute(`UPDATE user SET pincode = '${newPincode}' WHERE snowflake = '${snowflake}';`)
                 .then(async () => {
                     await interaction.reply({ content: `Your pincode has been succesfully changed. New pincode: \`${newPincode}\`.`, ephemeral: true });
-                }).catch(err => {
+                }).catch(() => {
                     return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else {
@@ -41,7 +41,7 @@ module.exports = {
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
-            .catch(err => {
+            .catch(() => {
                 return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
             });
     },

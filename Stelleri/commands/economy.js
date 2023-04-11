@@ -27,7 +27,7 @@ module.exports = {
             .execute(`SELECT id FROM user WHERE snowflake = ${snowflake};`)
             .then(async ([data]) => {
                 userId = data[0].id
-            }).catch(err => {
+            }).catch(() => {
                 return interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
             });
 
@@ -40,7 +40,7 @@ module.exports = {
                 .execute(`UPDATE economy SET wallet = wallet + ${amount}, bank = bank - ${amount} WHERE user_id = '${userId}';`)
                 .then(async () => {
                     await interaction.reply(`Succesfully withdrew \`${amount}\` Bits.`);
-                }).catch(err => {
+                }).catch(() => {
                     return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else if (actionType == "deposit" && amount != null) {
@@ -48,7 +48,7 @@ module.exports = {
                 .execute(`UPDATE economy SET wallet = wallet - ${amount}, bank = bank + ${amount} WHERE user_id = '${userId}';`)
                 .then(async () => {
                     await interaction.reply(`Succesfully deposited \`${amount}\` Bits.`);
-                }).catch(err => {
+                }).catch(() => {
                     return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else if (actionType == "balance") {
@@ -72,7 +72,7 @@ module.exports = {
                         .setTimestamp()
                         .setFooter({ text: 'Embed created by Stelleri' });
                     await interaction.reply({ embeds: [embed] });
-                }).catch(err => {
+                }).catch(() => {
                     return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else {
@@ -81,7 +81,7 @@ module.exports = {
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
-            .catch(err => {
+            .catch(() => {
                 return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
             });
     },

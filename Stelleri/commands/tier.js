@@ -16,7 +16,7 @@ module.exports = {
             .execute(`SELECT id FROM user WHERE snowflake = ${snowflake};`)
             .then(async ([data]) => {
                 userId = data[0].id
-            }).catch(err => {
+            }).catch(() => {
                 return interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
             });
 
@@ -44,13 +44,13 @@ module.exports = {
                     .setTimestamp()
                     .setFooter({ text: 'Embed created by Stelleri' });
                 await interaction.reply({ embeds: [embed] });
-            }).catch(err => {
+            }).catch(() => {
                 return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
             });
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
-            .catch(err => {
+            .catch(() => {
                 return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
             });
     },

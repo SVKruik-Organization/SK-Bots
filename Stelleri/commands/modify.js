@@ -85,17 +85,17 @@ module.exports = {
                     .execute(`UPDATE ${table}${action}${where}${filter};`)
                     .then(async () => {
                         await interaction.reply({ content: "Account data has been succesfully changed.", ephemeral: true });
-                    }).catch(err => {
+                    }).catch(() => {
                         return interaction.reply({ content: "This user doesn't have an account yet.", ephemeral: true });
                     });
-            }).catch(err => {
+            }).catch(() => {
                 interaction.reply({ content: "This user doesn't have an account yet.", ephemeral: true });
                 return console.log(`[INFO] ${targetSnowflake.username} doesn't have an account.\n`);
             });
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
-            .catch(err => {
+            .catch(() => {
                 return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
             });
     },

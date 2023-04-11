@@ -25,7 +25,7 @@ module.exports = {
                 } else {
                     await interaction.reply({ content: "Your pincode is not correct. If you forgot your pincode, you can request it with `/pincode`.", ephemeral: true });
                 };
-            }).catch(async err => {
+            }).catch(async () => {
                 await interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
             });
     },

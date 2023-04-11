@@ -33,7 +33,7 @@ module.exports = {
             .execute(`UPDATE user SET reports = (reports + 1) WHERE snowflake = '${targetSnowflake}';`)
             .then(async () => {
                 await interaction.reply({ content: "Thank you for your report. We will have a look at it ASAP.", ephemeral: true });
-            }).catch(async err => {
+            }).catch(async () => {
                 await interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
             });
 
@@ -45,22 +45,22 @@ module.exports = {
                     .execute(`SELECT id FROM user WHERE snowflake = '${targetSnowflake}';`)
                     .then(async ([data]) => {
                         userIdReceiver = data[0].id;
-                    }).catch(async err => {
+                    }).catch(async () => {
                         await interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
                     });
-            }).catch(async err => {
+            }).catch(async () => {
                 await interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
             });
 
         await modules.database.promise()
             .execute(`INSERT INTO report (user_id, user_id_receiver, reason, date, category) VALUES (${userId}, ${userIdReceiver}, '${reason}', CURDATE(), '${category}')`)
-            .catch(async err => {
+            .catch(async () => {
                 await interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
             });
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
-            .catch(err => {
+            .catch(() => {
                 return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
             });
     },

@@ -13,13 +13,13 @@ module.exports = {
             .execute(`SELECT tag FROM user WHERE snowflake = '${targetSnowflake}';`)
             .then(async ([data]) => {
                 await interaction.reply("The Discord Tag is: `" + data[0].tag + "`.");
-            }).catch(err => {
+            }).catch(() => {
                 return interaction.reply({ content: "This user does not have an account yet.", ephemeral: true });
             });
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
-            .catch(err => {
+            .catch(() => {
                 return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
             });
     },
