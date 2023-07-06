@@ -28,7 +28,7 @@ module.exports = {
                 { name: 'Uptime', value: uptime},
                 { name: 'Ping', value: `\`${modules.client.ws.ping}\`ms` },
                 { name: 'Commands', value: `\`${commands}\` Total` },
-                { name: 'Repository', value: `https://github.com/PuffinKwadraat/Discord-Bots-v2`},
+                { name: 'Repository', value: `https://github.com/SVKruik/Discord-Bots-v2`},
                 { name: 'Version', value: `\`v2.1.0\``}
             )
             .addFields({ name: '----', value: 'Meta' })
