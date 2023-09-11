@@ -1,4 +1,5 @@
 const { Events } = require('discord.js');
+const fs = require('fs');
 
 module.exports = {
 	name: Events.InteractionCreate,
@@ -8,21 +9,26 @@ module.exports = {
 		const command = interaction.client.commands.get(interaction.commandName);
 
 		if (!command) {
-			console.error(`No command matching ${interaction.commandName} was found.`);
+			const data = `${time} [WARNING] No command matching ${interaction.commandName} was found.`;
+			console.log(data);
+			fs.appendFile(`./logs/${date}.log`, data, (err) => {
+				if (err) console.log(`${time} [ERROR] Error appending to log file.`);
+			});
 			return;
 		};
 
-		// Timestamp
-		var today = new Date();
-		const m = String(today.getMinutes()).padStart(2, '0');
-		const hh = String(today.getHours()).padStart(2, '0');
-		today = `${hh}:${m}`;
+		const modules = require('..');
+		const dateInfo = modules.getDate();
+		const date = dateInfo.date;
+		const time = dateInfo.time;
 
-		try {
-			console.log(`[INFO] ${today} ${interaction.user.username} used || ${interaction.commandName} ||`)
-		} catch (error) {
-			console.error(`Error executing ${interaction.commandName}.`);
-			console.error(error);
-		};
+		const data = `${time} [INFO] ${interaction.user.username} used || ${interaction.commandName} ||\n`;
+		console.log(data);
+		fs.appendFile(`./logs/${date}.log`, data, (err) => {
+			if (err) console.log(`${time} [ERROR] Error appending to log file.`);
+		});
+
+		console.log("Test B");
+
 	},
 };

@@ -1,7 +1,11 @@
 const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const prettier = require("prettier");
-const { ModelOperations } = require('@vscode/vscode-languagedetection');
+const fs = require("fs");
+const modules = require('..');
+const dateInfo = modules.getDate();
+const date = dateInfo.date;
+const time = dateInfo.time;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -26,7 +30,7 @@ module.exports = {
     async execute(interaction) {
         const modules = require('..');
         const snowflake = interaction.user.id;
-        const name = interaction.user.username;
+        const username = interaction.user.username;
         const channel = modules.client.channels.cache.get(config.general.snippetChannel);
         const language = interaction.options.getString('language');
         const code = interaction.options.getString('code');
@@ -35,18 +39,28 @@ module.exports = {
             title = " - Unnamed Snippet";
         };
 
+        /**
+         * Format a code snippet with the Prettier API.
+         * @param {string} code The code to be formatted.
+         * @returns THe formatted code.
+         */
         async function formatCode(code) {
             return prettier.format(code, { semi: false, parser: 'babel' });
         };
         const formattedCode = await formatCode(code);
 
-        channel.send({ content: `${name}${title}\n\n\`\`\`${language}\n${formattedCode}\n\`\`\`` });
+        channel.send({ content: `${username}${title}\n\n\`\`\`${language}\n${formattedCode}\n\`\`\`` });
         await interaction.reply({ content: `Message created. Check your codesnippet here: <#${config.general.snippetChannel}>.`, ephemeral: true });
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
             .catch(() => {
-                return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
+                const data = `${time} [WARNING] Command usage increase unsuccessful, ${username} does not have an account yet.\n`;
+                console.log(data);
+                fs.appendFile(`./logs/${date}.log`, data, (err) => {
+                    if (err) console.log(`${time} [ERROR] Error appending to log file.`);
+                });
+                return;
             });
     },
 };

@@ -1,2 +1,5 @@
 node_modules
 .env
+logs
+discloud.config
+package-lock.json

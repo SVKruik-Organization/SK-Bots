@@ -1,5 +1,10 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { Configuration, OpenAIApi } = require('openai')
+const fs = require("fs");
+const modules = require('..');
+const dateInfo = modules.getDate();
+const date = dateInfo.date;
+const time = dateInfo.time;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -17,6 +22,7 @@ module.exports = {
     async execute(interaction) {
         const modules = require('..');
         const snowflake = interaction.user.id;
+        const username = interaction.user.username;
         const actionType = interaction.options.getString('action');
         const prompt = interaction.options.getString('prompt');
 
@@ -42,19 +48,15 @@ module.exports = {
             console.log(err.response.data);
         };
 
-
-        // modules.database.promise()
-        //     .execute(`SELECT pincode AS pin FROM user WHERE snowflake = '${snowflake}';`)
-        //     .then(async ([data]) => {
-        //         await interaction.reply({ content: `Your Pincode is: \`${data[0].pin}\`.`, ephemeral: true });
-        //     }).catch(() => {
-        //         return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
-        //     });
-
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
             .catch(() => {
-                return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
+                const data = `${time} [WARNING] Command usage increase unsuccessful, ${username} does not have an account yet.\n`;
+                console.log(data);
+                fs.appendFile(`./logs/${date}.log`, data, (err) => {
+                    if (err) console.log(`${time} [ERROR] Error appending to log file.`);
+                });
+                return;
             });
     },
 };

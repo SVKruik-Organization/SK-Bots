@@ -10,7 +10,7 @@ module.exports = {
         const snowflake = interaction.user.id;
         const userTag = interaction.user.tag;
         const pincode = interaction.options.getString('pincode');
-        
+
         modules.database.promise()
             .execute(`INSERT INTO user (snowflake, tag, pincode, created_on) VALUES ('${snowflake}', '${userTag}', '${pincode}', CURDATE());`)
             .then(() => {

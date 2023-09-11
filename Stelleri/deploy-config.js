@@ -3,6 +3,12 @@ const fs = require("fs");
 
 update("eventId", "1072476767991906354");
 
+/**
+ * Update the config.json with new values.
+ * @param {string} key Target JSON key.
+ * @param {string} value New value.
+ * @returns On error.
+ */
 function update(key, value) {
     if (key == undefined || value == undefined) {
         return console.log("\n[ERROR] Invalid key/value pair provided.\n");

@@ -1,6 +1,11 @@
 const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const { EmbedBuilder } = require('discord.js');
+const fs = require("fs");
+const modules = require('..');
+const dateInfo = modules.getDate();
+const date = dateInfo.date;
+const time = dateInfo.time;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -9,7 +14,7 @@ module.exports = {
     async execute(interaction) {
         const modules = require('..');
         const snowflake = interaction.user.id;
-        const user = interaction.user
+        const username = interaction.user.username;
 
         let userId = undefined;
         await modules.database.promise()
@@ -20,19 +25,16 @@ module.exports = {
                 return interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
             });
 
-        if (userId == undefined) {
-            return;
-        };
+        if (userId == undefined) return;
 
         modules.database.promise()
             .execute(`SELECT level, xp FROM tier WHERE user_id = '${userId}';`)
             .then(async ([data]) => {
-                const name = interaction.user.username;
                 const pfp = interaction.user.avatarURL();
                 const embed = new EmbedBuilder()
                     .setColor(config.general.color)
                     .setTitle(`Bits Balance`)
-                    .setAuthor({ name: name, iconURL: pfp })
+                    .setAuthor({ name: username, iconURL: pfp })
                     .addFields({ name: '----', value: 'List' })
                     .addFields(
                         { name: 'Level', value: `\`${data[0].level}\`` },
@@ -51,7 +53,12 @@ module.exports = {
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
             .catch(() => {
-                return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
+                const data = `${time} [WARNING] Command usage increase unsuccessful, ${username} does not have an account yet.\n`;
+                console.log(data);
+                fs.appendFile(`./logs/${date}.log`, data, (err) => {
+                    if (err) console.log(`${time} [ERROR] Error appending to log file.`);
+                });
+                return;
             });
     },
 };

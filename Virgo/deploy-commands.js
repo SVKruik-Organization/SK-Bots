@@ -14,11 +14,15 @@ for (const file of commandFiles) {
 // Deploy
 (async () => {
     try {
-        const data = await rest.put(
-            Routes.applicationGuildCommands(general.clientId, general.guildId),
-            { body: commands },
-        );
-        console.log(`\n[INFO] Successfully reloaded ${data.length} commands.\n`);
+        console.log("\n");
+        for (let i = 0; i < general.guildId.length; i++) {
+            const data = await rest.put(
+                Routes.applicationGuildCommands(general.clientId, general.guildId[i]),
+                { body: commands },
+            );
+            console.log(`[INFO] Successfully loaded ${data.length} commands for guild ${general.guildId[i]}.`);
+        }
+        console.log("\n");
     } catch (error) {
         console.error(error);
     };

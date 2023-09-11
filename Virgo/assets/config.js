@@ -1,6 +1,6 @@
 exports.general = {
     name: "Virgo",
-    color: "#8C965F",
+    color: "#AAC261",
     clientId: "1150713787784110110",
-    guildId: "1022886794510999664",
+    guildId: ["1022886794510999664", "1148559935743987782"],
 };

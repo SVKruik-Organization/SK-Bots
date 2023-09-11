@@ -1,12 +1,12 @@
 {
-  "name": "src",
+  "name": "stelleri",
   "version": "1.0.0",
-  "description": "DB V2",
+  "description": "General Purpose Bot",
   "main": "index.js",
   "scripts": {
-    "test": "node ."
+    "start": "node deploy-commands.js && node ."
   },
-  "author": "PuffinKwadraat",
+  "author": "SVKruik",
   "license": "ISC",
   "dependencies": {
     "@vscode/vscode-languagedetection": "^1.0.22",

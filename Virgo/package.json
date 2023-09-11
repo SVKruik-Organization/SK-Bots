@@ -4,7 +4,7 @@
   "description": "Trading Bot",
   "main": "index.js",
   "scripts": {
-    "test": "node ."
+    "start": "node deploy-commands.js && node ."
   },
   "author": "SVKruik",
   "license": "ISC",

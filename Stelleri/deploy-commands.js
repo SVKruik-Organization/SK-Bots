@@ -5,21 +5,33 @@ const fs = require('node:fs');
 const commands = [];
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+const modules = require('./index.js');
+const dateInfo = modules.getDate();
+const date = dateInfo.date;
+const time = dateInfo.time;
 
 for (const file of commandFiles) {
-	const command = require(`./commands/${file}`);
-	commands.push(command.data.toJSON());
+    const command = require(`./commands/${file}`);
+    commands.push(command.data.toJSON());
 };
 
 // Deploy
 (async () => {
-	try {
-		const data = await rest.put(
-			Routes.applicationGuildCommands(general.clientId, general.guildId),
-			{ body: commands },
-		);
-		console.log(`\n[INFO] Successfully reloaded ${data.length} commands.\n`);
-	} catch (error) {
-		console.error(error);
-	};
+    try {
+        console.log("\n");
+        for (let i = 0; i < general.guildId.length; i++) {
+            const data = await rest.put(
+                Routes.applicationGuildCommands(general.clientId, general.guildId[i]),
+                { body: commands },
+            );
+			const logData = `${time} [INFO] Successfully loaded ${data.length} commands for guild ${general.guildId[i]}.`;
+			console.log(logData);
+			fs.appendFile(`./logs/${date}.log`, `${logData}\n`, (err) => {
+				if (err) console.log(`${time} [ERROR] Error appending to log file.`);
+			});
+        };
+        console.log("\n");
+    } catch (error) {
+        console.error(error);
+    };
 })();

@@ -1,5 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
-const math = require('mathjs');
+const fs = require("fs");
+const modules = require('..');
+const dateInfo = modules.getDate();
+const date = dateInfo.date;
+const time = dateInfo.time;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -8,9 +12,8 @@ module.exports = {
         .addIntegerOption(option => option.setName('jackpot').setDescription('A number between 200 and 1000. There is a 1 in 800 chance you hit the jackpot.').setRequired(false).setMinValue(200).setMaxValue(1000)),
     async execute(interaction) {
         const modules = require('..');
-        const user = interaction.user;
-        const name = user.username;
-        const snowflake = user.id;
+        const username = interaction.user.username;
+        const snowflake = interaction.user.id;
         let jackpot = interaction.options.getInteger('jackpot');
         if (jackpot == undefined) {
             jackpot == 199;
@@ -46,7 +49,11 @@ module.exports = {
                 if (jackpotBoolean == true) {
                     await interaction.followUp(`💎 You hit the JACKPOT! 💎 You received \`${jackpotValue}\` more Bits. Congratulations! 🎉`);
                     const total = jackpotValue + dailyreward;
-                    console.log(`[INFO] ${name} hit the daily reward jackpot. He/she received a total of ${total} Bits.\n`);
+                    const data = `${time} [INFO] ${username} hit the daily reward jackpot. He/she received a total of ${total} Bits.\n`
+                    console.log(data);
+                    fs.appendFile(`./logs/${date}.log`, data, (err) => {
+                        if (err) console.log(`${time} [ERROR] Error appending to log file.`);
+                    });
                 }
             }).catch(() => {
                 return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
@@ -55,7 +62,12 @@ module.exports = {
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
             .catch(() => {
-                return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
+                const data = `${time} [WARNING] Command usage increase unsuccessful, ${username} does not have an account yet.\n`;
+                console.log(data);
+                fs.appendFile(`./logs/${date}.log`, data, (err) => {
+                    if (err) console.log(`${time} [ERROR] Error appending to log file.`);
+                });
+                return;
             });
     },
 };

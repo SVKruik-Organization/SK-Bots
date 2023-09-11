@@ -1,4 +1,9 @@
 const { Events } = require('discord.js');
+const fs = require('fs');
+const modules = require('..');
+const dateInfo = modules.getDate();
+const date = dateInfo.date;
+const time = dateInfo.time;
 
 module.exports = {
 	name: Events.InteractionCreate,
@@ -12,17 +17,10 @@ module.exports = {
 			return;
 		};
 
-		// Timestamp
-		var today = new Date();
-		const m = String(today.getMinutes()).padStart(2, '0');
-		const hh = String(today.getHours()).padStart(2, '0');
-		today = `${hh}:${m}`;
-
-		try {
-			console.log(`[INFO] ${today} ${interaction.user.username} used || ${interaction.commandName} ||`)
-		} catch (error) {
-			console.error(`Error executing ${interaction.commandName}.`);
-			console.error(error);
-		};
+		const data = `${time} [INFO] ${interaction.user.username} used || ${interaction.commandName} ||`;
+		console.log(data);
+		fs.appendFile(`./logs/${date}.log`, `${data}\n`, (err) => {
+			if (err) console.log("[ERROR] Error appending to log file.");
+		});
 	},
 };

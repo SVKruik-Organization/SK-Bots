@@ -1,4 +1,9 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const fs = require("fs");
+const modules = require('..');
+const dateInfo = modules.getDate();
+const date = dateInfo.date;
+const time = dateInfo.time;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -31,17 +36,18 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
         const modules = require('..');
+        const snowflake = interaction.user.id;
+        const username = interaction.user.username;
         const sectionType = interaction.options.getString('section');
         const actionType = interaction.options.getString('action');
         const amount = interaction.options.getInteger('amount');
         const targetSnowflake = interaction.options.getUser('target').id;
-        const snowflake = interaction.user.id;
 
         let userId = undefined;
         let table = undefined;
         let row = undefined;
         let action = undefined;
-        let where = " WHERE user_id = "
+        let where = " WHERE user_id = ";
 
 
         await modules.database.promise()
@@ -90,13 +96,23 @@ module.exports = {
                     });
             }).catch(() => {
                 interaction.reply({ content: "This user doesn't have an account yet.", ephemeral: true });
-                return console.log(`[INFO] ${targetSnowflake.username} doesn't have an account.\n`);
+                const data = `${time} [WARNING] ${targetSnowflake.username} does not have an account yet, which is required for the || modify || command.\n`;
+                console.log(data);
+                fs.appendFile(`./logs/${date}.log`, data, (err) => {
+                    if (err) console.log(`${time} [ERROR] Error appending to log file.`);
+                });
+                return;
             });
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
             .catch(() => {
-                return console.log("[WARNING] Command usage increase unsuccessful, user does not have an account yet.\n");
+                const data = `${time} [WARNING] Command usage increase unsuccessful, ${username} does not have an account yet.\n`;
+                console.log(data);
+                fs.appendFile(`./logs/${date}.log`, data, (err) => {
+                    if (err) console.log(`${time} [ERROR] Error appending to log file.`);
+                });
+                return;
             });
     },
 };

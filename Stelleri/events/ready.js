@@ -1,23 +1,22 @@
 const { Events } = require('discord.js');
 const fs = require("fs");
 const commands = fs.readdirSync("./commands").length;
+const modules = require('..');
+const dateInfo = modules.getDate();
+const date = dateInfo.date;
+const time = dateInfo.time;
 
 module.exports = {
 	name: Events.ClientReady,
 	once: true,
-	execute(client) {
-
-		var today = new Date();
-		var m = String(today.getMinutes()).padStart(2, '0');
-		var hh = String(today.getHours()).padStart(2, '0');
-		var dd = String(today.getDate()).padStart(2, '0');
-		var mm = String(today.getMonth() + 1).padStart(2, '0');
-		var yyyy = today.getFullYear();
-		today = `${hh}:${m}, ${dd}/${mm}/${yyyy}`;
-
+	execute() {
 		console.log(`Succesfully loaded ${commands} files.`);
-		console.log(`Session started on ${today}.\n`);
+		console.log(`Session started on ${time}, ${date}.\n`);
 		console.log(`Stelleri is now online!\n`);
 		console.log(`\t------\n`);
+
+		fs.appendFile(`./logs/${date}.log`, `\nSuccesfully loaded ${commands} files.\nSetup complete.\nStelleri is now online!\n\t------\n\n`, (err) => {
+			if (err) console.log(`${time} [ERROR] Error appending to log file.`);
+		});
 	},
 };

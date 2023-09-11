@@ -15,32 +15,56 @@ const client = new Client({
 });
 const blockedUsers = ['1'];
 client.login(process.env.TOKEN);
-const guild = client.guilds.fetch(config.general.guildId);
-if (!guild) {
-	console.log("\n[FATAL] Guild not found. Aborting.\n");
-	process.exit();
+
+// Guild Loading
+for (let i = 0; i < config.general.guildId.length; i++) {
+	const guild = client.guilds.fetch(config.general.guildId[i]);
+	if (!guild) {
+		console.log("\n[FATAL] Guild not found. Aborting.\n");
+		process.exit();
+	};
+};
+console.log("[INFO] Fetched all guilds.");
+
+/**
+ * Timestamp Calculation
+ * @returns Object with date, time and new Date().
+ */
+function getDate() {
+	const today = new Date();
+	const s = String(today.getSeconds()).padStart(2, '0');
+	const m = String(today.getMinutes()).padStart(2, '0');
+	const hh = String(today.getHours()).padStart(2, '0');
+	const dd = String(today.getDate()).padStart(2, '0');
+	const mm = String(today.getMonth() + 1).padStart(2, '0');
+	const yyyy = today.getFullYear();
+	const date = `${dd}-${mm}-${yyyy}`;
+	const time = `${hh}:${m}:${s}`;
+
+	return { date, time, today };
 };
 
+// Database
 const database = mysql.createPool({
 	host: process.env.HOST,
 	user: process.env.USER,
 	database: process.env.DATABASE,
 	password: process.env.PASSWORD
 });
-
 database.promise()
 	.execute("SHOW databases")
 	.then(() => {
-		console.log("\nDatabase connection established.\n");
+		console.log("[INFO] Database connection established.\n");
 	}).catch((err) => {
-		console.log("[ERROR] Connecting to the database went wrong.", err);
+		console.log("[FATAL] Connecting to the database went wrong. Aborting.", err);
 		process.exit();
 	});
 
-// Modules
+// Exporting Values & Functions
 module.exports = {
-	client,
-	database
+	"client": client,
+	"database": database,
+	"getDate": getDate
 };
 
 // Command Handler
@@ -55,18 +79,20 @@ for (const file of commandFiles) {
 	if ('data' in command && 'execute' in command) {
 		client.commands.set(command.data.name, command);
 	} else {
-		return console.log(`[FATAL] Error at ${filePath}.`);
+		return console.log(`[ERROR] Error at ${filePath}.`);
 	};
 };
 
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
-	if (blockedUsers.includes(interaction.user.id)) return;
+	if (blockedUsers.includes(interaction.user.id)) {
+		return await interaction.reply({ content: 'You are not allowed to use me. Contact the moderators to appeal.', ephemeral: true });
+	};
 
 	const command = interaction.client.commands.get(interaction.commandName);
 
 	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
+		console.error(`[WARN] No command matching ${interaction.commandName} was found.`);
 		return;
 	};
 
