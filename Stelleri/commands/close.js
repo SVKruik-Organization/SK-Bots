@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const modules = require('..');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -6,7 +7,6 @@ module.exports = {
         .setDescription('Close your account. You can no longer use account specific commands.')
         .addStringOption(option => option.setName('pincode').setDescription('Your 4-digit pincode you chose when registering your account.').setRequired(true)),
     async execute(interaction) {
-        const modules = require('..');
         const snowflake = interaction.user.id;
         const inputPincode = interaction.options.getString('pincode');
 
@@ -26,12 +26,7 @@ module.exports = {
                     await interaction.reply({ content: "Your pincode is not correct. If you forgot your pincode, you can request it with `/pincode`.", ephemeral: true });
                 };
             }).catch(async () => {
-                const data = `${time} [WARNING] Command usage increase unsuccessful, ${username} does not have an account yet.\n`;
-                console.log(data);
-                fs.appendFile(`./logs/${date}.log`, data, (err) => {
-                    if (err) console.log(`${time} [ERROR] Error appending to log file.`);
-                });
-                return;
+                return modules.log(`Command usage increase unsuccessful, ${username} does not have an account yet.`, "warning");
             });
     },
 };

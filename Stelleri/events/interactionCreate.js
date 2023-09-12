@@ -1,34 +1,26 @@
 const { Events } = require('discord.js');
-const fs = require('fs');
+const modules = require('..');
+const blockedUsers = modules.blockedUsers;
 
 module.exports = {
 	name: Events.InteractionCreate,
 	async execute(interaction) {
 		if (!interaction.isChatInputCommand()) return;
-
-		const command = interaction.client.commands.get(interaction.commandName);
-
-		if (!command) {
-			const data = `${time} [WARNING] No command matching ${interaction.commandName} was found.`;
-			console.log(data);
-			fs.appendFile(`./logs/${date}.log`, data, (err) => {
-				if (err) console.log(`${time} [ERROR] Error appending to log file.`);
-			});
-			return;
+		if (blockedUsers.includes(interaction.user.id)) {
+			return await interaction.reply({ content: 'You are not allowed to use my commands. Contact the moderators to appeal if you think this is a mistake.', ephemeral: true });
 		};
 
-		const modules = require('..');
-		const dateInfo = modules.getDate();
-		const date = dateInfo.date;
-		const time = dateInfo.time;
+		const command = interaction.client.commands.get(interaction.commandName);
+		if (!command) return modules.log(`No command matching ${interaction.commandName} was found.`, "warning");
 
-		const data = `${time} [INFO] ${interaction.user.username} used || ${interaction.commandName} ||\n`;
-		console.log(data);
-		fs.appendFile(`./logs/${date}.log`, data, (err) => {
-			if (err) console.log(`${time} [ERROR] Error appending to log file.`);
-		});
+		try {
+			await command.execute(interaction);
+		} catch (error) {
+			modules.log(`There was an error while executing || ${interaction.commandName} ||`, "error");
+			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+			console.log(error);
+		};
 
-		console.log("Test B");
-
+		modules.log(`${interaction.user.username} used || ${interaction.commandName} ||`, "info");
 	},
 };

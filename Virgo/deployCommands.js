@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const commands = [];
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+const modules = require('./index.js');
 
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
@@ -20,8 +21,8 @@ for (const file of commandFiles) {
                 Routes.applicationGuildCommands(general.clientId, general.guildId[i]),
                 { body: commands },
             );
-            console.log(`[INFO] Successfully loaded ${data.length} commands for guild ${general.guildId[i]}.`);
-        }
+			modules.log(`Successfully loaded ${data.length} commands for guild ${general.guildId[i]}.`, "info");
+        };
         console.log("\n");
     } catch (error) {
         console.error(error);

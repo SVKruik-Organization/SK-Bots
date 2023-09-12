@@ -1,11 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
-const prettier = require("prettier");
-const fs = require("fs");
+const prettier = require('prettier');
 const modules = require('..');
-const dateInfo = modules.getDate();
-const date = dateInfo.date;
-const time = dateInfo.time;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -28,7 +24,6 @@ module.exports = {
         .addStringOption(option => option.setName('code').setDescription('The code you want to format.').setRequired(true))
         .addStringOption(option => option.setName('title').setDescription('An optional title for your code. For example: JS for-loop.').setRequired(false)),
     async execute(interaction) {
-        const modules = require('..');
         const snowflake = interaction.user.id;
         const username = interaction.user.username;
         const channel = modules.client.channels.cache.get(config.general.snippetChannel);
@@ -49,18 +44,13 @@ module.exports = {
         };
         const formattedCode = await formatCode(code);
 
-        channel.send({ content: `${username}${title}\n\n\`\`\`${language}\n${formattedCode}\n\`\`\`` });
+        channel.send({ content: `${username} ${title}\n\n\`\`\`${language}\n${formattedCode}\n\`\`\`` });
         await interaction.reply({ content: `Message created. Check your codesnippet here: <#${config.general.snippetChannel}>.`, ephemeral: true });
 
         modules.database.promise()
             .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
             .catch(() => {
-                const data = `${time} [WARNING] Command usage increase unsuccessful, ${username} does not have an account yet.\n`;
-                console.log(data);
-                fs.appendFile(`./logs/${date}.log`, data, (err) => {
-                    if (err) console.log(`${time} [ERROR] Error appending to log file.`);
-                });
-                return;
+                return modules.log(`Command usage increase unsuccessful, ${username} does not have an account yet.`, "warning");
             });
     },
 };

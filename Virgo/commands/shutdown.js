@@ -8,6 +8,6 @@ module.exports = {
 		.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 	async execute(interaction) {
 		await interaction.reply(`${config.general.name} is logging off. Bye!`);
-		process.exit();
+		process.exit(0);
 	}
 };

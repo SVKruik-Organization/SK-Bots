@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const mysql = require('mysql2');
 const config = require('./assets/config.js');
-const { Client, Events, GatewayIntentBits, Collection } = require('discord.js');
+const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
@@ -15,24 +15,17 @@ const client = new Client({
 });
 const blockedUsers = ['1'];
 client.login(process.env.TOKEN);
+log("\n\t------", "none");
 
 // Guild Loading
 for (let i = 0; i < config.general.guildId.length; i++) {
 	const guild = client.guilds.fetch(config.general.guildId[i]);
 	if (!guild) {
-		const data = `\n${this.getDate().time} [FATAL] Guild not found. Aborting.\n`;
-		console.log(data);
-		fs.appendFile(`./logs/${this.getDate().date}.log`, data, (err) => {
-			if (err) console.log(`${getDate().time} [ERROR] Error appending to log file.`);
-		});
-		return process.exit();
+		log("Guild not found. Aborting.", "fatal");
+		return process.exit(1);
 	};
 };
-const data = `${getDate().time} [INFO] Fetched all guilds.\n`;
-console.log(data);
-fs.appendFile(`./logs/${getDate().date}.log`, data, (err) => {
-	if (err) console.log(`${getDate().time} [ERROR] Error appending to log file.`);
-});
+log("Fetched all guilds.", "info");
 
 /**
  * Timestamp Calculation
@@ -64,6 +57,27 @@ function getDate() {
 	return { date, time, today };
 };
 
+/**
+ * Log messages to the log file.
+ * @param {string} data The data to log to the file.
+ * @param {string} type The type of message. For example: warning, alert, info, fatal
+ * @returns Status.
+ */
+function log(data, type) {
+	let logData;
+	if (type === "none") {
+		logData = `${data}\n`;
+	} else logData = `${getDate().time} [${type.toUpperCase()}] ${data}\n`;
+	fs.appendFile(`./logs/${getDate().date}.log`, logData, (err) => {
+		if (err) {
+			console.log(`${getDate().time} [ERROR] Error appending to log file.`);
+			return false;
+		};
+	});
+	console.log(logData);
+	return true;
+};
+
 // Database
 const database = mysql.createPool({
 	host: process.env.HOST,
@@ -74,84 +88,38 @@ const database = mysql.createPool({
 database.promise()
 	.execute("SHOW databases")
 	.then(() => {
-		const data = `${getDate().time} [INFO] Database connection established.\n`;
-		console.log(data);
-		fs.appendFile(`./logs/${getDate().date}.log`, data, (err) => {
-			if (err) console.log(`${getDate().time} [ERROR] Error appending to log file.`);
-		});
+		log("Database connection established.", "info");
 	}).catch(() => {
-		const data = `${getDate().time} [FATAL] Connecting to the database went wrong. Aborting.`;
-		console.log(data);
-		fs.appendFile(`./logs/${getDate().date}.log`, data, (err) => {
-			if (err) console.log(`${getDate().time} [ERROR] Error appending to log file.`);
-		});
-
-		return process.exit();
+		log("Connecting to the database went wrong. Aborting.", "fatal");
+		return process.exit(1);
 	});
 
 // Exporting Values & Functions
 module.exports = {
 	"client": client,
 	"database": database,
-	"getDate": getDate
+	"getDate": getDate,
+	"blockedUsers": blockedUsers,
+	"log": log
 };
 
 // Command Handler
 client.commands = new Collection();
-
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-
 for (const file of commandFiles) {
 	const filePath = path.join(commandsPath, file);
 	const command = require(filePath);
 	if ('data' in command && 'execute' in command) {
 		client.commands.set(command.data.name, command);
 	} else {
-		const data = `${getDate().time} [ERROR] Error at ${filePath}.`;
-		console.log(data);
-		fs.appendFile(`./logs/${getDate().date}.log`, data, (err) => {
-			if (err) console.log(`${getDate().time} [ERROR] Error appending to log file.`);
-		});
-		return;
+		return log(`Error at ${filePath}.`, "error");
 	};
 };
-
-client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
-	if (blockedUsers.includes(interaction.user.id)) {
-		return await interaction.reply({ content: 'You are not allowed to use my commands. Contact the moderators to appeal if you think this is a mistake.', ephemeral: true });
-	};
-
-	const command = interaction.client.commands.get(interaction.commandName);
-
-	if (!command) {
-		const data = `${time} [WARNING] No command matching ${interaction.commandName} was found.`;
-		console.log(data);
-		fs.appendFile(`./logs/${date}.log`, data, (err) => {
-			if (err) console.log(`${time} [ERROR] Error appending to log file.`);
-		});
-		return;
-	};
-
-	try {
-		await command.execute(interaction);
-	} catch (error) {
-		const data = `${time} [ERROR] There was an error while executing || ${interaction.commandName} ||`;
-		console.log(data);
-		fs.appendFile(`./logs/${date}.log`, data, (err) => {
-			if (err) console.log(`${time} [ERROR] Error appending to log file.`);
-		});
-		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-	};
-
-	console.log("Test A");
-});
 
 // Event Handler
 const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
-
 for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file);
 	const event = require(filePath);

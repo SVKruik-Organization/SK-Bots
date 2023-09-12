@@ -6,9 +6,6 @@ const commands = [];
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 const modules = require('./index.js');
-const dateInfo = modules.getDate();
-const date = dateInfo.date;
-const time = dateInfo.time;
 
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
@@ -24,11 +21,7 @@ for (const file of commandFiles) {
                 Routes.applicationGuildCommands(general.clientId, general.guildId[i]),
                 { body: commands },
             );
-			const logData = `${time} [INFO] Successfully loaded ${data.length} commands for guild ${general.guildId[i]}.`;
-			console.log(logData);
-			fs.appendFile(`./logs/${date}.log`, `${logData}\n`, (err) => {
-				if (err) console.log(`${time} [ERROR] Error appending to log file.`);
-			});
+			modules.log(`Successfully loaded ${data.length} commands for guild ${general.guildId[i]}.`, "info");
         };
         console.log("\n");
     } catch (error) {

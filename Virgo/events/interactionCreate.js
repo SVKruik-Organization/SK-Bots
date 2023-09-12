@@ -1,26 +1,25 @@
 const { Events } = require('discord.js');
-const fs = require('fs');
 const modules = require('..');
-const dateInfo = modules.getDate();
-const date = dateInfo.date;
-const time = dateInfo.time;
+const blockedUsers = modules.blockedUsers;
 
 module.exports = {
 	name: Events.InteractionCreate,
 	async execute(interaction) {
 		if (!interaction.isChatInputCommand()) return;
-
-		const command = interaction.client.commands.get(interaction.commandName);
-
-		if (!command) {
-			console.error(`No command matching ${interaction.commandName} was found.`);
-			return;
+		if (blockedUsers.includes(interaction.user.id)) {
+			return await interaction.reply({ content: 'You are not allowed to use my commands. Contact the moderators to appeal if you think this is a mistake.', ephemeral: true });
 		};
 
-		const data = `${time} [INFO] ${interaction.user.username} used || ${interaction.commandName} ||`;
-		console.log(data);
-		fs.appendFile(`./logs/${date}.log`, `${data}\n`, (err) => {
-			if (err) console.log("[ERROR] Error appending to log file.");
-		});
+		const command = interaction.client.commands.get(interaction.commandName);
+		if (!command) return modules.log(`No command matching ${interaction.commandName} was found.`, "warning");
+
+		try {
+			await command.execute(interaction);
+		} catch (error) {
+			modules.log(`There was an error while executing || ${interaction.commandName} ||`, "error");
+			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		};
+
+		modules.log(`${interaction.user.username} used || ${interaction.commandName} ||`, "info");
 	},
 };

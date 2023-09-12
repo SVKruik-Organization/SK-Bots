@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const modules = require('..');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -6,13 +7,12 @@ module.exports = {
         .setDescription('Create a new account with us.')
         .addStringOption(option => option.setName('pincode').setDescription('A 4-digit pincode that you will use for sensitive commands. Save it save!').setRequired(true).setMaxLength(4).setMinLength(4)),
     async execute(interaction) {
-        const modules = require('..');
         const snowflake = interaction.user.id;
-        const userTag = interaction.user.tag;
+        const username = interaction.user.username;
         const pincode = interaction.options.getString('pincode');
 
         modules.database.promise()
-            .execute(`INSERT INTO user (snowflake, tag, pincode, created_on) VALUES ('${snowflake}', '${userTag}', '${pincode}', CURDATE());`)
+            .execute(`INSERT INTO user (snowflake, username, warnings, pincode, created_on) VALUES ('${snowflake}', '${username}', 0, '${pincode}', CURDATE());`)
             .then(() => {
                 modules.database.promise()
                     .execute(`SELECT id FROM user WHERE snowflake = '${snowflake}';`)

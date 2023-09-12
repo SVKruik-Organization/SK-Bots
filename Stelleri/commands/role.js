@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
+const modules = require('..');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -7,12 +8,11 @@ module.exports = {
         .setDescription('Give yourself a custom role with your own color.')
         .addStringOption(option => option.setName('hex').setDescription('The HEX code for your color. For example: 000000. Hasthag prefix is not needed.').setRequired(true).setMinLength(7).setMaxLength(7)),
     async execute(interaction) {
-        const modules = require('..');
         const snowflake = interaction.user.id;
         const color = await interaction.options.getString('hex');
         const regex = "^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
         const role = interaction.guild.roles.cache.find(role => role.name === interaction.user.username);
-        const guild = modules.client.guilds.cache.get(config.general.guildId);
+        const guild = modules.client.guilds.cache.get(interaction.guildId);
         const position = guild.roles.cache.size - 2
 
         modules.database.promise()
