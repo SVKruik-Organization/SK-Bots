@@ -6,5 +6,8 @@ exports.general = {
     eventChannel: "1148574058691182732",
     suggestionChannel: "1150770446548086865",
     snippetChannel: "1150770471592275978",
-    highPowerRoles: 3
+    highPowerRoles: 3,
+    apiLimit: 1,
+    imageURL: "https://i.imgur.com/9X7PIG0.png",
+    memberCountOffset: 2
 };

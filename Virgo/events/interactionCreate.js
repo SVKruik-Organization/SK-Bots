@@ -21,6 +21,12 @@ module.exports = {
 			console.log(error);
 		};
 
+		modules.database.promise()
+			.execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${interaction.user.snowflake}';`)
+			.catch(() => {
+				return log(`Command usage increase unsuccessful, ${interaction.user.username} does not have an account yet.`, "warning");
+			});
+
 		modules.log(`${interaction.user.username} used || ${interaction.commandName} ||`, "info");
 	}
 };

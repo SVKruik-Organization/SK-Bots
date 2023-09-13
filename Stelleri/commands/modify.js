@@ -30,8 +30,6 @@ module.exports = {
         .addIntegerOption(option => option.setName('amount').setDescription("The amount for the chosen action.").setRequired(true).setMinValue(0))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
-        const snowflake = interaction.user.id;
-        const username = interaction.user.username;
         const sectionType = interaction.options.getString('section');
         const actionType = interaction.options.getString('action');
         const amount = interaction.options.getInteger('amount');
@@ -80,13 +78,11 @@ module.exports = {
                     .execute(`UPDATE ${table}${action}${where}${filter};`)
                     .then(async () => {
                         await interaction.reply({ content: "Account data has been succesfully changed.", ephemeral: true });
-                    }).catch(() => {
-                        return interaction.reply({ content: "This user doesn't have an account yet.", ephemeral: true });
+                    }).catch(async () => {
+                        return await interaction.reply({ content: "This user doesn't have an account yet.", ephemeral: true });
                     });
             }).catch(() => {
                 return modules.log(`${targetSnowflake.username} does not have an account yet, which is required for the || modify || command.\n`, "warning");
             });
-
-        modules.commandUsage(snowflake, username);
-    },
+    }
 };

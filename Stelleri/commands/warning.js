@@ -9,8 +9,6 @@ module.exports = {
         .addUserOption(option => option.setName('target').setDescription('The person you want to warn.').setRequired(true))
         .addStringOption(option => option.setName('reason').setDescription('The reason for the warning.').setRequired(false).setMaxLength(1000)),
     async execute(interaction) {
-        const snowflake = interaction.user.id;
-        const username = interaction.user.username;
         const targetName = interaction.options.getUser('target').username
         const targetSnowflake = interaction.options.getUser('target').id;
         let reason = interaction.options.getString('reason') ?? 'No reason provided';
@@ -39,7 +37,5 @@ module.exports = {
             .catch(async () => {
                 await interaction.followUp({ content: "Something went wrong while warning this user. Please try again later.", ephemeral: true });
             });
-
-        modules.commandUsage(snowflake, username);
-    },
+    }
 };

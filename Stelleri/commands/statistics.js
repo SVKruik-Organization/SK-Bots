@@ -9,7 +9,6 @@ module.exports = {
         .setName('statistics')
         .setDescription('Let the bot display some statistics.'),
     async execute(interaction) {
-        const snowflake = interaction.user.id;
         const username = interaction.user.username;
         const pfp = interaction.user.avatarURL();
         const commands = fs.readdirSync("commands").length;
@@ -23,7 +22,7 @@ module.exports = {
             .setAuthor({ name: username, iconURL: pfp })
             .addFields({ name: '----', value: 'List' })
             .addFields(
-                { name: 'Name', value: "**Stelleri**" },
+                { name: 'Name', value: `**${config.general.name}**` },
                 { name: 'Creator', value: `<@422704748488163332>` },
                 { name: 'Uptime', value: uptime },
                 { name: 'Ping', value: `\`${modules.client.ws.ping}\`ms` },
@@ -33,9 +32,7 @@ module.exports = {
             )
             .addFields({ name: '----', value: 'Meta' })
             .setTimestamp()
-            .setFooter({ text: 'Embed created by Stelleri' })
-        interaction.reply({ embeds: [embed] });
-
-        modules.commandUsage(snowflake, username);
-    },
+            .setFooter({ text: `Embed created by ${config.general.name}` })
+        await interaction.reply({ embeds: [embed] });
+    }
 };

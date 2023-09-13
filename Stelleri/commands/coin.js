@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('discord.js');
-const modules = require('..');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -14,8 +13,6 @@ module.exports = {
                     { name: 'Tails', value: 'tails' }
                 )),
     async execute(interaction) {
-        const snowflake = interaction.user.id;
-        const username = interaction.user.username;
         const winningSide = interaction.options.getString('side');
         const list = ["heads", "tails"];
         const random = list[Math.floor(Math.random() * list.length)];
@@ -30,18 +27,16 @@ module.exports = {
          * Response when user wins.
          * @param {string} side The side that has been chosen.
          */
-        function win(side) {
-            interaction.reply(`:coin: ${side}! -- You win. :green_circle:`);
+        async function win(side) {
+            await interaction.reply(`:coin: ${side}! -- You win. :green_circle:`);
         };
 
         /**
          * Response when user loses.
          * @param {string} side The side that has been chosen.
          */
-        function lose(side) {
-            interaction.reply(`:coin: ${side}! -- You lose. :red_circle:`);
+        async function lose(side) {
+            await interaction.reply(`:coin: ${side}! -- You lose. :red_circle:`);
         };
-
-        modules.commandUsage(snowflake, username);
-    },
+    }
 };

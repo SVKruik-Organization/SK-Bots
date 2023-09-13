@@ -14,7 +14,6 @@ module.exports = {
         .addStringOption(option => option.setName('date').setDescription('The date for your event. For example: 05/02/2023.').setRequired(true).setMaxLength(10))
         .addStringOption(option => option.setName('time').setDescription('The time when your event starts. For example: 09:15.').setRequired(true).setMaxLength(5)),
     async execute(interaction) {
-        const snowflake = interaction.user.id;
         const channel = modules.client.channels.cache.get(config.general.eventChannel);
         const username = interaction.user.username;
         const pfp = interaction.user.avatarURL();
@@ -37,10 +36,8 @@ module.exports = {
             )
             .addFields({ name: '----', value: 'Meta' })
             .setTimestamp()
-            .setFooter({ text: 'Embed created by Stelleri' })
+            .setFooter({ text: `Embed created by ${config.general.name}` })
         channel.send({ embeds: [embed] });
         await interaction.reply({ content: `Message created. Check your event here: <#${config.general.eventChannel}>.`, ephemeral: true });
-
-        modules.commandUsage(snowflake, username);
-    },
+    }
 };

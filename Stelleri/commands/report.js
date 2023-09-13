@@ -30,8 +30,6 @@ module.exports = {
         let userId = undefined;
         let userIdReceiver = undefined;
 
-        await interaction.reply({ content: "Thank you for your report. We will have a look at it ASAP.", ephemeral: true });
-
         await modules.database.promise()
             .execute(`SELECT id FROM user WHERE snowflake = '${snowflake}';`)
             .then(async ([data]) => {
@@ -49,10 +47,11 @@ module.exports = {
 
         await modules.database.promise()
             .execute(`INSERT INTO report (user_id, user_id_receiver, reason, date, category) VALUES (${userId}, ${userIdReceiver}, '${reason}', CURRENT_TIMESTAMP(), '${category}')`)
-            .catch(async () => {
+            .then(async () => {
+                await interaction.reply({ content: "Thank you for your report. We will have a look at it ASAP.", ephemeral: true });
+                modules.log(`${username} has reported someone.`, "info");
+            }).catch(async () => {
                 await interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
             });
-
-        modules.commandUsage(snowflake, username);
-    },
+    }
 };

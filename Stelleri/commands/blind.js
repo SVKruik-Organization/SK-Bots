@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const config = require('../assets/config.js');
 const modules = require('..');
 
 module.exports = {
@@ -17,9 +16,7 @@ module.exports = {
                     { name: 'Unblind', value: 'unblind' }
                 )),
     async execute(interaction) {
-        const snowflake = interaction.user.id;
         const user = interaction.options.getUser('target');
-        const username = interaction.user.username;
         const targetSnowflake = user.id;
         const role = interaction.guild.roles.cache.find(role => role.name === "Blinded");
         const guild = modules.client.guilds.cache.get(interaction.guildId);
@@ -36,7 +33,5 @@ module.exports = {
                 await interaction.reply(`<@${targetSnowflake}> has been unblinded. Welcome back!`);
             });
         };
-
-        modules.commandUsage(snowflake, username);
-    },
+    }
 };

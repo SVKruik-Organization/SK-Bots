@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('discord.js');
-const modules = require('..');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -15,8 +14,6 @@ module.exports = {
                     { name: 'Scissors', value: 'Scissors' }
                 )),
     async execute(interaction) {
-        const snowflake = interaction.user.id;
-        const username = interaction.user.username;
         const type = interaction.options.getString('type');
         let reply = undefined;
 
@@ -46,7 +43,5 @@ module.exports = {
         };
 
         await interaction.reply(`I chose: ${reply}`);
-
-        modules.commandUsage(snowflake, username);
-    },
+    }
 };

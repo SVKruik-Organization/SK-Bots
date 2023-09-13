@@ -24,7 +24,6 @@ module.exports = {
         .addStringOption(option => option.setName('code').setDescription('The code you want to format.').setRequired(true))
         .addStringOption(option => option.setName('title').setDescription('An optional title for your code. For example: JS for-loop.').setRequired(false)),
     async execute(interaction) {
-        const snowflake = interaction.user.id;
         const username = interaction.user.username;
         const channel = modules.client.channels.cache.get(config.general.snippetChannel);
         const language = interaction.options.getString('language');
@@ -46,7 +45,5 @@ module.exports = {
 
         channel.send({ content: `${username} ${title}\n\n\`\`\`${language}\n${formattedCode}\n\`\`\`` });
         await interaction.reply({ content: `Message created. Check your codesnippet here: <#${config.general.snippetChannel}>.`, ephemeral: true });
-
-        modules.commandUsage(snowflake, username);
-    },
+    }
 };

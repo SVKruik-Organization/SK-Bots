@@ -10,7 +10,6 @@ module.exports = {
         .addStringOption(option => option.setName('title').setDescription('The title for your suggestion.').setRequired(true).setMaxLength(50))
         .addStringOption(option => option.setName('description').setDescription('The description. Pitch your idea, explain why and how to implement.').setRequired(true)),
     async execute(interaction) {
-        const snowflake = interaction.user.id;
         const title = interaction.options.getString('title');
         const description = interaction.options.getString('description');
         const channel = modules.client.channels.cache.get(config.general.suggestionChannel);
@@ -24,12 +23,10 @@ module.exports = {
             .setDescription(`${description}`)
             .addFields({ name: '----', value: 'Meta' })
             .setTimestamp()
-            .setFooter({ text: 'Embed created by Stelleri' })
+            .setFooter({ text: `Embed created by ${config.general.name}` });
         const embedMessage = await channel.send({ embeds: [embed] });
         embedMessage.react('🟢');
         embedMessage.react('🔴');
         await interaction.reply({ content: `Message created. Check your event here: <#${config.general.suggestionChannel}>.`, ephemeral: true });
-
-        modules.commandUsage(snowflake, username);
-    },
+    }
 };

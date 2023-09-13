@@ -50,5 +50,5 @@ module.exports = {
                 console.log(err);
                 await interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
             });
-    },
+    }
 };

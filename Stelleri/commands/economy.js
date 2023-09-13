@@ -28,8 +28,8 @@ module.exports = {
             .execute(`SELECT id FROM user WHERE snowflake = ${snowflake};`)
             .then(async ([data]) => {
                 userId = data[0].id
-            }).catch(() => {
-                return interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
+            }).catch(async () => {
+                return await interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
             });
 
         if (userId == undefined) {
@@ -41,16 +41,16 @@ module.exports = {
                 .execute(`UPDATE economy SET wallet = wallet + ${amount}, bank = bank - ${amount} WHERE user_id = '${userId}';`)
                 .then(async () => {
                     await interaction.reply(`Succesfully withdrew \`${amount}\` Bits.`);
-                }).catch(() => {
-                    return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
+                }).catch(async () => {
+                    return await interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else if (actionType == "deposit" && amount != null) {
             modules.database.promise()
                 .execute(`UPDATE economy SET wallet = wallet - ${amount}, bank = bank + ${amount} WHERE user_id = '${userId}';`)
                 .then(async () => {
                     await interaction.reply(`Succesfully deposited \`${amount}\` Bits.`);
-                }).catch(() => {
-                    return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
+                }).catch(async () => {
+                    return await interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else if (actionType == "balance") {
             modules.database.promise()
@@ -71,15 +71,14 @@ module.exports = {
                         )
                         .addFields({ name: '----', value: 'Meta' })
                         .setTimestamp()
-                        .setFooter({ text: 'Embed created by Stelleri' });
+                        .setFooter({ text: `Embed created by ${config.general.name}` });
                     await interaction.reply({ embeds: [embed] });
-                }).catch(() => {
-                    return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
+                }).catch(async () => {
+                    return await interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else {
             await interaction.reply({ content: "You need to give the amount to withdraw or deposit.", ephemeral: true });
         };
 
-        modules.commandUsage(snowflake, username);
-    },
+    }
 };

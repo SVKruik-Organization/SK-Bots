@@ -29,8 +29,8 @@ module.exports = {
             .execute(`SELECT id FROM user WHERE snowflake = ${snowflake};`)
             .then(async ([data]) => {
                 userId = data[0].id
-            }).catch(() => {
-                return interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
+            }).catch(async () => {
+                return await interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
             });
 
         if (userId == undefined) {
@@ -47,10 +47,8 @@ module.exports = {
                     const total = jackpotValue + dailyreward;
                     modules.log(`${username} hit the daily reward jackpot. He/she received a total of ${total} Bits.\n`, "info");
                 };
-            }).catch(() => {
-                return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
+            }).catch(async () => {
+                return await interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
             });
-
-        modules.commandUsage(snowflake, username);
-    },
+    }
 };

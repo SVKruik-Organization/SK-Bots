@@ -16,8 +16,8 @@ module.exports = {
             .execute(`SELECT id FROM user WHERE snowflake = ${snowflake};`)
             .then(async ([data]) => {
                 userId = data[0].id
-            }).catch(() => {
-                return interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
+            }).catch(async () => {
+                return await interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
             });
 
         if (userId == undefined) return;
@@ -39,12 +39,10 @@ module.exports = {
                     )
                     .addFields({ name: '----', value: 'Meta' })
                     .setTimestamp()
-                    .setFooter({ text: 'Embed created by Stelleri' });
+                    .setFooter({ text: `Embed created by ${config.general.name}` });
                 await interaction.reply({ embeds: [embed] });
-            }).catch(() => {
-                return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
+            }).catch(async () => {
+                return await interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
             });
-
-        modules.commandUsage(snowflake, username);
-    },
+    }
 };

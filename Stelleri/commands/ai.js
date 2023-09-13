@@ -1,6 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { Configuration, OpenAIApi } = require('openai');
-const modules = require('..');
 const config = require('../assets/config.js');
 
 module.exports = {
@@ -17,8 +16,6 @@ module.exports = {
                 ))
         .addStringOption(option => option.setName('prompt').setDescription("Your text or image prompt.").setRequired(true).setMaxLength(100)),
     async execute(interaction) {
-        const snowflake = interaction.user.id;
-        const username = interaction.user.username;
         const actionType = interaction.options.getString('action');
         const prompt = interaction.options.getString('prompt');
 
@@ -43,7 +40,5 @@ module.exports = {
             }
             console.log(err.response.data);
         };
-
-        modules.commandUsage(snowflake, username);
-    },
+    }
 };

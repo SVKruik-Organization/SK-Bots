@@ -15,7 +15,5 @@ module.exports = {
         const template = interaction.options.getString('template');
 
         await interaction.reply({ content: template });
-
-        modules.commandUsage(snowflake, username);
-    },
+    }
 };

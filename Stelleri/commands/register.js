@@ -36,5 +36,5 @@ module.exports = {
             }).catch(async () => {
                 await interaction.reply({ content: "Either you already have an account, or something else went wrong.", ephemeral: true });
             });
-    },
+    }
 };

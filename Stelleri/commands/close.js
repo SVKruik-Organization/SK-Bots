@@ -28,5 +28,5 @@ module.exports = {
             }).catch(async () => {
                 return modules.log(`Command usage increase unsuccessful, ${username} does not have an account yet.`, "warning");
             });
-    },
+    }
 };

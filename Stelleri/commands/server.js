@@ -8,31 +8,27 @@ module.exports = {
         .setName('server')
         .setDescription('Show some server statistics.'),
     async execute(interaction) {
-        const snowflake = interaction.user.id;
         const guild = modules.client.guilds.cache.get(interaction.guildId);
-        const name = interaction.user.username;
+        const username = interaction.user.username;
         const pfp = interaction.user.avatarURL();
         const rawDate = guild.createdAt;
-        const date = `${rawDate.getDate()}/${rawDate.getMonth() + 1}/${rawDate.getFullYear()}`
+        const date = `${rawDate.getDate()}/${rawDate.getMonth() + 1}/${rawDate.getFullYear()}`;
 
         const embed = new EmbedBuilder()
             .setColor(config.general.color)
             .setTitle("Server Statistics")
-            .setAuthor({ name: name, iconURL: pfp })
+            .setAuthor({ name: username, iconURL: pfp })
             .addFields({ name: '----', value: 'List' })
             .addFields(
                 { name: 'Name', value: `${guild.name}` },
-                { name: 'Members', value: `\`${guild.memberCount}\`` },
+                { name: 'Members', value: `\`${guild.memberCount - config.general.memberCountOffset}\`` },
                 { name: 'Created', value: `${date}` },
                 { name: 'Owner', value: `<@${guild.ownerId}>` },
                 { name: 'Rules', value: `<#${guild.rulesChannelId}>` }
-
             )
             .addFields({ name: '----', value: 'Meta' })
             .setTimestamp()
-            .setFooter({ text: 'Embed created by Stelleri' })
-        interaction.reply({ embeds: [embed] });
-
-        modules.commandUsage(snowflake, username);
-    },
+            .setFooter({ text: `Embed created by ${config.general.name}` });
+        await interaction.reply({ embeds: [embed] });
+    }
 };
