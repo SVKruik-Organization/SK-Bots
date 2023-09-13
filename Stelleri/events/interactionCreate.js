@@ -22,5 +22,5 @@ module.exports = {
 		};
 
 		modules.log(`${interaction.user.username} used || ${interaction.commandName} ||`, "info");
-	},
+	}
 };

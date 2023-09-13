@@ -11,15 +11,11 @@ module.exports = {
         .addStringOption(option => option.setName('template').setDescription('Template').setRequired(true)),
     async execute(interaction) {
         const snowflake = interaction.user.id;
-        const template = interaction.options.getString('template');
         const username = interaction.user.username;
+        const template = interaction.options.getString('template');
 
         await interaction.reply({ content: template });
 
-        modules.database.promise()
-            .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
-            .catch(() => {
-                return modules.log(`Command usage increase unsuccessful, ${username} does not have an account yet.`, "warning");
-            });
+        modules.commandUsage(snowflake, username);
     },
 };

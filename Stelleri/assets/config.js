@@ -5,5 +5,6 @@ exports.general = {
     guildId: ["1022886794510999664", "1148559935743987782"],
     eventChannel: "1148574058691182732",
     suggestionChannel: "1150770446548086865",
-    snippetChannel: "1150770471592275978"
+    snippetChannel: "1150770471592275978",
+    highPowerRoles: 3
 };

@@ -13,7 +13,7 @@ module.exports = {
         const regex = "^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
         const role = interaction.guild.roles.cache.find(role => role.name === interaction.user.username);
         const guild = modules.client.guilds.cache.get(interaction.guildId);
-        const position = guild.roles.cache.size - 2;
+        const position = guild.roles.cache.size - config.general.highPowerRoles;
 
         /**
          * Convert a HEX color to an integer value.

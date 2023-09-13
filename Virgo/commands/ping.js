@@ -13,10 +13,6 @@ module.exports = {
 
 		await interaction.reply(`👋 ${random}`);
 
-		modules.database.promise()
-			.execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
-			.catch(() => {
-				return modules.log(`Command usage increase unsuccessful, ${username} does not have an account yet.`, "warning");
-			});
+		modules.commandUsage(snowflake, username);
 	},
 };

@@ -18,8 +18,9 @@ module.exports = {
 		} catch (error) {
 			modules.log(`There was an error while executing || ${interaction.commandName} ||`, "error");
 			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+			console.log(error);
 		};
 
 		modules.log(`${interaction.user.username} used || ${interaction.commandName} ||`, "info");
-	},
+	}
 };

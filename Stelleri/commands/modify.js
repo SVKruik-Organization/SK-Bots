@@ -87,10 +87,6 @@ module.exports = {
                 return modules.log(`${targetSnowflake.username} does not have an account yet, which is required for the || modify || command.\n`, "warning");
             });
 
-        modules.database.promise()
-            .execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
-            .catch(() => {
-                return modules.log(`Command usage increase unsuccessful, ${username} does not have an account yet.`, "warning");
-            });
+        modules.commandUsage(snowflake, username);
     },
 };
