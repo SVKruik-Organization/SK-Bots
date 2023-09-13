@@ -41,11 +41,12 @@ module.exports = {
             .execute(`UPDATE economy SET wallet = wallet + ${jackpotValue} + ${dailyreward} WHERE user_id = '${userId}';`)
             .then(async () => {
                 await interaction.reply(`Succesfully collected your daily reward: \`${dailyreward}\` Bits. Be sure to come back tomorrow!`);
+                modules.log(`${interaction.user.username} collected their daily reward. They received ${dailyreward} bits.`, "info");
                 if (jackpotBoolean == true) {
                     await interaction.followUp(`💎 You hit the JACKPOT! 💎 You received \`${jackpotValue}\` more Bits. Congratulations! 🎉`);
                     const total = jackpotValue + dailyreward;
                     modules.log(`${username} hit the daily reward jackpot. He/she received a total of ${total} Bits.\n`, "info");
-                }
+                };
             }).catch(() => {
                 return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
             });

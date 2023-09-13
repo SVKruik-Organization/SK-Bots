@@ -9,7 +9,7 @@ module.exports = {
 	once: true,
 	execute() {
 		setTimeout(() => {
-			modules.log(`\n\nSession started on ${time}, ${date}.\n${config.general.name} is now online!\n\t------\n\n`, "info");
+			modules.log(`\n\nSession started on ${time}, ${date}.\n${config.general.name} is now online!\n\t------\n`, "info");
 		}, 1000);
 	},
 };
