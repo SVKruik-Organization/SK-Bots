@@ -94,13 +94,27 @@ database.promise()
 		return process.exit(1);
 	});
 
+/**
+ * Increase the command usage count.
+ * @param {string} snowflake The snowflake of the user.
+ * @param {string} username The username of the user.
+ */
+function commandUsage(snowflake, username) {
+	database.promise()
+	.execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${snowflake}';`)
+	.catch(() => {
+		return log(`Command usage increase unsuccessful, ${username} does not have an account yet.`, "warning");
+	});
+};
+
 // Exporting Values & Functions
 module.exports = {
 	"client": client,
 	"database": database,
 	"getDate": getDate,
 	"blockedUsers": blockedUsers,
-	"log": log
+	"log": log,
+	"commandUsage": commandUsage
 };
 
 // Command Handler

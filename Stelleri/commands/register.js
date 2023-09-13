@@ -12,16 +12,16 @@ module.exports = {
         const pincode = interaction.options.getString('pincode');
 
         modules.database.promise()
-            .execute(`INSERT INTO user (snowflake, username, warnings, pincode, created_on) VALUES ('${snowflake}', '${username}', 0, '${pincode}', CURDATE());`)
+            .execute(`INSERT INTO user (snowflake, username, pincode, created_on) VALUES ('${snowflake}', '${username}', '${pincode}', CURRENT_TIMESTAMP());`)
             .then(() => {
                 modules.database.promise()
                     .execute(`SELECT id FROM user WHERE snowflake = '${snowflake}';`)
                     .then(async ([data]) => {
                         modules.database.promise()
-                            .execute(`INSERT INTO tier (user_id, level, xp) VALUES (${data[0].id}, 1, 0);`)
+                            .execute(`INSERT INTO tier (user_id) VALUES (${data[0].id});`)
                             .then(async () => {
                                 modules.database.promise()
-                                    .execute(`INSERT INTO economy (user_id, wallet, bank) VALUES (${data[0].id}, 0, 0);`)
+                                    .execute(`INSERT INTO economy (user_id) VALUES (${data[0].id});`)
                                     .then(async () => {
                                         await interaction.reply({ content: "Thank you for your registration! You can now use economy and tier commands.", ephemeral: true });
                                     }).catch(async () => {

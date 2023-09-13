@@ -30,13 +30,7 @@ module.exports = {
         let userId = undefined;
         let userIdReceiver = undefined;
 
-        await modules.database.promise()
-            .execute(`UPDATE user SET reports = (reports + 1) WHERE snowflake = '${targetSnowflake}';`)
-            .then(async () => {
-                await interaction.reply({ content: "Thank you for your report. We will have a look at it ASAP.", ephemeral: true });
-            }).catch(async () => {
-                await interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
-            });
+        await interaction.reply({ content: "Thank you for your report. We will have a look at it ASAP.", ephemeral: true });
 
         await modules.database.promise()
             .execute(`SELECT id FROM user WHERE snowflake = '${snowflake}';`)
@@ -54,7 +48,7 @@ module.exports = {
             });
 
         await modules.database.promise()
-            .execute(`INSERT INTO report (user_id, user_id_receiver, reason, date, category) VALUES (${userId}, ${userIdReceiver}, '${reason}', CURDATE(), '${category}')`)
+            .execute(`INSERT INTO report (user_id, user_id_receiver, reason, date, category) VALUES (${userId}, ${userIdReceiver}, '${reason}', CURRENT_TIMESTAMP(), '${category}')`)
             .catch(async () => {
                 await interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
             });

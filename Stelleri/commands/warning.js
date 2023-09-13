@@ -16,13 +16,7 @@ module.exports = {
         let reason = interaction.options.getString('reason') ?? 'No reason provided';
         let userId;
 
-        await modules.database.promise()
-            .execute(`UPDATE user SET warnings = (warnings + 1) WHERE snowflake = '${targetSnowflake}';`)
-            .then(async () => {
-                await interaction.reply(`User <@${targetSnowflake}> has been warned for: \`${reason}\``);
-            }).catch(async () => {
-                await interaction.reply({ content: "Something went wrong while warning this user. Please try again later.", ephemeral: true });
-            });
+        await interaction.reply(`User <@${targetSnowflake}> has been warned for: \`${reason}\``);
 
         await modules.database.promise()
             .execute(`SELECT id FROM user WHERE snowflake = '${targetSnowflake}';`)
@@ -36,12 +30,12 @@ module.exports = {
             });
 
         if (!userId) {
-            userId = 2;
+            userId = 0;
             reason = `${targetName} - ${reason}`;
         };
 
         await modules.database.promise()
-            .execute(`INSERT INTO warning (user_id_receiver, reason, date) VALUES (${userId}, '${reason}', CURDATE())`)
+            .execute(`INSERT INTO warning (user_id_receiver, reason, date) VALUES (${userId}, '${reason}', CURRENT_TIMESTAMP())`)
             .catch(async () => {
                 await interaction.followUp({ content: "Something went wrong while warning this user. Please try again later.", ephemeral: true });
             });

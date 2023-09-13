@@ -14,8 +14,7 @@ module.exports = {
                     { name: 'Tier - Level', value: 'rnk-lvl' },
                     { name: 'Tier - XP', value: 'rnk-xp' },
                     { name: 'Economy - Wallet', value: 'eco-wal' },
-                    { name: 'Economy - Bank', value: 'eco-bnk' },
-                    { name: 'Warnings', value: 'warning' }
+                    { name: 'Economy - Bank', value: 'eco-bnk' }
                 ))
         .addStringOption(option =>
             option.setName('action')
@@ -63,11 +62,6 @@ module.exports = {
                 } else if (sectionType == "eco-bnk") {
                     table = "`economy` SET bank =";
                     row = "`bank`";
-                } else if (sectionType == "warning") {
-                    table = "`user` SET warnings =";
-                    row = "`warnings`";
-                    where = " WHERE snowflake = '";
-                    filter = `${targetSnowflake}'`;
                 };
 
                 if (actionType == "set") {
