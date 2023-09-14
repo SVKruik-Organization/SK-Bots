@@ -1,6 +1,6 @@
 # Discord Bots v2
 
-Welcome to my second Discord bot repository. You can have a look at the old bots [here](https://github.com/SVKruik/Discord-Bots). Because of the drastic changes Discord.JS makes to their API every major version, I decided to begin from scratch and make a fresh set of bots. Upgrading from v12 to v14 was not worth it. The bots now support the newest version of Discord.JS, and comes with new features like slash commands, which greatly increases UX. Feel free to browse through the code, and if you want to contribute, hit me up!
+Welcome to my second Discord bot repository. You can have a look at the old bots [here](https://github.com/SVKruik/Discord-Bots). Because of the drastic changes Discord.JS makes to their API every major version, I decided to begin from scratch and make a fresh set of bots. Upgrading from v12 to v14 was not worth it. The bots now support the newest version of Discord.JS, and they all come with new features like slash commands, which greatly increases UX. Feel free to browse through the code, and if you want to contribute or have questions, hit me up!
 
 Below you will find a list of statistics and commands. I will update this regularly. Last updated on:
 **14/09/2023**.
