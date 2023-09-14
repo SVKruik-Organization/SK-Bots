@@ -1,6 +1,6 @@
 {
   "name": "stelleri",
-  "version": "1.0.0",
+  "version": "2.2.0",
   "description": "General Purpose Bot",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,6 @@
     "dotenv": "^16.0.3",
     "mathjs": "^11.5.1",
     "mysql2": "^3.1.0",
-    "openai": "^3.2.1",
     "prettier": "^2.8.4",
     "request": "^2.88.2"
   }
