@@ -6,6 +6,7 @@ const request = require('request');
 const limit = require('../assets/config.js').general.apiLimit;
 
 module.exports = {
+    cooldown: config.cooldowns.B,
     data: new SlashCommandBuilder()
         .setName('fact')
         .setDescription('Get a random fact.'),

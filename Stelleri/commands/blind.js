@@ -1,7 +1,9 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const modules = require('..');
+const config = require('../assets/config.js');
 
 module.exports = {
+    cooldown: config.cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('blind')
         .setDescription('Blind controls. Blind or unblind someone.')

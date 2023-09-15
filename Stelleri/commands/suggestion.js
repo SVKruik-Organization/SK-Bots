@@ -4,6 +4,7 @@ const { EmbedBuilder } = require('discord.js');
 const modules = require('..');
 
 module.exports = {
+    cooldown: config.cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('suggestion')
         .setDescription('Pitch a new idea for the project!')

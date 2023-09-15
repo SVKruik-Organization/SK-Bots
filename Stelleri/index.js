@@ -1,19 +1,24 @@
 require('dotenv').config();
 const fs = require('node:fs');
 const path = require('node:path');
-const mysql = require('mysql2');
+const mariadb = require('mariadb');
 const config = require('./assets/config.js');
-const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const { Client, Collection } = require('discord.js');
 const client = new Client({
 	intents: [
-		GatewayIntentBits.Guilds,
-		GatewayIntentBits.GuildMessages,
-		GatewayIntentBits.MessageContent,
-		GatewayIntentBits.GuildMembers,
-		GatewayIntentBits.GuildMessageReactions
+		'Guilds',
+		'GuildMessages',
+		'MessageContent',
+		'GuildMembers',
+		'GuildMessageReactions',
+		'DirectMessages'
 	],
+	partials: [
+		'Channel',
+		'Message',
+		'Reactions'
+	]
 });
-const blockedUsers = ['1'];
 client.login(process.env.TOKEN);
 log("\n\t------", "none");
 
@@ -79,14 +84,14 @@ function log(data, type) {
 };
 
 // Database
-const database = mysql.createPool({
+const database = mariadb.createPool({
 	host: process.env.HOST,
 	user: process.env.USER,
 	database: process.env.DATABASE,
-	password: process.env.PASSWORD
+	password: process.env.PASSWORD,
+	multipleStatements: true
 });
-database.promise()
-	.execute("SHOW databases")
+database.query("SHOW databases")
 	.then(() => {
 		log("Database connection established.", "info");
 	}).catch(() => {
@@ -99,7 +104,6 @@ module.exports = {
 	"client": client,
 	"database": database,
 	"getDate": getDate,
-	"blockedUsers": blockedUsers,
 	"log": log
 };
 
@@ -129,3 +133,6 @@ for (const file of eventFiles) {
 		client.on(event.name, (...args) => event.execute(...args));
 	};
 };
+
+// Cooldowns
+client.cooldowns = new Collection();

@@ -1,7 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
 const modules = require('..');
+const config = require('../assets/config.js');
 
 module.exports = {
+    cooldown: config.cooldowns.D,
     data: new SlashCommandBuilder()
         .setName('pincode')
         .setDescription('Change or get your 4-digit pincode.')
@@ -21,16 +23,14 @@ module.exports = {
         const newPincode = interaction.options.getString('new-pincode');
 
         if (actionType == "get") {
-            modules.database.promise()
-                .execute(`SELECT pincode AS pin FROM user WHERE snowflake = '${snowflake}';`)
+            modules.database.query(`SELECT pincode AS pin FROM user WHERE snowflake = '${snowflake}';`)
                 .then(async ([data]) => {
                     await interaction.reply({ content: `Your Pincode is: \`${data[0].pin}\`.`, ephemeral: true });
                 }).catch(async () => {
                     return await interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else if (actionType == "change" && newPincode != null) {
-            modules.database.promise()
-                .execute(`UPDATE user SET pincode = '${newPincode}' WHERE snowflake = '${snowflake}';`)
+            modules.database.query(`UPDATE user SET pincode = '${newPincode}' WHERE snowflake = '${snowflake}';`)
                 .then(async () => {
                     await interaction.reply({ content: `Your pincode has been succesfully changed. New pincode: \`${newPincode}\`.`, ephemeral: true });
                     modules.log(`${username} has changed their pincode.`, "info");

@@ -1,9 +1,10 @@
-const { SlashCommandBuilder, Guild } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const { EmbedBuilder } = require('discord.js');
 const modules = require('..');
 
 module.exports = {
+    cooldown: config.cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('server')
         .setDescription('Show some server statistics.'),

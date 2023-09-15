@@ -4,6 +4,7 @@ const prettier = require('prettier');
 const modules = require('..');
 
 module.exports = {
+    cooldown: config.cooldowns.B,
     data: new SlashCommandBuilder()
         .setName('snippet')
         .setDescription('Format a piece of code.')

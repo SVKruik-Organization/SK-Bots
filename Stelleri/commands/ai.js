@@ -1,6 +1,8 @@
 const { SlashCommandBuilder } = require('discord.js');
+const config = require('../assets/config.js');
 
 module.exports = {
+    cooldown: config.cooldowns.D,
     data: new SlashCommandBuilder()
         .setName('ai')
         .setDescription('Use ChatGPT or DALL-E from Discord!')

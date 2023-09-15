@@ -1,6 +1,8 @@
 const { SlashCommandBuilder } = require('discord.js');
+const config = require('../assets/config.js');
 
 module.exports = {
+    cooldown: config.cooldowns.B,
     data: new SlashCommandBuilder()
         .setName('coin')
         .setDescription('Flip a coin!')

@@ -1,7 +1,9 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const modules = require('..');
+const config = require('../assets/config.js');
 
 module.exports = {
+    cooldown: config.cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('modify')
         .setDescription('Modify database data. For example, XP and coins.')
@@ -35,54 +37,42 @@ module.exports = {
         const amount = interaction.options.getInteger('amount');
         const targetSnowflake = interaction.options.getUser('target').id;
 
-        let userId = undefined;
         let table = undefined;
         let row = undefined;
         let action = undefined;
-        let where = " WHERE user_id = ";
+        let where = ` WHERE snowflake = ${targetSnowflake}`;
 
+        if (sectionType == "rnk-lvl") {
+            table = "`tier` SET level = ";
+            row = "`level`";
+        } else if (sectionType == "rnk-xp") {
+            table = "`tier` SET xp =";
+            row = "`xp`";
+        } else if (sectionType == "eco-wal") {
+            table = "`economy` SET wallet =";
+            row = "`wallet`";
+        } else if (sectionType == "eco-bnk") {
+            table = "`economy` SET bank =";
+            row = "`bank`";
+        };
 
-        await modules.database.promise()
-            .execute(`SELECT id FROM user WHERE snowflake = ${targetSnowflake};`)
-            .then(async ([data]) => {
-                userId = data[0].id;
-                let filter = userId
+        if (actionType == "set") {
+            action = ` ${amount}`;
+        } else if (actionType == "inc") {
+            action = ` ${row} + ${amount}`;
+        } else if (actionType == "dec") {
+            action = ` ${row} - ${amount}`;
+        } else if (actionType == "mult") {
+            action = ` ${row} * ${amount}`;
+        } else if (actionType == "div") {
+            action = ` ${row} / ${amount}`;
+        };
 
-                if (sectionType == "rnk-lvl") {
-                    table = "`tier` SET level = ";
-                    row = "`level`";
-                } else if (sectionType == "rnk-xp") {
-                    table = "`tier` SET xp =";
-                    row = "`xp`";
-                } else if (sectionType == "eco-wal") {
-                    table = "`economy` SET wallet =";
-                    row = "`wallet`";
-                } else if (sectionType == "eco-bnk") {
-                    table = "`economy` SET bank =";
-                    row = "`bank`";
-                };
-
-                if (actionType == "set") {
-                    action = ` ${amount}`;
-                } else if (actionType == "inc") {
-                    action = ` ${row} + ${amount}`;
-                } else if (actionType == "dec") {
-                    action = ` ${row} - ${amount}`;
-                } else if (actionType == "mult") {
-                    action = ` ${row} * ${amount}`;
-                } else if (actionType == "div") {
-                    action = ` ${row} / ${amount}`;
-                };
-
-                modules.database.promise()
-                    .execute(`UPDATE ${table}${action}${where}${filter};`)
-                    .then(async () => {
-                        await interaction.reply({ content: "Account data has been succesfully changed.", ephemeral: true });
-                    }).catch(async () => {
-                        return await interaction.reply({ content: "This user doesn't have an account yet.", ephemeral: true });
-                    });
-            }).catch(() => {
-                return modules.log(`${targetSnowflake.username} does not have an account yet, which is required for the || modify || command.\n`, "warning");
+        modules.database.query(`UPDATE ${table}${action}${where}`)
+            .then(async () => {
+                await interaction.reply({ content: "Account data has been succesfully changed.", ephemeral: true });
+            }).catch(async () => {
+                return await interaction.reply({ content: "This user doesn't have an account yet.", ephemeral: true });
             });
     }
 };

@@ -1,17 +1,39 @@
 const { Events } = require('discord.js');
 const modules = require('..');
-const blockedUsers = modules.blockedUsers;
+const { Collection } = require('discord.js');
+const config = require('../assets/config.js');
 
 module.exports = {
 	name: Events.InteractionCreate,
 	async execute(interaction) {
 		if (!interaction.isChatInputCommand()) return;
-		if (blockedUsers.includes(interaction.user.id)) {
+		if (config.specialUsers.blocked.includes(interaction.user.id)) {
 			return await interaction.reply({ content: 'You are not allowed to use my commands. Contact the moderators to appeal if you think this is a mistake.', ephemeral: true });
 		};
 
 		const command = interaction.client.commands.get(interaction.commandName);
 		if (!command) return modules.log(`No command matching ${interaction.commandName} was found.`, "warning");
+
+		// TO-DO: Admin Exception
+		const { cooldowns } = modules.client;
+		if (!cooldowns.has(command.data.name))
+			cooldowns.set(command.data.name, new Collection());
+
+		const now = Date.now();
+		const timestamps = cooldowns.get(command.data.name);
+		const defaultCooldownDuration = 3;
+		const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000;
+
+		if (timestamps.has(interaction.user.id)) {
+			const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
+			if (now < expirationTime) {
+				const expiredTimestamp = Math.round(expirationTime / 1000);
+				return interaction.reply({ content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again <t:${expiredTimestamp}:R>.`, ephemeral: true });
+			};
+		};
+
+		timestamps.set(interaction.user.id, now);
+		setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
 
 		try {
 			await command.execute(interaction);
@@ -21,8 +43,8 @@ module.exports = {
 			console.log(error);
 		};
 
-		modules.database.promise()
-			.execute(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${interaction.user.snowflake}';`)
+		// TO-DO: Increase XP
+		modules.database.query(`UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = '${interaction.user.snowflake}';`)
 			.catch(() => {
 				return log(`Command usage increase unsuccessful, ${interaction.user.username} does not have an account yet.`, "warning");
 			});

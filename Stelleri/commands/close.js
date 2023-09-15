@@ -1,7 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
 const modules = require('..');
+const config = require('../assets/config.js');
 
 module.exports = {
+    cooldown: config.cooldowns.D,
     data: new SlashCommandBuilder()
         .setName('close')
         .setDescription('Close your account. You can no longer use account specific commands.')
@@ -10,13 +12,11 @@ module.exports = {
         const snowflake = interaction.user.id;
         const inputPincode = interaction.options.getString('pincode');
 
-        modules.database.promise()
-            .execute(`SELECT pincode AS 'pin' FROM user WHERE snowflake = '${snowflake}';`)
+        modules.database.query(`SELECT pincode AS 'pin' FROM user WHERE snowflake = '${snowflake}';`)
             .then(async ([data]) => {
                 const dataPincode = data[0].pin;
                 if (inputPincode == dataPincode) {
-                    modules.database.promise()
-                        .execute(`DELETE FROM user WHERE snowflake = '${snowflake}';`)
+                    modules.database.query(`DELETE FROM user WHERE snowflake = '${snowflake}';`)
                         .then(async () => {
                             await interaction.reply({ content: "Your account has been succesfully closed. If you change your mind, you can always create a new account with `/register`.", ephemeral: true });
                         }).catch(async () => {

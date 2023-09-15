@@ -1,6 +1,8 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const config = require('../assets/config.js');
 
 module.exports = {
+    cooldown: config.cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('clear')
         .setDescription('Bulk delete messages.')

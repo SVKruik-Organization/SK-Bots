@@ -5,6 +5,7 @@ const modules = require('..');
 const fs = require('fs');
 
 module.exports = {
+    cooldown: config.cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('statistics')
         .setDescription('Let the bot display some statistics.'),

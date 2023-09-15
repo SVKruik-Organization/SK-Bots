@@ -1,7 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
 const modules = require('..');
+const config = require('../assets/config.js');
 
 module.exports = {
+    cooldown: config.cooldowns.E,
     data: new SlashCommandBuilder()
         .setName('dailyreward')
         .setDescription('Collect your daily reward.')
@@ -24,21 +26,7 @@ module.exports = {
             jackpotValue = 0;
         };
 
-        let userId = undefined;
-        await modules.database.promise()
-            .execute(`SELECT id FROM user WHERE snowflake = ${snowflake};`)
-            .then(async ([data]) => {
-                userId = data[0].id
-            }).catch(async () => {
-                return await interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
-            });
-
-        if (userId == undefined) {
-            return;
-        };
-
-        await modules.database.promise()
-            .execute(`UPDATE economy SET wallet = wallet + ${jackpotValue} + ${dailyreward} WHERE user_id = '${userId}';`)
+        await modules.database.query(`UPDATE economy SET wallet = wallet + ${jackpotValue} + ${dailyreward} WHERE snowflake = '${snowflake}';`)
             .then(async () => {
                 await interaction.reply(`Succesfully collected your daily reward: \`${dailyreward}\` Bits. Be sure to come back tomorrow!`);
                 modules.log(`${interaction.user.username} collected their daily reward. They received ${dailyreward} bits.`, "info");

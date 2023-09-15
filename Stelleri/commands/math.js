@@ -1,7 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
 const math = require('mathjs');
+const config = require('../assets/config.js');
 
 module.exports = {
+    cooldown: config.cooldowns.B,
     data: new SlashCommandBuilder()
         .setName('math')
         .setDescription('Evaluate a math expression.')

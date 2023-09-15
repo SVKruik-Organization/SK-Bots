@@ -1,6 +1,6 @@
 const { Events } = require('discord.js');
 const modules = require('..');
-const config = require('../assets/config.js')
+const config = require('../assets/config.js');
 const date = modules.getDate().date;
 const time = modules.getDate().time;
 

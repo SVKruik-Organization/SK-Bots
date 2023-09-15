@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const commands = [];
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
-const modules = require('./index.js');
+const modules = require('.');
 
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);

@@ -3,6 +3,7 @@ const config = require('../assets/config.js');
 const modules = require('..');
 
 module.exports = {
+    cooldown: config.cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('role')
         .setDescription('Give yourself a custom role with your own color.')
@@ -24,31 +25,24 @@ module.exports = {
             return parseInt(hex, 16);
         };
 
-        modules.database.promise()
-            .execute(`SELECT id FROM user WHERE snowflake = '${snowflake}';`)
-            .then(async () => {
-                if (role) await role.delete();
-                if (color.match(regex)) {
-                    await interaction.guild.roles.create({
-                        position: position,
-                        name: interaction.user.username,
-                        color: hexToInt(color)
-                    }).then(async () => {
-                        const role = guild.roles.cache.find((r) => r.name === interaction.user.username);
-                        await guild.members.fetch(snowflake).then(async (user) => {
-                            user.roles.add(role);
-                        });
-                        await interaction.reply(`\`#${color}\` -- great color! You look awesome!`);
-                    }).catch(async (err) => {
-                        console.log(err);
-                        await interaction.reply({ content: "Something went wrong while creating your role. Please try again later.", ephemeral: true });
-                    });
-                } else {
-                    await interaction.reply({ content: "Your color is invalid. Make sure your color is in HEX format, like so: `000000`. Hasthag prefix is not needed.", ephemeral: true });
-                };
+        if (role) await role.delete();
+        if (color.match(regex)) {
+            await interaction.guild.roles.create({
+                position: position,
+                name: interaction.user.username,
+                color: hexToInt(color)
+            }).then(async () => {
+                const role = guild.roles.cache.find((r) => r.name === interaction.user.username);
+                await guild.members.fetch(snowflake).then(async (user) => {
+                    user.roles.add(role);
+                });
+                await interaction.reply(`\`#${color}\` -- great color! You look awesome!`);
             }).catch(async (err) => {
                 console.log(err);
-                await interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
+                await interaction.reply({ content: "Something went wrong while creating your role. Please try again later.", ephemeral: true });
             });
+        } else {
+            await interaction.reply({ content: "Your color is invalid. Make sure your color is in HEX format, like so: `000000`. Hasthag prefix is not needed.", ephemeral: true });
+        };
     }
 };

@@ -4,6 +4,7 @@ const { EmbedBuilder } = require('discord.js');
 const modules = require('..');
 
 module.exports = {
+    cooldown: config.cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('economy')
         .setDescription('Controls for the economy system. View balance, withdraw etc.')
@@ -19,42 +20,25 @@ module.exports = {
         .addIntegerOption(option => option.setName('amount').setDescription("Amount to withdraw/deposit, if you have selected that option.").setRequired(false).setMinValue(1)),
     async execute(interaction) {
         const snowflake = interaction.user.id;
-        const username = interaction.user.username;
         const actionType = interaction.options.getString('action');
         const amount = interaction.options.getInteger('amount');
 
-        let userId = undefined;
-        await modules.database.promise()
-            .execute(`SELECT id FROM user WHERE snowflake = ${snowflake};`)
-            .then(async ([data]) => {
-                userId = data[0].id
-            }).catch(async () => {
-                return await interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
-            });
-
-        if (userId == undefined) {
-            return;
-        };
-
         if (actionType == "withdraw" && amount != null) {
-            modules.database.promise()
-                .execute(`UPDATE economy SET wallet = wallet + ${amount}, bank = bank - ${amount} WHERE user_id = '${userId}';`)
+            modules.database.query(`UPDATE economy SET wallet = wallet + ${amount}, bank = bank - ${amount} WHERE snowflake = '${snowflake}';`)
                 .then(async () => {
                     await interaction.reply(`Succesfully withdrew \`${amount}\` Bits.`);
                 }).catch(async () => {
                     return await interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else if (actionType == "deposit" && amount != null) {
-            modules.database.promise()
-                .execute(`UPDATE economy SET wallet = wallet - ${amount}, bank = bank + ${amount} WHERE user_id = '${userId}';`)
+            modules.database.query(`UPDATE economy SET wallet = wallet - ${amount}, bank = bank + ${amount} WHERE snowflake = '${snowflake}';`)
                 .then(async () => {
                     await interaction.reply(`Succesfully deposited \`${amount}\` Bits.`);
                 }).catch(async () => {
                     return await interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else if (actionType == "balance") {
-            modules.database.promise()
-                .execute(`SELECT wallet, bank, (wallet + bank) AS 'total' FROM economy WHERE user_id = '${userId}';`)
+            modules.database.query(`SELECT wallet, bank, (wallet + bank) AS 'total' FROM economy WHERE snowflake = '${snowflake}';`)
                 .then(async ([data]) => {
                     const name = interaction.user.username;
                     const pfp = interaction.user.avatarURL();
@@ -79,6 +63,5 @@ module.exports = {
         } else {
             await interaction.reply({ content: "You need to give the amount to withdraw or deposit.", ephemeral: true });
         };
-
     }
 };

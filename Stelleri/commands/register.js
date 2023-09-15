@@ -1,7 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
 const modules = require('..');
+const config = require('../assets/config.js');
 
 module.exports = {
+    cooldown: config.cooldowns.D,
     data: new SlashCommandBuilder()
         .setName('register')
         .setDescription('Create a new account with us.')
@@ -11,30 +13,12 @@ module.exports = {
         const username = interaction.user.username;
         const pincode = interaction.options.getString('pincode');
 
-        modules.database.promise()
-            .execute(`INSERT INTO user (snowflake, username, pincode, created_on) VALUES ('${snowflake}', '${username}', '${pincode}', CURRENT_TIMESTAMP());`)
+        modules.database.query(`INSERT INTO user (snowflake, username, pincode, created_on) VALUES ('${snowflake}', '${username}', '${pincode}', CURRENT_TIMESTAMP()); INSERT INTO tier (snowflake) VALUES ('${snowflake}'); INSERT INTO economy (snowflake) VALUES ('${snowflake}');`)
             .then(() => {
-                modules.database.promise()
-                    .execute(`SELECT id FROM user WHERE snowflake = '${snowflake}';`)
-                    .then(async ([data]) => {
-                        modules.database.promise()
-                            .execute(`INSERT INTO tier (user_id) VALUES (${data[0].id});`)
-                            .then(async () => {
-                                modules.database.promise()
-                                    .execute(`INSERT INTO economy (user_id) VALUES (${data[0].id});`)
-                                    .then(async () => {
-                                        await interaction.reply({ content: "Thank you for your registration! You can now use economy and tier commands.", ephemeral: true });
-                                    }).catch(async () => {
-                                        await interaction.reply({ content: "Either you already have an account, or something else went wrong.", ephemeral: true });
-                                    });
-                            }).catch(async () => {
-                                await interaction.reply({ content: "Either you already have an account, or something else went wrong.", ephemeral: true });
-                            });
-                    }).catch(async () => {
-                        await interaction.reply({ content: "Either you already have an account, or something else went wrong.", ephemeral: true });
-                    });
-            }).catch(async () => {
-                await interaction.reply({ content: "Either you already have an account, or something else went wrong.", ephemeral: true });
+                interaction.reply({ content: "Thank you for your registration! You can now use all commands.", ephemeral: true });
+            }).catch(async (error) => {
+                console.log(error);
+                return await interaction.reply({ content: "Either you already have an account, or something else went wrong.", ephemeral: true });
             });
     }
 };

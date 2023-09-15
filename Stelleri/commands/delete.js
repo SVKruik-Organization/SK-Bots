@@ -4,6 +4,7 @@ const { REST, Routes } = require('discord.js');
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 module.exports = {
+    cooldown: config.cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('delete')
         .setDescription('Delete a command.')

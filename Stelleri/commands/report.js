@@ -1,7 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
 const modules = require('..');
+const config = require('../assets/config.js');
 
 module.exports = {
+    cooldown: config.cooldowns.D,
     data: new SlashCommandBuilder()
         .setName('report')
         .setDescription('Report someone for breaking the rules. We will have a look at it.')
@@ -27,26 +29,8 @@ module.exports = {
         const targetSnowflake = interaction.options.getUser('target').id;
         const reason = interaction.options.getString('reason');
         const category = interaction.options.getString('category');
-        let userId = undefined;
-        let userIdReceiver = undefined;
 
-        await modules.database.promise()
-            .execute(`SELECT id FROM user WHERE snowflake = '${snowflake}';`)
-            .then(async ([data]) => {
-                userId = data[0].id;
-                await modules.database.promise()
-                    .execute(`SELECT id FROM user WHERE snowflake = '${targetSnowflake}';`)
-                    .then(async ([data]) => {
-                        userIdReceiver = data[0].id;
-                    }).catch(async () => {
-                        await interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
-                    });
-            }).catch(async () => {
-                await interaction.reply({ content: "This command requires you to have an account. Create an account with the `/register` command.", ephemeral: true });
-            });
-
-        await modules.database.promise()
-            .execute(`INSERT INTO report (user_id, user_id_receiver, reason, date, category) VALUES (${userId}, ${userIdReceiver}, '${reason}', CURRENT_TIMESTAMP(), '${category}')`)
+        await modules.database.query(`INSERT INTO report (snowflake, snowflake_recv, reason, date, category) VALUES (${snowflake}, ${targetSnowflake}, '${reason}', CURRENT_TIMESTAMP(), '${category}')`)
             .then(async () => {
                 await interaction.reply({ content: "Thank you for your report. We will have a look at it ASAP.", ephemeral: true });
                 modules.log(`${username} has reported someone.`, "info");
