@@ -11,9 +11,9 @@ module.exports = {
     async execute(interaction) {
         const amount = interaction.options.getInteger('amount');
 
-        await interaction.reply("Deleting `" + amount + "` messages . . .");
-        setTimeout(async () => {
-            await interaction.channel.bulkDelete(amount + 1);
+        interaction.reply("Deleting `" + amount + "` messages . . .");
+        setTimeout(() => {
+            interaction.channel.bulkDelete(amount + 1);
         }, 1000);
     }
 };

@@ -14,6 +14,6 @@ module.exports = {
         const username = interaction.user.username;
         const template = interaction.options.getString('template');
 
-        await interaction.reply({ content: template });
+        interaction.reply({ content: template });
     }
 };

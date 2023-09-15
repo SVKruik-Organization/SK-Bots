@@ -15,12 +15,12 @@ module.exports = {
 
         let error = 0;
         for (let i = 0; i < config.general.guildId.length; i++) {
-            await rest.delete(Routes.applicationGuildCommand(config.general.clientId, config.general.guildId[i], commandId))
-                .catch(async () => error = 1);
+            await rest.delete(Routes.applicationGuildCommand(config.general.clientId[0], config.general.guildId[i], commandId))
+                .catch(() => error = 1);
         };
 
         if (error === 1) {
-            await interaction.reply({ content: "Command doesn't exist. It may have already been removed.", ephemeral: true });
-        } else return await interaction.reply({ content: "Command succesfully removed.", ephemeral: true });
+            interaction.reply({ content: "Command doesn't exist. It may have already been removed.", ephemeral: true });
+        } else return interaction.reply({ content: "Command succesfully removed.", ephemeral: true });
     }
 };

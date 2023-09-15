@@ -44,6 +44,6 @@ module.exports = {
             };
         };
 
-        await interaction.reply(`I chose: ${reply}`);
+        interaction.reply(`I chose: ${reply}`);
     }
 };

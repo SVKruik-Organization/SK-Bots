@@ -13,12 +13,14 @@ module.exports = {
         const username = interaction.user.username;
         const pincode = interaction.options.getString('pincode');
 
-        modules.database.query(`INSERT INTO user (snowflake, username, pincode, created_on) VALUES ('${snowflake}', '${username}', '${pincode}', CURRENT_TIMESTAMP()); INSERT INTO tier (snowflake) VALUES ('${snowflake}'); INSERT INTO economy (snowflake) VALUES ('${snowflake}');`)
+        modules.database.query("INSERT INTO user (snowflake, username, pincode, created_on) VALUES (?, ?, ?, CURRENT_TIMESTAMP()); INSERT INTO tier (snowflake) VALUES (?); INSERT INTO economy (snowflake) VALUES (?);"
+        [snowflake, username, pincode, snowflake, snowflake])
             .then(() => {
                 interaction.reply({ content: "Thank you for your registration! You can now use all commands.", ephemeral: true });
-            }).catch(async (error) => {
-                console.log(error);
-                return await interaction.reply({ content: "Either you already have an account, or something else went wrong.", ephemeral: true });
+            }).catch((error) => {
+                if (error.code = "ER_DUP_ENTRY") {
+                    return interaction.reply({ content: "You already have an account.", ephemeral: true });
+                } else return interaction.reply({ content: "Something went wrong while registering your account. Please try again later.", ephemeral: true });
             });
     }
 };

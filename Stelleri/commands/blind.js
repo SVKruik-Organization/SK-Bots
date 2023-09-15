@@ -25,14 +25,14 @@ module.exports = {
         const action = interaction.options.getString('action');
 
         if (action == "blind") {
-            await guild.members.fetch(targetSnowflake).then(async (user) => {
+            await guild.members.fetch(targetSnowflake).then((user) => {
                 user.roles.add(role);
-                await interaction.reply(`<@${targetSnowflake}> has been blinded. He/she no longer has access to the general voice and text channels.`);
+                interaction.reply(`<@${targetSnowflake}> has been blinded. He/she no longer has access to the general voice and text channels.`);
             });
         } else if (action == "unblind") {
-            await guild.members.fetch(targetSnowflake).then(async (user) => {
+            await guild.members.fetch(targetSnowflake).then((user) => {
                 user.roles.remove(role);
-                await interaction.reply(`<@${targetSnowflake}> has been unblinded. Welcome back!`);
+                interaction.reply(`<@${targetSnowflake}> has been unblinded. Welcome back!`);
             });
         };
     }

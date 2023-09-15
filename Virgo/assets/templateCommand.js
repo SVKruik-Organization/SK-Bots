@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const config = require('./config.js');
 const fs = require('fs');
-const modules = require('../index.js');
+const modules = require('..');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -14,6 +14,6 @@ module.exports = {
         const username = interaction.user.username;
         const template = interaction.options.getString('template');
 
-        await interaction.reply({ content: template });
+        interaction.reply({ content: template });
     }
 };

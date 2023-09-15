@@ -69,10 +69,10 @@ module.exports = {
         };
 
         modules.database.query(`UPDATE ${table}${action}${where}`)
-            .then(async () => {
-                await interaction.reply({ content: "Account data has been succesfully changed.", ephemeral: true });
-            }).catch(async () => {
-                return await interaction.reply({ content: "This user doesn't have an account yet.", ephemeral: true });
+            .then(() => {
+                interaction.reply({ content: "Account data has been succesfully changed.", ephemeral: true });
+            }).catch(() => {
+                return interaction.reply({ content: "This user doesn't have an account yet.", ephemeral: true });
             });
     }
 };

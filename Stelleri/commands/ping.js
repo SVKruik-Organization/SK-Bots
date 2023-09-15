@@ -10,6 +10,6 @@ module.exports = {
 		const list = ["Yep!", "Here!", "Ready!", "Awake!", "I'm here!", "Yes!", "Yeah!", "Sure!", "Hello!", "Hey!"];
 		const random = list[Math.floor(Math.random() * list.length)];
 
-		await interaction.reply(`👋 ${random}`);
+		interaction.reply(`👋 ${random}`);
 	}
 };

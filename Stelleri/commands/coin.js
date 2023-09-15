@@ -29,16 +29,16 @@ module.exports = {
          * Response when user wins.
          * @param {string} side The side that has been chosen.
          */
-        async function win(side) {
-            await interaction.reply(`:coin: ${side}! -- You win. :green_circle:`);
+        function win(side) {
+            interaction.reply(`:coin: ${side}! -- You win. :green_circle:`);
         };
 
         /**
          * Response when user loses.
          * @param {string} side The side that has been chosen.
          */
-        async function lose(side) {
-            await interaction.reply(`:coin: ${side}! -- You lose. :red_circle:`);
+        function lose(side) {
+            interaction.reply(`:coin: ${side}! -- You lose. :red_circle:`);
         };
     }
 };

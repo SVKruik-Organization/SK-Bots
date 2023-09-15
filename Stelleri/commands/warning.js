@@ -14,7 +14,7 @@ module.exports = {
         const targetSnowflake = interaction.options.getUser('target').id;
         let reason = interaction.options.getString('reason') ?? 'No reason provided';
 
-        await modules.database.query(`INSERT INTO warning (snowflake_recv, reason, date) VALUES (${targetSnowflake}, '${reason}', CURRENT_TIMESTAMP())`)
+        modules.database.query("INSERT INTO warning (snowflake_recv, reason, date) VALUES (?, ?, CURRENT_TIMESTAMP());", [targetSnowflake, reason])
             .then(() => {
                 interaction.reply(`User <@${targetSnowflake}> has been warned for: \`${reason}\``);
             }).catch(() => {

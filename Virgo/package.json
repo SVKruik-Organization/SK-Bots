@@ -1,6 +1,6 @@
 {
   "name": "virgo",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Trading Bot",
   "main": "index.js",
   "scripts": {
@@ -11,6 +11,6 @@
   "dependencies": {
     "discord.js": "^14.13.0",
     "dotenv": "^16.3.1",
-    "mysql2": "^3.6.1"
+    "mariadb": "^3.2.1"
   }
 }

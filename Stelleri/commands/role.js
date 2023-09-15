@@ -33,16 +33,15 @@ module.exports = {
                 color: hexToInt(color)
             }).then(async () => {
                 const role = guild.roles.cache.find((r) => r.name === interaction.user.username);
-                await guild.members.fetch(snowflake).then(async (user) => {
+                await guild.members.fetch(snowflake).then((user) => {
                     user.roles.add(role);
                 });
-                await interaction.reply(`\`#${color}\` -- great color! You look awesome!`);
-            }).catch(async (err) => {
-                console.log(err);
-                await interaction.reply({ content: "Something went wrong while creating your role. Please try again later.", ephemeral: true });
+                interaction.reply(`\`#${color}\` -- great color! You look awesome!`);
+            }).catch(() => {
+                interaction.reply({ content: "Something went wrong while creating your role. Please try again later.", ephemeral: true });
             });
         } else {
-            await interaction.reply({ content: "Your color is invalid. Make sure your color is in HEX format, like so: `000000`. Hasthag prefix is not needed.", ephemeral: true });
+            interaction.reply({ content: "Your color is invalid. Make sure your color is in HEX format, like so: `000000`. Hasthag prefix is not needed.", ephemeral: true });
         };
     }
 };

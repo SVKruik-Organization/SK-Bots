@@ -1,7 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const { EmbedBuilder } = require('discord.js');
-const modules = require('..');
 const request = require('request');
 const limit = require('../assets/config.js').general.apiLimit;
 
@@ -18,10 +17,9 @@ module.exports = {
             headers: {
                 'X-Api-Key': process.env.API_TOKEN
             },
-        }, async function (error, response, body) {
+        }, function (error, response, body) {
             if (response.statusCode != 200) {
-                await interaction.reply({ content: "Something went wrong while retrieving a fact. Please try again later.", ephemeral: true });
-                return modules.log("Something went wrong while retrieving a fact.", "error");
+                return interaction.reply({ content: "Something went wrong while retrieving a fact. Please try again later.", ephemeral: true });
             } else {
                 const data = (JSON.parse(body))[0].fact;
                 const embed = new EmbedBuilder()
@@ -30,7 +28,7 @@ module.exports = {
                     .addFields({ name: 'Random Fact', value: data })
                     .setTimestamp()
                     .setFooter({ text: `Embed created by ${config.general.name}` })
-                await interaction.reply({ embeds: [embed] });
+                interaction.reply({ embeds: [embed] });
             };
         });
     }

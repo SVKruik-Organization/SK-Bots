@@ -11,7 +11,7 @@ module.exports = {
 	async execute(interaction) {
 		modules.database.end();
 		modules.log("Terminated database connection. Shutting down.", "alert");
-		await interaction.reply(`${config.general.name} is logging off. Bye!`);
+		interaction.reply(`${config.general.name} is logging off. Bye!`);
 		setTimeout(() => {
 			process.exit(0);
 		}, 1000);

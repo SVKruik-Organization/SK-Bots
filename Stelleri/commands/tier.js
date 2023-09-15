@@ -12,8 +12,8 @@ module.exports = {
         const snowflake = interaction.user.id;
         const username = interaction.user.username;
 
-        modules.database.query(`SELECT level, xp FROM tier WHERE snowflake = '${snowflake}';`)
-            .then(async ([data]) => {
+        modules.database.query("SELECT level, xp FROM tier WHERE snowflake = ?;", [snowflake])
+            .then((data) => {
                 const pfp = interaction.user.avatarURL();
                 const embed = new EmbedBuilder()
                     .setColor(config.general.color)
@@ -29,9 +29,9 @@ module.exports = {
                     .addFields({ name: '----', value: 'Meta' })
                     .setTimestamp()
                     .setFooter({ text: `Embed created by ${config.general.name}` });
-                await interaction.reply({ embeds: [embed] });
-            }).catch(async () => {
-                return await interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
+                interaction.reply({ embeds: [embed] });
+            }).catch(() => {
+                return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
             });
     }
 };

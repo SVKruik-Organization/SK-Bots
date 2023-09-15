@@ -18,7 +18,7 @@ for (const file of commandFiles) {
         console.log("\n");
         for (let i = 0; i < general.guildId.length; i++) {
             const data = await rest.put(
-                Routes.applicationGuildCommands(general.clientId, general.guildId[i]),
+                Routes.applicationGuildCommands(general.clientId[0], general.guildId[i]),
                 { body: commands },
             );
 			modules.log(`Successfully loaded ${data.length} commands for guild ${general.guildId[i]}.`, "info");

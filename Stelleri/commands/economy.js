@@ -24,22 +24,22 @@ module.exports = {
         const amount = interaction.options.getInteger('amount');
 
         if (actionType == "withdraw" && amount != null) {
-            modules.database.query(`UPDATE economy SET wallet = wallet + ${amount}, bank = bank - ${amount} WHERE snowflake = '${snowflake}';`)
-                .then(async () => {
-                    await interaction.reply(`Succesfully withdrew \`${amount}\` Bits.`);
-                }).catch(async () => {
-                    return await interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
+            modules.database.query("UPDATE economy SET wallet = wallet + ?, bank = bank - ? WHERE snowflake = ?;", [amount, amount, snowflake])
+                .then(() => {
+                    interaction.reply(`Succesfully withdrew \`${amount}\` Bits.`);
+                }).catch(() => {
+                    return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else if (actionType == "deposit" && amount != null) {
-            modules.database.query(`UPDATE economy SET wallet = wallet - ${amount}, bank = bank + ${amount} WHERE snowflake = '${snowflake}';`)
-                .then(async () => {
-                    await interaction.reply(`Succesfully deposited \`${amount}\` Bits.`);
-                }).catch(async () => {
-                    return await interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
+            modules.database.query("UPDATE economy SET wallet = wallet - ?, bank = bank + ? WHERE snowflake = ?;", [amount, amount, snowflake])
+                .then(() => {
+                    interaction.reply(`Succesfully deposited \`${amount}\` Bits.`);
+                }).catch(() => {
+                    return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else if (actionType == "balance") {
-            modules.database.query(`SELECT wallet, bank, (wallet + bank) AS 'total' FROM economy WHERE snowflake = '${snowflake}';`)
-                .then(async ([data]) => {
+            modules.database.query("SELECT wallet, bank, (wallet + bank) AS 'total' FROM economy WHERE snowflake = ?;", [snowflake])
+                .then((data) => {
                     const name = interaction.user.username;
                     const pfp = interaction.user.avatarURL();
                     const embed = new EmbedBuilder()
@@ -56,12 +56,12 @@ module.exports = {
                         .addFields({ name: '----', value: 'Meta' })
                         .setTimestamp()
                         .setFooter({ text: `Embed created by ${config.general.name}` });
-                    await interaction.reply({ embeds: [embed] });
-                }).catch(async () => {
-                    return await interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
+                    interaction.reply({ embeds: [embed] });
+                }).catch(() => {
+                    return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
                 });
         } else {
-            await interaction.reply({ content: "You need to give the amount to withdraw or deposit.", ephemeral: true });
+            interaction.reply({ content: "You need to give the amount to withdraw or deposit.", ephemeral: true });
         };
     }
 };

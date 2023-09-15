@@ -11,6 +11,6 @@ module.exports = {
         const bound = interaction.options.getInteger('maximum');
         const random = Math.floor(Math.random() * bound) + 1;
 
-        await interaction.reply(`Random number: \`${random}\`.`);
+        interaction.reply(`Random number: \`${random}\`.`);
     }
 };

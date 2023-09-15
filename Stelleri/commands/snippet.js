@@ -39,12 +39,12 @@ module.exports = {
          * @param {string} code The code to be formatted.
          * @returns THe formatted code.
          */
-        async function formatCode(code) {
+        function formatCode(code) {
             return prettier.format(code, { semi: false, parser: 'babel' });
         };
-        const formattedCode = await formatCode(code);
+        const formattedCode = formatCode(code);
 
         channel.send({ content: `${username} ${title}\n\n\`\`\`${language}\n${formattedCode}\n\`\`\`` });
-        await interaction.reply({ content: `Message created. Check your codesnippet here: <#${config.general.snippetChannel}>.`, ephemeral: true });
+        interaction.reply({ content: `Message created. Check your codesnippet here: <#${config.general.snippetChannel}>.`, ephemeral: true });
     }
 };

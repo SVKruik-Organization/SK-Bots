@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
+const modules = require('..');
 
 module.exports = {
     cooldown: config.cooldowns.D,
@@ -19,6 +20,7 @@ module.exports = {
         const actionType = interaction.options.getString('action');
         const prompt = interaction.options.getString('prompt');
 
-        await interaction.reply({ content: "This command is currently disabled. Come back later.", ephemeral: true });
+        modules.log(`${interaction.user.username} used || ai || with type: '${actionType}' and prompt: '${prompt}'.`, "info");
+        interaction.reply({ content: "This command is currently disabled. Come back later.", ephemeral: true });
     }
 };

@@ -34,6 +34,6 @@ module.exports = {
             .addFields({ name: '----', value: 'Meta' })
             .setTimestamp()
             .setFooter({ text: `Embed created by ${config.general.name}` })
-        await interaction.reply({ embeds: [embed] });
+        interaction.reply({ embeds: [embed] });
     }
 };

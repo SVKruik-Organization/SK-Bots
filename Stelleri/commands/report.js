@@ -30,12 +30,13 @@ module.exports = {
         const reason = interaction.options.getString('reason');
         const category = interaction.options.getString('category');
 
-        await modules.database.query(`INSERT INTO report (snowflake, snowflake_recv, reason, date, category) VALUES (${snowflake}, ${targetSnowflake}, '${reason}', CURRENT_TIMESTAMP(), '${category}')`)
-            .then(async () => {
-                await interaction.reply({ content: "Thank you for your report. We will have a look at it ASAP.", ephemeral: true });
+        modules.database.query("INSERT INTO report (snowflake, snowflake_recv, reason, date, category) VALUES (?, ?, ?, CURRENT_TIMESTAMP(), ?);",
+        [snowflake, targetSnowflake, reason, category])
+            .then(() => {
+                interaction.reply({ content: "Thank you for your report. We will have a look at it ASAP.", ephemeral: true });
                 modules.log(`${username} has reported someone.`, "info");
-            }).catch(async () => {
-                await interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
+            }).catch(() => {
+                interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
             });
     }
 };
