@@ -5,8 +5,8 @@ const modules = require('..')
 module.exports = {
     cooldown: config.cooldowns.A,
     data: new SlashCommandBuilder()
-        .setName('block')
-        .setDescription('Block a user from using this bot.')
+        .setName('admin')
+        .setDescription('Add a super user for use of admin commands.')
         .addUserOption(option => option.setName('target').setDescription('The target member.').setRequired(true))
         .addStringOption(option =>
             option.setName('action')
@@ -29,26 +29,26 @@ module.exports = {
         } else if (actionType === "remove") status = 0;
 
         if (status < 2) {
-            modules.database.query("UPDATE user SET blocked = ? WHERE snowflake = ?", [status, targetSnowflake])
+            modules.database.query("UPDATE user SET super = ? WHERE snowflake = ?", [status, targetSnowflake])
                 .then((data) => {
                     if (data.affectedRows === 0) return interaction.reply({ content: `User <@${targetSnowflake}> does not have an account yet.` })
                     if (status === 0) {
-                        modules.log(`${targetUsername} was removed from the blacklist by ${interaction.user.username}.`, "alert");
-                        interaction.reply({ content: `<@${targetSnowflake}> has been removed from the blacklist. They are now able to use my commands again.` });
+                        modules.log(`${targetUsername} was removed from the super users by ${interaction.user.username}.`, "alert");
+                        interaction.reply({ content: `<@${targetSnowflake}> has been removed from the super users. They are no longer able to use my admin commands.` });
                     } else if (status === 1) {
-                        modules.log(`${targetUsername} was added to the blacklist by ${interaction.user.username}.`, "alert");
-                        interaction.reply({ content: `<@${targetSnowflake}> has been added to the blacklist. They are no longer able to use my commands.` });
+                        modules.log(`${targetUsername} was added to the super users by ${interaction.user.username}.`, "alert");
+                        interaction.reply({ content: `<@${targetSnowflake}> has been added to the super users. They are now able to use my admin commands.` });
                     };
                 }).catch(() => {
-                    interaction.reply({ content: "Something went wrong while modifying the block status of this user. Please try again later.", ephemeral: true });
+                    interaction.reply({ content: "Something went wrong while modifying the super status of this user. Please try again later.", ephemeral: true });
                 });
         } else {
-            modules.database.query("SELECT blocked FROM user WHERE snowflake = ?", [targetSnowflake])
+            modules.database.query("SELECT super FROM user WHERE snowflake = ?", [targetSnowflake])
                 .then((data) => {
                     if (!data.length) return interaction.reply({ content: `User <@${targetSnowflake}> does not have an account yet.`, ephemeral: true });
-                    interaction.reply({ content: `Blocked status of user <@${targetSnowflake}>: \`${data[0].blocked}\`` });
+                    interaction.reply({ content: `Super status of user <@${targetSnowflake}>: \`${data[0].super}\``});
                 }).catch(() => {
-                    interaction.reply({ content: "Something went wrong while checking the block status of this user. Please try again later.", ephemeral: true });
+                    interaction.reply({ content: "Something went wrong while checking the super status of this user. Please try again later.", ephemeral: true });
                 });
         };
     }

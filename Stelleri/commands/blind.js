@@ -7,8 +7,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('blind')
         .setDescription('Blind controls. Blind or unblind someone.')
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-        .addUserOption(option => option.setName('target').setDescription('User to blind or unblind').setRequired(true))
+        .addUserOption(option => option.setName('target').setDescription('The target member.').setRequired(true))
         .addStringOption(option =>
             option.setName('action')
                 .setDescription('Choose what you want to do with the selected user.')
@@ -16,7 +15,8 @@ module.exports = {
                 .addChoices(
                     { name: 'Blind', value: 'blind' },
                     { name: 'Unblind', value: 'unblind' }
-                )),
+                ))
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
         const user = interaction.options.getUser('target');
         const targetSnowflake = user.id;

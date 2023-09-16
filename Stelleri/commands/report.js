@@ -7,7 +7,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('report')
         .setDescription('Report someone for breaking the rules. We will have a look at it.')
-        .addUserOption(option => option.setName('target').setDescription('The person you want to report.').setRequired(true))
+        .addUserOption(option => option.setName('target').setDescription('The target member.').setRequired(true))
         .addStringOption(option =>
             option.setName('category')
                 .setDescription('Type of report.')

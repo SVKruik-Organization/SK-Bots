@@ -83,7 +83,7 @@ function log(data, type) {
 	return true;
 };
 
-// Database
+// Database Connection
 const database = mariadb.createPool({
 	host: process.env.HOST,
 	user: process.env.USER,
@@ -91,8 +91,20 @@ const database = mariadb.createPool({
 	password: process.env.PASSWORD,
 	multipleStatements: true
 });
-database.query("SHOW databases")
-	.then(() => {
+
+// Indexing super & blocked users
+let userData = [];
+let superUsers = [];
+let blockedUsers = [];
+database.query("SELECT snowflake, super, blocked FROM user WHERE super = 1 OR blocked = 1;")
+	.then((data) => {
+		userData = data;
+		for (let i = 0; i < userData.length; i++) {
+			if (userData[i].super === 1) {
+				superUsers.push(userData[i].snowflake);
+				continue;
+			} else blockedUsers.push(userData[i].snowflake);
+		}
 		log("Database connection established.", "info");
 	}).catch(() => {
 		log("Connecting to the database went wrong. Aborting.", "fatal");
@@ -104,7 +116,9 @@ module.exports = {
 	"client": client,
 	"database": database,
 	"getDate": getDate,
-	"log": log
+	"log": log,
+	"superUsers": superUsers,
+	"blockedUsers": blockedUsers
 };
 
 // Command Handler

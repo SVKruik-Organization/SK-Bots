@@ -7,7 +7,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('modify')
         .setDescription('Modify database data. For example, XP and coins.')
-        .addUserOption(option => option.setName('target').setDescription('The account you want to change.').setRequired(true))
+        .addUserOption(option => option.setName('target').setDescription('The target member.').setRequired(true))
         .addStringOption(option =>
             option.setName('section')
                 .setDescription('Choose wheter you want to change their tier or economy.')
