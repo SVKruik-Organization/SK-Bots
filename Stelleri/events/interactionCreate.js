@@ -45,10 +45,23 @@ module.exports = {
 			console.log(error);
 		};
 
-		modules.database.query("UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = ?; UPDATE tier SET xp = xp + ? WHERE snowflake = ?;",
-			[interaction.user.id, config.tier.slashCommand, interaction.user.id])
-			.catch(() => {
-				return log(`Command usage increase unsuccessful, ${interaction.user.username} does not have an account yet.`, "warning");
+		modules.database.query("UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = ?; UPDATE tier SET xp = xp + ? WHERE snowflake = ?; SELECT * FROM tier WHERE snowflake = ?",
+			[interaction.user.id, config.tier.slashCommand, interaction.user.id, interaction.user.id])
+			.then((data) => {
+				if (data[2][0].xp >= config.tier.levelUpThreshold) {
+					modules.database.query("UPDATE tier SET level = level + 1, xp = 0 WHERE snowflake = ?;", [interaction.user.id])
+						.then(() => {
+							const newLevel = data[2][0].level + 1;
+							const channel = modules.client.channels.cache.get(interaction.channelId);
+							channel.send({ content: `Nice! <@${interaction.user.id}> just leveled up and reached level ${newLevel}! 🎉` });
+						}).catch((err) => {
+							console.log(err);
+							return modules.log(`XP increase unsuccessful, ${interaction.user.username} does not have an account yet.`, "warning");
+						});
+				};
+			}).catch((err) => {
+				console.log(err);
+				return modules.log(`Command usage increase unsuccessful, ${interaction.user.username} does not have an account yet.`, "warning");
 			});
 
 		modules.log(`${interaction.user.username} used || ${interaction.commandName} ||`, "info");

@@ -22,7 +22,7 @@ module.exports = {
                     .addFields({ name: '----', value: 'List' })
                     .addFields(
                         { name: 'Level', value: `\`${data[0].level}\`` },
-                        { name: 'EXP', value: `\`${data[0].xp}\`` },
+                        { name: 'EXP', value: `\`${data[0].xp + config.tier.slashCommand}\`` },
                         { name: '-----', value: `Summary` },
                         { name: 'EXP Left', value: `WIP` }
                     )

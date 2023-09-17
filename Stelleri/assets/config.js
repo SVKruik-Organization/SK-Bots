@@ -23,5 +23,5 @@ exports.cooldowns = {
 exports.tier = {
     normalMessage: 1,
     slashCommand: 8,
-    levelUpThreshold: 10
+    levelUpThreshold: 30
 };
