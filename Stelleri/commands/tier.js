@@ -14,6 +14,7 @@ module.exports = {
 
         modules.database.query("SELECT level, xp FROM tier WHERE snowflake = ?;", [snowflake])
             .then((data) => {
+                const currentXp = data[0].xp + config.tier.slashCommand;
                 const pfp = interaction.user.avatarURL();
                 const embed = new EmbedBuilder()
                     .setColor(config.general.color)
@@ -22,9 +23,9 @@ module.exports = {
                     .addFields({ name: '----', value: 'List' })
                     .addFields(
                         { name: 'Level', value: `\`${data[0].level}\`` },
-                        { name: 'EXP', value: `\`${data[0].xp + config.tier.slashCommand}\`` },
+                        { name: 'EXP', value: `\`${currentXp}\`` },
                         { name: '-----', value: `Summary` },
-                        { name: 'EXP Left', value: `WIP` }
+                        { name: 'EXP Needed', value: `\`${2 * (data[0].level + 1) + 30 - currentXp}\`` }
                     )
                     .addFields({ name: '----', value: 'Meta' })
                     .setTimestamp()

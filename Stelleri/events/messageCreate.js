@@ -9,7 +9,7 @@ module.exports = {
 		modules.database.query("UPDATE tier SET xp = xp + ? WHERE snowflake = ?; SELECT xp, level FROM tier WHERE snowflake = ?;",
 			[config.tier.normalMessage, message.author.id, message.author.id])
 			.then((data) => {
-				if (data[1][0].xp >= config.tier.levelUpThreshold) {
+				if (data[1][0].xp >= (2 * (data[1][0].level + 1) + 30)) {
 					modules.database.query("UPDATE tier SET level = level + 1, xp = 0 WHERE snowflake = ?;", [message.author.id])
 						.then(() => {
 							const newLevel = data[1][0].level + 1;

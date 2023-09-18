@@ -48,7 +48,7 @@ module.exports = {
 		modules.database.query("UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = ?; UPDATE tier SET xp = xp + ? WHERE snowflake = ?; SELECT * FROM tier WHERE snowflake = ?",
 			[interaction.user.id, config.tier.slashCommand, interaction.user.id, interaction.user.id])
 			.then((data) => {
-				if (data[2][0].xp >= config.tier.levelUpThreshold) {
+				if (data[2][0].xp >= (2 * (data[2][0].level + 1) + 30)) {
 					modules.database.query("UPDATE tier SET level = level + 1, xp = 0 WHERE snowflake = ?;", [interaction.user.id])
 						.then(() => {
 							const newLevel = data[2][0].level + 1;
