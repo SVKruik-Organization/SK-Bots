@@ -10,7 +10,7 @@ module.exports = {
         .addUserOption(option => option.setName('target').setDescription('The target member.').setRequired(true))
         .addStringOption(option =>
             option.setName('section')
-                .setDescription('Choose wheter you want to change their tier or economy.')
+                .setDescription('Choose whether you want to change their tier or economy.')
                 .setRequired(true)
                 .addChoices(
                     { name: 'Tier - Level', value: 'rnk-lvl' },
@@ -42,37 +42,39 @@ module.exports = {
         let action = undefined;
         let where = ` WHERE snowflake = ${targetSnowflake}`;
 
-        if (sectionType == "rnk-lvl") {
+        if (sectionType === "rnk-lvl") {
             table = "`tier` SET level = ";
             row = "`level`";
-        } else if (sectionType == "rnk-xp") {
+        } else if (sectionType === "rnk-xp") {
             table = "`tier` SET xp =";
             row = "`xp`";
-        } else if (sectionType == "eco-wal") {
+        } else if (sectionType === "eco-wal") {
             table = "`economy` SET wallet =";
             row = "`wallet`";
-        } else if (sectionType == "eco-bnk") {
+        } else if (sectionType === "eco-bnk") {
             table = "`economy` SET bank =";
             row = "`bank`";
-        };
+        }
 
-        if (actionType == "set") {
+
+        if (actionType === "set") {
             action = ` ${amount}`;
-        } else if (actionType == "inc") {
+        } else if (actionType === "inc") {
             action = ` ${row} + ${amount}`;
-        } else if (actionType == "dec") {
+        } else if (actionType === "dec") {
             action = ` ${row} - ${amount}`;
-        } else if (actionType == "mult") {
+        } else if (actionType === "mult") {
             action = ` ${row} * ${amount}`;
-        } else if (actionType == "div") {
+        } else if (actionType === "div") {
             action = ` ${row} / ${amount}`;
-        };
+        }
+
 
         modules.database.query(`UPDATE ${table}${action}${where}`)
             .then(() => {
-                interaction.reply({ content: "Account data has been succesfully changed.", ephemeral: true });
+                interaction.reply({ content: "Account data has been successfully changed.", ephemeral: true });
             }).catch(() => {
-                return interaction.reply({ content: "This user doesn't have an account yet.", ephemeral: true });
-            });
+            return interaction.reply({ content: "This user doesn't have an account yet.", ephemeral: true });
+        });
     }
 };

@@ -16,10 +16,13 @@ module.exports = {
             url: 'https://api.api-ninjas.com/v1/facts?limit=' + limit,
             headers: {
                 'X-Api-Key': process.env.API_TOKEN
-            },
+            }
         }, function (error, response, body) {
-            if (response.statusCode != 200) {
-                return interaction.reply({ content: "Something went wrong while retrieving a fact. Please try again later.", ephemeral: true });
+            if (response.statusCode !== 200) {
+                return interaction.reply({
+                    content: "Something went wrong while retrieving a fact. Please try again later.",
+                    ephemeral: true
+                });
             } else {
                 const data = (JSON.parse(body))[0].fact;
                 const embed = new EmbedBuilder()
@@ -29,7 +32,8 @@ module.exports = {
                     .setTimestamp()
                     .setFooter({ text: `Embed created by ${config.general.name}` })
                 interaction.reply({ embeds: [embed] });
-            };
+            }
+
         });
     }
 };

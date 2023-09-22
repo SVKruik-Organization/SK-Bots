@@ -12,27 +12,31 @@ module.exports = {
         const username = interaction.user.username;
         const snowflake = interaction.user.id;
         let jackpot = interaction.options.getInteger('jackpot');
-        if (jackpot == undefined) jackpot == 199;
+        if (jackpot === undefined) jackpot === 199;
         let dailyreward = Math.floor(Math.random() * (1001 - 200) + 200);
 
         let jackpotValue = undefined;
         let jackpotBoolean = false;
-        if (jackpot == dailyreward) {
+        if (jackpot === dailyreward) {
             jackpotBoolean = true;
             jackpotValue = 10000;
         } else jackpotValue = 0;
 
         await modules.database.query("UPDATE economy SET wallet = wallet + ? + ? WHERE snowflake = ?;", [jackpotValue, dailyreward, snowflake])
             .then(() => {
-                interaction.reply(`Succesfully collected your daily reward: \`${dailyreward}\` Bits. Be sure to come back tomorrow!`);
+                interaction.reply(`Successfully collected your daily reward: \`${dailyreward}\` Bits. Be sure to come back tomorrow!`);
                 modules.log(`${interaction.user.username} collected their daily reward. They received ${dailyreward} bits.`, "info");
-                if (jackpotBoolean == true) {
+                if (jackpotBoolean === true) {
                     interaction.followUp(`💎 You hit the JACKPOT! 💎 You received \`${jackpotValue}\` more Bits. Congratulations! 🎉`);
                     const total = jackpotValue + dailyreward;
                     modules.log(`${username} hit the daily reward jackpot. He/she received a total of ${total} Bits.\n`, "info");
-                };
+                }
+
             }).catch(() => {
-                return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
+                return interaction.reply({
+                    content: "You do not have an account yet. Create an account with the `/register` command.",
+                    ephemeral: true
+                });
             });
     }
 };

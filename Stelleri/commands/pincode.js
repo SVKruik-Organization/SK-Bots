@@ -22,23 +22,36 @@ module.exports = {
         const actionType = interaction.options.getString('action');
         const newPincode = interaction.options.getString('new-pincode');
 
-        if (actionType == "get") {
+        if (actionType === "get") {
             modules.database.query("SELECT pincode AS pin FROM user WHERE snowflake = ?;", [snowflake])
                 .then((data) => {
                     interaction.reply({ content: `Your Pincode is: \`${data[0].pin}\`.`, ephemeral: true });
                 }).catch(() => {
-                    return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
+                return interaction.reply({
+                    content: "You do not have an account yet. Create an account with the `/register` command.",
+                    ephemeral: true
                 });
-        } else if (actionType == "change" && newPincode != null) {
+            });
+        } else if (actionType === "change" && newPincode != null) {
             modules.database.query("UPDATE user SET pincode = ? WHERE snowflake = ?;", [newPincode, snowflake])
                 .then(() => {
-                    interaction.reply({ content: `Your pincode has been succesfully changed. New pincode: \`${newPincode}\`.`, ephemeral: true });
+                    interaction.reply({
+                        content: `Your pincode has been Successfully changed. New pincode: \`${newPincode}\`.`,
+                        ephemeral: true
+                    });
                     modules.log(`${username} has changed their pincode.`, "info");
                 }).catch(() => {
-                    return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
+                return interaction.reply({
+                    content: "You do not have an account yet. Create an account with the `/register` command.",
+                    ephemeral: true
                 });
+            });
         } else {
-            interaction.reply({ content: "With this actiontype you need to fill in the optional input, the new pincode. Please try again.", ephemeral: true });
-        };
+            interaction.reply({
+                content: "With this actiontype you need to fill in the optional input, the new pincode. Please try again.",
+                ephemeral: true
+            });
+        }
+
     }
 };

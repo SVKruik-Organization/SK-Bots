@@ -22,27 +22,31 @@ module.exports = {
         const choices = ["Rock", "Paper", "Scissors"];
         const random = choices[Math.floor(Math.random() * choices.length)];
 
-        if (type == random) {
+        if (type === random) {
             reply = "🌟 - It's a tie!";
-        } else if (random == "Rock") {
-            if (type == "Scissors") {
+        } else if (random === "Rock") {
+            if (type === "Scissors") {
                 reply = "🪨 - You lose!";
             } else {
                 reply = "🪨 - You win!";
-            };
-        } else if (random == "Paper") {
-            if (type == "Rock") {
+            }
+
+        } else if (random === "Paper") {
+            if (type === "Rock") {
                 reply = "📃 - You lose!";
             } else {
                 reply = "📃 - You win!";
-            };
-        } else if (random == "Scissors") {
-            if (type == "Paper") {
+            }
+
+        } else if (random === "Scissors") {
+            if (type === "Paper") {
                 reply = "✂ - You lose!";
             } else {
                 reply = "✂ - You win!";
-            };
-        };
+            }
+
+        }
+
 
         interaction.reply(`I chose: ${reply}`);
     }

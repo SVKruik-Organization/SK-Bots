@@ -30,9 +30,10 @@ module.exports = {
         const language = interaction.options.getString('language');
         const code = interaction.options.getString('code');
         let title = interaction.options.getString('title');
-        if (title == undefined) {
+        if (title === undefined) {
             title = " - Unnamed Snippet";
-        };
+        }
+
 
         /**
          * Format a code snippet with the Prettier API.
@@ -41,10 +42,13 @@ module.exports = {
          */
         function formatCode(code) {
             return prettier.format(code, { semi: false, parser: 'babel' });
-        };
+        }
         const formattedCode = formatCode(code);
 
         channel.send({ content: `${username} ${title}\n\n\`\`\`${language}\n${formattedCode}\n\`\`\`` });
-        interaction.reply({ content: `Message created. Check your codesnippet here: <#${config.general.snippetChannel}>.`, ephemeral: true });
+        interaction.reply({
+            content: `Message created. Check your code-snippet here: <#${config.general.snippetChannel}>.`,
+            ephemeral: true
+        });
     }
 };

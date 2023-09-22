@@ -19,11 +19,12 @@ module.exports = {
         const list = ["heads", "tails"];
         const random = list[Math.floor(Math.random() * list.length)];
 
-        if (random == "heads") {
-            winningSide == "heads" ? win("Heads") : lose("Heads");
-        } else if (random == "tails") {
-            winningSide == "tails" ? win("Tails") : lose("Tails");
-        };
+        if (random === "heads") {
+            winningSide === "heads" ? win("Heads") : lose("Heads");
+        } else if (random === "tails") {
+            winningSide === "tails" ? win("Tails") : lose("Tails");
+        }
+
 
         /**
          * Response when user wins.
@@ -31,7 +32,7 @@ module.exports = {
          */
         function win(side) {
             interaction.reply(`:coin: ${side}! -- You win. :green_circle:`);
-        };
+        }
 
         /**
          * Response when user loses.
@@ -39,6 +40,6 @@ module.exports = {
          */
         function lose(side) {
             interaction.reply(`:coin: ${side}! -- You lose. :red_circle:`);
-        };
+        }
     }
 };

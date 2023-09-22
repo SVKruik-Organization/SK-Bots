@@ -39,6 +39,9 @@ module.exports = {
             .setTimestamp()
             .setFooter({ text: `Embed created by ${config.general.name}` })
         channel.send({ embeds: [embed] });
-        interaction.reply({ content: `Message created. Check your event here: <#${config.general.eventChannel}>.`, ephemeral: true });
+        interaction.reply({
+            content: `Message created. Check your event here: <#${config.general.eventChannel}>.`,
+            ephemeral: true
+        });
     }
 };

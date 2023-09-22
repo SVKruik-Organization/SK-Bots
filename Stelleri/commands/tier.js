@@ -32,7 +32,10 @@ module.exports = {
                     .setFooter({ text: `Embed created by ${config.general.name}` });
                 interaction.reply({ embeds: [embed] });
             }).catch(() => {
-                return interaction.reply({ content: "You do not have an account yet. Create an account with the `/register` command.", ephemeral: true });
+            return interaction.reply({
+                content: "You do not have an account yet. Create an account with the `/register` command.",
+                ephemeral: true
             });
+        });
     }
 };

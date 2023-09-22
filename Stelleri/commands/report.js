@@ -31,12 +31,18 @@ module.exports = {
         const category = interaction.options.getString('category');
 
         modules.database.query("INSERT INTO report (snowflake, snowflake_recv, reason, date, category) VALUES (?, ?, ?, CURRENT_TIMESTAMP(), ?);",
-        [snowflake, targetSnowflake, reason, category])
+            [snowflake, targetSnowflake, reason, category])
             .then(() => {
-                interaction.reply({ content: "Thank you for your report. We will have a look at it ASAP.", ephemeral: true });
+                interaction.reply({
+                    content: "Thank you for your report. We will have a look at it ASAP.",
+                    ephemeral: true
+                });
                 modules.log(`${username} has reported someone.`, "info");
             }).catch(() => {
-                interaction.reply({ content: "Something went wrong while reporting this user. Please try again later.", ephemeral: true });
+            interaction.reply({
+                content: "Something went wrong while reporting this user. Please try again later.",
+                ephemeral: true
             });
+        });
     }
 };

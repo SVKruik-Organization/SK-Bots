@@ -17,10 +17,11 @@ module.exports = {
         for (let i = 0; i < config.general.guildId.length; i++) {
             await rest.delete(Routes.applicationGuildCommand(config.general.clientId[0], config.general.guildId[i], commandId))
                 .catch(() => error = 1);
-        };
+        }
+
 
         if (error === 1) {
             interaction.reply({ content: "Command doesn't exist. It may have already been removed.", ephemeral: true });
-        } else return interaction.reply({ content: "Command succesfully removed.", ephemeral: true });
+        } else return interaction.reply({ content: "Command successfully removed.", ephemeral: true });
     }
 };

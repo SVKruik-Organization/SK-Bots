@@ -10,7 +10,7 @@ module.exports = {
         .addUserOption(option => option.setName('target').setDescription('The target member.').setRequired(true))
         .addStringOption(option =>
             option.setName('action')
-                .setDescription('Wheter you want to modify or check the user status.')
+                .setDescription('Whether you want to modify or check the user status.')
                 .setRequired(true)
                 .addChoices(
                     { name: 'Add', value: 'add' },
@@ -41,18 +41,29 @@ module.exports = {
                         if (index !== -1) modules.blockedUsers.push(targetSnowflake);
                         modules.log(`${targetUsername} was added to the blacklist by ${interaction.user.username}.`, "alert");
                         interaction.reply({ content: `<@${targetSnowflake}> has been added to the blacklist. They are no longer able to use my commands.` });
-                    };
+                    }
+
                 }).catch(() => {
-                    interaction.reply({ content: "Something went wrong while modifying the block status of this user. Please try again later.", ephemeral: true });
+                interaction.reply({
+                    content: "Something went wrong while modifying the block status of this user. Please try again later.",
+                    ephemeral: true
                 });
+            });
         } else {
             modules.database.query("SELECT blocked FROM user WHERE snowflake = ?", [targetSnowflake])
                 .then((data) => {
-                    if (!data.length) return interaction.reply({ content: `User <@${targetSnowflake}> does not have an account yet.`, ephemeral: true });
+                    if (!data.length) return interaction.reply({
+                        content: `User <@${targetSnowflake}> does not have an account yet.`,
+                        ephemeral: true
+                    });
                     interaction.reply({ content: `Blocked status of user <@${targetSnowflake}>: \`${data[0].blocked}\`` });
                 }).catch(() => {
-                    interaction.reply({ content: "Something went wrong while checking the block status of this user. Please try again later.", ephemeral: true });
+                interaction.reply({
+                    content: "Something went wrong while checking the block status of this user. Please try again later.",
+                    ephemeral: true
                 });
-        };
+            });
+        }
+
     }
 };

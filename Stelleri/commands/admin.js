@@ -10,7 +10,7 @@ module.exports = {
         .addUserOption(option => option.setName('target').setDescription('The target member.').setRequired(true))
         .addStringOption(option =>
             option.setName('action')
-                .setDescription('Wheter you want to modify or check the user status.')
+                .setDescription('Whether you want to modify or check the user status.')
                 .setRequired(true)
                 .addChoices(
                     { name: 'Add', value: 'add' },
@@ -38,18 +38,29 @@ module.exports = {
                     } else if (status === 1) {
                         modules.log(`${targetUsername} was added to the super users by ${interaction.user.username}.`, "alert");
                         interaction.reply({ content: `<@${targetSnowflake}> has been added to the super users. They are now able to use my admin commands.` });
-                    };
+                    }
+
                 }).catch(() => {
-                    interaction.reply({ content: "Something went wrong while modifying the super status of this user. Please try again later.", ephemeral: true });
+                interaction.reply({
+                    content: "Something went wrong while modifying the super status of this user. Please try again later.",
+                    ephemeral: true
                 });
+            });
         } else {
             modules.database.query("SELECT super FROM user WHERE snowflake = ?", [targetSnowflake])
                 .then((data) => {
-                    if (!data.length) return interaction.reply({ content: `User <@${targetSnowflake}> does not have an account yet.`, ephemeral: true });
-                    interaction.reply({ content: `Super status of user <@${targetSnowflake}>: \`${data[0].super}\``});
+                    if (!data.length) return interaction.reply({
+                        content: `User <@${targetSnowflake}> does not have an account yet.`,
+                        ephemeral: true
+                    });
+                    interaction.reply({ content: `Super status of user <@${targetSnowflake}>: \`${data[0].super}\`` });
                 }).catch(() => {
-                    interaction.reply({ content: "Something went wrong while checking the super status of this user. Please try again later.", ephemeral: true });
+                interaction.reply({
+                    content: "Something went wrong while checking the super status of this user. Please try again later.",
+                    ephemeral: true
                 });
-        };
+            });
+        }
+
     }
 };

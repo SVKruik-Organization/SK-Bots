@@ -24,16 +24,17 @@ module.exports = {
         const guild = modules.client.guilds.cache.get(interaction.guildId);
         const action = interaction.options.getString('action');
 
-        if (action == "blind") {
+        if (action === "blind") {
             await guild.members.fetch(targetSnowflake).then((user) => {
                 user.roles.add(role);
                 interaction.reply(`<@${targetSnowflake}> has been blinded. He/she no longer has access to the general voice and text channels.`);
             });
-        } else if (action == "unblind") {
+        } else if (action === "unblind") {
             await guild.members.fetch(targetSnowflake).then((user) => {
                 user.roles.remove(role);
                 interaction.reply(`<@${targetSnowflake}> has been unblinded. Welcome back!`);
             });
-        };
+        }
+
     }
 };

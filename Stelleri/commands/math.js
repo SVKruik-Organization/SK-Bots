@@ -16,6 +16,7 @@ module.exports = {
             interaction.reply(`Expression: \`${expression}\`\n\nResult: \`${answer}\``);
         } catch (err) {
             interaction.reply({ content: `Invalid expression.`, ephemeral: true });
-        };
+        }
+
     }
 };

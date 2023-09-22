@@ -10,7 +10,8 @@ const modules = require('.');
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     commands.push(command.data.toJSON());
-};
+}
+;
 
 // Deploy
 (async () => {
@@ -21,10 +22,12 @@ for (const file of commandFiles) {
                 Routes.applicationGuildCommands(general.clientId[0], general.guildId[i]),
                 { body: commands },
             );
-			modules.log(`Successfully loaded ${data.length} commands for guild ${general.guildId[i]}.`, "info");
-        };
+            modules.log(`Successfully loaded ${data.length} commands for guild ${general.guildId[i]}.`, "info");
+        }
+
         console.log("\n");
     } catch (error) {
         console.error(error);
-    };
+    }
+
 })();

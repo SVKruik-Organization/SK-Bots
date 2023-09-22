@@ -3,17 +3,17 @@ const config = require('../assets/config.js');
 const modules = require('..');
 
 module.exports = {
-	cooldown: config.cooldowns.A,
-	data: new SlashCommandBuilder()
-		.setName('shutdown')
-		.setDescription('Turn the bot off. This action is irreversible from Discord, manual restart required.')
-		.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
-	async execute(interaction) {
-		modules.database.end();
-		modules.log("Terminated database connection. Shutting down.", "alert");
-		interaction.reply(`${config.general.name} is logging off. Bye!`);
-		setTimeout(() => {
-			process.exit(0);
-		}, 1000);
-	}
+    cooldown: config.cooldowns.A,
+    data: new SlashCommandBuilder()
+        .setName('shutdown')
+        .setDescription('Turn the bot off. This action is irreversible from Discord, manual restart required.')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+    async execute(interaction) {
+        await modules.database.end();
+        modules.log("Terminated database connection. Shutting down.", "alert");
+        interaction.reply(`${config.general.name} is logging off. Bye!`);
+        setTimeout(() => {
+            process.exit(0);
+        }, 1000);
+    }
 };

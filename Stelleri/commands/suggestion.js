@@ -25,9 +25,12 @@ module.exports = {
             .addFields({ name: '----', value: 'Meta' })
             .setTimestamp()
             .setFooter({ text: `Embed created by ${config.general.name}` });
-        const embedMessage = channel.send({ embeds: [embed] });
-        embedMessage.react('🟢');
-        embedMessage.react('🔴');
-        interaction.reply({ content: `Message created. Check your event here: <#${config.general.suggestionChannel}>.`, ephemeral: true });
+        const embedMessage = await channel.send({ embeds: [embed] });
+        await embedMessage.react('🟢');
+        await embedMessage.react('🔴');
+        interaction.reply({
+            content: `Message created. Check your event here: <#${config.general.suggestionChannel}>.`,
+            ephemeral: true
+        });
     }
 };
