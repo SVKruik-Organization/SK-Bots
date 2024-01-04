@@ -4,9 +4,10 @@ Welcome to my second Discord bot repository. You can have a look at the old bots
 
 Below you will find a list of statistics, information and commands. I will update this regularly. Last updated on:
 
-**16/09/2023**.
+**04/01/2024**.
 
 #### Bots Overview
+
 | Name | Type | Commands | Info |
 | - | - | - | - |
 | Stelleri | General Purpose | `29` | [Steller's Eider](https://en.wikipedia.org/wiki/Steller%27s_eider) |
@@ -19,11 +20,12 @@ Stelleri is a general purpose bot. This means it comes with large set of feature
 Virgo is a trading bot. My focus is still on Stelleri, so there is no money being made (yet). More information will follow later, as I am still working on the core and efficiency of both bots. For now Virgo serves as a template.
 
 #### Available Commands - Stelleri
-| Command | Description | Parameters | Admin | Category | 
+
+| Command | Description | Parameters | Admin | Category |
 | - | - | - | - | - |
 | `admin` | Add or remove someone from the super users. | `target` `action` | `true` | Moderation |
-| `ai` | Prompt ChatGPT or Dall-E for text or image generation. Requires funding, and is currently not operational. | `type` | `false` | Fun | 
-| `blind` | Add or remove someone from the blinded users. If you have the `Blinded` role, you can only see a the selected channels. | `target` `action` | `true` | Moderation | 
+| `ai` | Prompt ChatGPT or Dall-E for text or image generation. Requires funding, and is currently not operational. | `type` | `false` | Fun |
+| `blind` | Add or remove someone from the blinded users. If you have the `Blinded` role, you can only see a the selected channels. | `target` `action` | `true` | Moderation |
 | `block` | Add or remove someone from the blocked users. | `target` `action` | `true` | Moderation |
 | `clear` | Bulk delete `param1` amount of messages. | `amount` | `true` | Moderation |
 | `close` | Close your account. Pincode input for verification. | `pincode` | `false` | Account |
@@ -52,13 +54,15 @@ Virgo is a trading bot. My focus is still on Stelleri, so there is no money bein
 | `warn` | Give someone an official warning. This is the administrator version of reporting. Unlike the `report` command, reasoning (`param2`) is optional. | `target` optional: `reason` | `true` | Moderation |
 
 #### Available Commands - Virgo
+
 | Command | Description | Parameters | Admin |
 | - | - | - | - |
 | `ping` | Check if the bot is online and working. If so, the bot will respond with a random chosen message. | - | `false` |
 | `shutdown` | Shutdown the bot remotely. | - | `true` |
 
 #### Meta
-- Node.js version: `v18.17.0 LTS`
+
+- Node.js version: `v20.10.0 LTS`
 - Discord.js version: `v14.7.1`
-- Project version: `v2.2.0`
+- Project version: `v2.3.0`
 - Database: `MariaDB`
