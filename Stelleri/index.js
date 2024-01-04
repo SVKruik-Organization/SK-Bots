@@ -80,7 +80,6 @@ function log(data, type) {
             console.log(`${getDate().time} [ERROR] Error appending to log file.`);
             return false;
         }
-
     });
     console.log(logData);
     return true;
@@ -133,10 +132,7 @@ for (const file of commandFiles) {
     const command = require(filePath);
     if ('data' in command && 'execute' in command) {
         client.commands.set(command.data.name, command);
-    } else {
-        return log(`Error at ${filePath}.`, "error");
-    }
-
+    } else return log(`Error at ${filePath}.`, "error");
 }
 
 // Event Handler
@@ -147,10 +143,7 @@ for (const file of eventFiles) {
     const event = require(filePath);
     if (event.once) {
         client.once(event.name, (...args) => event.execute(...args));
-    } else {
-        client.on(event.name, (...args) => event.execute(...args));
-    }
-
+    } else client.on(event.name, (...args) => event.execute(...args));
 }
 
 // Cooldowns

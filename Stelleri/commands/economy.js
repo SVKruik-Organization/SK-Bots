@@ -72,6 +72,5 @@ module.exports = {
         } else {
             interaction.reply({ content: "You need to give the amount to withdraw or deposit.", ephemeral: true });
         }
-
     }
 };

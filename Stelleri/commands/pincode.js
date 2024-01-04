@@ -52,6 +52,5 @@ module.exports = {
                 ephemeral: true
             });
         }
-
     }
 };

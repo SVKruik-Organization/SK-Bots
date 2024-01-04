@@ -11,7 +11,6 @@ for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     commands.push(command.data.toJSON());
 }
-;
 
 // Deploy
 (async () => {
@@ -29,5 +28,4 @@ for (const file of commandFiles) {
     } catch (error) {
         console.error(error);
     }
-
 })();

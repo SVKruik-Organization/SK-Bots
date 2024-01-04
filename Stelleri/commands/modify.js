@@ -56,7 +56,6 @@ module.exports = {
             row = "`bank`";
         }
 
-
         if (actionType === "set") {
             action = ` ${amount}`;
         } else if (actionType === "inc") {
@@ -68,7 +67,6 @@ module.exports = {
         } else if (actionType === "div") {
             action = ` ${row} / ${amount}`;
         }
-
 
         modules.database.query(`UPDATE ${table}${action}${where}`)
             .then(() => {

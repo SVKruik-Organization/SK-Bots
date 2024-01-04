@@ -31,7 +31,6 @@ module.exports = {
                     const total = jackpotValue + dailyreward;
                     modules.log(`${username} hit the daily reward jackpot. He/she received a total of ${total} Bits.\n`, "info");
                 }
-
             }).catch(() => {
                 return interaction.reply({
                     content: "You do not have an account yet. Create an account with the `/register` command.",

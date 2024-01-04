@@ -33,7 +33,6 @@ module.exports = {
                     .setFooter({ text: `Embed created by ${config.general.name}` })
                 interaction.reply({ embeds: [embed] });
             }
-
         });
     }
 };

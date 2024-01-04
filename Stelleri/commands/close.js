@@ -34,7 +34,6 @@ module.exports = {
                         ephemeral: true
                     });
                 }
-
             }).catch(() => {
             return modules.log(`Command usage increase unsuccessful, ${username} does not have an account yet.`, "warning");
         });

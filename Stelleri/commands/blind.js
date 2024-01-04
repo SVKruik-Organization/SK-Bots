@@ -35,6 +35,5 @@ module.exports = {
                 interaction.reply(`<@${targetSnowflake}> has been unblinded. Welcome back!`);
             });
         }
-
     }
 };

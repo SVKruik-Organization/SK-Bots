@@ -25,7 +25,6 @@ module.exports = {
             winningSide === "tails" ? win("Tails") : lose("Tails");
         }
 
-
         /**
          * Response when user wins.
          * @param {string} side The side that has been chosen.

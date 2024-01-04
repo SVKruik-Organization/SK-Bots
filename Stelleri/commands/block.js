@@ -42,7 +42,6 @@ module.exports = {
                         modules.log(`${targetUsername} was added to the blacklist by ${interaction.user.username}.`, "alert");
                         interaction.reply({ content: `<@${targetSnowflake}> has been added to the blacklist. They are no longer able to use my commands.` });
                     }
-
                 }).catch(() => {
                 interaction.reply({
                     content: "Something went wrong while modifying the block status of this user. Please try again later.",
@@ -64,6 +63,5 @@ module.exports = {
                 });
             });
         }
-
     }
 };

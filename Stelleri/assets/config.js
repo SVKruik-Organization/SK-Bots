@@ -7,9 +7,9 @@ exports.general = {
     suggestionChannel: "1150770446548086865",
     snippetChannel: "1150770471592275978",
     highPowerRoles: 3,
-    apiLimit: 1,
-    imageURL: "https://i.imgur.com/9X7PIG0.png",
-    memberCountOffset: 2
+    apiLimit: 1, // API Response Limit
+    imageURL: "https://i.imgur.com/9X7PIG0.png", // https://api-ninjas.com/
+    memberCountOffset: 2 // Amount of Bots
 };
 
 exports.cooldowns = {

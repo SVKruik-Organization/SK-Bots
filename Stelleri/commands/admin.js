@@ -39,7 +39,6 @@ module.exports = {
                         modules.log(`${targetUsername} was added to the super users by ${interaction.user.username}.`, "alert");
                         interaction.reply({ content: `<@${targetSnowflake}> has been added to the super users. They are now able to use my admin commands.` });
                     }
-
                 }).catch(() => {
                 interaction.reply({
                     content: "Something went wrong while modifying the super status of this user. Please try again later.",
@@ -61,6 +60,5 @@ module.exports = {
                 });
             });
         }
-
     }
 };

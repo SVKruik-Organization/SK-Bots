@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const prettier = require('prettier');
-const modules = require('..');
+const modules = require('../index.js');
 
 module.exports = {
     cooldown: config.cooldowns.B,
@@ -15,37 +15,34 @@ module.exports = {
                 .addChoices(
                     { name: 'HTML', value: 'html' },
                     { name: 'CSS', value: 'css' },
-                    { name: 'JavaScript', value: 'js' },
-                    { name: 'TypeScript', value: 'ts' },
+                    { name: 'JavaScript', value: 'javascript' },
+                    { name: 'TypeScript', value: 'typescript' },
                     { name: 'JSON', value: 'json' },
-                    { name: 'XML', value: 'xml' },
-                    { name: 'Python', value: 'py' },
-                    { name: 'YML', value: 'yml' }
+                    { name: 'Vue', value: 'vue' },
+                    { name: 'Markdown', value: 'markdown' }
                 ))
-        .addStringOption(option => option.setName('code').setDescription('The code you want to format.').setRequired(true))
+        .addStringOption(option => option.setName('code').setDescription('The code you want to format. You can just copy and paste it without any modification.').setRequired(true))
         .addStringOption(option => option.setName('title').setDescription('An optional title for your code. For example: JS for-loop.').setRequired(false)),
     async execute(interaction) {
-        const username = interaction.user.username;
+        const snowflake = interaction.user.id;
         const channel = modules.client.channels.cache.get(config.general.snippetChannel);
         const language = interaction.options.getString('language');
-        const code = interaction.options.getString('code');
+        let code = interaction.options.getString('code');
         let title = interaction.options.getString('title');
-        if (title === undefined) {
-            title = " - Unnamed Snippet";
+        if (title === undefined || title === null) title = "- Unnamed Snippet";
+
+        try {
+            if (language === "javascript") {
+                code = prettier.format(code, { semi: false, parser: 'babel' });
+            } else code = prettier.format(code, { semi: false, parser: language });
+        } catch (error) {
+            return interaction.reply({
+                content: "Something went wrong while parsing your code. Check for syntax errors, and try again.",
+                ephemeral: true
+            });
         }
 
-
-        /**
-         * Format a code snippet with the Prettier API.
-         * @param {string} code The code to be formatted.
-         * @returns THe formatted code.
-         */
-        function formatCode(code) {
-            return prettier.format(code, { semi: false, parser: 'babel' });
-        }
-        const formattedCode = formatCode(code);
-
-        channel.send({ content: `${username} ${title}\n\n\`\`\`${language}\n${formattedCode}\n\`\`\`` });
+        channel.send({ content: `<@${snowflake}> ${title}\n\n\`\`\`${language}\n${code}\n\`\`\`` });
         interaction.reply({
             content: `Message created. Check your code-snippet here: <#${config.general.snippetChannel}>.`,
             ephemeral: true
