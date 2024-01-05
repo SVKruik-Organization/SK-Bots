@@ -26,6 +26,7 @@ module.exports = {
     async execute(interaction) {
         const snowflake = interaction.user.id;
         const channel = modules.client.channels.cache.get(config.general.snippetChannel);
+        if (!channel) return interaction.reply({ content: `The snippet channel could not be found. The channel might have been deleted. Reconfigure the snippet channel ID, and try again.`, ephemeral: true });
         const language = interaction.options.getString('language');
         let code = interaction.options.getString('code');
         let title = interaction.options.getString('title');

@@ -16,6 +16,7 @@ module.exports = {
         .addStringOption(option => option.setName('time').setDescription('The time when your event starts. For example: 09:15.').setRequired(true).setMaxLength(5)),
     async execute(interaction) {
         const channel = modules.client.channels.cache.get(config.general.eventChannel);
+        if (!channel) return interaction.reply({ content: `The event channel could not be found. The channel might have been deleted. Reconfigure the event channel ID, and try again.`, ephemeral: true });
         const username = interaction.user.username;
         const pfp = interaction.user.avatarURL();
         const title = interaction.options.getString('title');

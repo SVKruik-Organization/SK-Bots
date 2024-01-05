@@ -11,9 +11,10 @@ module.exports = {
         .addStringOption(option => option.setName('title').setDescription('The title for your suggestion.').setRequired(true).setMaxLength(50))
         .addStringOption(option => option.setName('description').setDescription('The description. Pitch your idea, explain why and how to implement.').setRequired(true)),
     async execute(interaction) {
+        const channel = modules.client.channels.cache.get(config.general.suggestionChannel);
+        if (!channel) return interaction.reply({ content: `The suggestion channel could not be found. The channel might have been deleted. Reconfigure the suggestion channel ID, and try again.`, ephemeral: true });
         const title = interaction.options.getString('title');
         const description = interaction.options.getString('description');
-        const channel = modules.client.channels.cache.get(config.general.suggestionChannel);
         const username = interaction.user.username;
         const pfp = interaction.user.avatarURL();
 
