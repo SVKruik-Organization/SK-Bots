@@ -29,7 +29,6 @@ for (let i = 0; i < config.general.guildId.length; i++) {
         log("Guild not found. Aborting.", "fatal");
         return process.exit(1);
     }
-
 }
 
 log("Fetched all guilds.", "info");
@@ -80,7 +79,6 @@ function log(data, type) {
             console.log(`${getDate().time} [ERROR] Error appending to log file.`);
             return false;
         }
-
     });
     console.log(logData);
     return true;
@@ -89,7 +87,8 @@ function log(data, type) {
 // Database Connection
 const database = mariadb.createPool({
     host: process.env.HOST,
-    user: process.env.USER,
+    port: process.env.PORT,
+    user: process.env.USERNAME,
     database: process.env.DATABASE,
     password: process.env.PASSWORD,
     multipleStatements: true
@@ -110,9 +109,9 @@ database.query("SELECT snowflake, super, blocked FROM user WHERE super = 1 OR bl
         }
         log("Database connection established.", "info");
     }).catch(() => {
-    log("Connecting to the database went wrong. Aborting.", "fatal");
-    return process.exit(1);
-});
+        log("Connecting to the database went wrong. Aborting.", "fatal");
+        return process.exit(1);
+    });
 
 // Exporting Values & Functions
 module.exports = {
@@ -133,10 +132,7 @@ for (const file of commandFiles) {
     const command = require(filePath);
     if ('data' in command && 'execute' in command) {
         client.commands.set(command.data.name, command);
-    } else {
-        return log(`Error at ${filePath}.`, "error");
-    }
-
+    } else return log(`Error at ${filePath}.`, "error");
 }
 
 // Event Handler
@@ -147,10 +143,7 @@ for (const file of eventFiles) {
     const event = require(filePath);
     if (event.once) {
         client.once(event.name, (...args) => event.execute(...args));
-    } else {
-        client.on(event.name, (...args) => event.execute(...args));
-    }
-
+    } else client.on(event.name, (...args) => event.execute(...args));
 }
 
 // Cooldowns

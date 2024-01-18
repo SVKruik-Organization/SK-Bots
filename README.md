@@ -17,7 +17,7 @@ Below you will find a list of statistics, information and commands. I will updat
 
 Stelleri is a general purpose bot. This means it comes with large set of features, to satisfy most servers needs. Stelleri is still a WIP, which means every new release brings at least a couple of new commands for you to try out.
 
-Virgo is a trading bot. My focus is still on Stelleri, so there is no money being made (yet). More information will follow later, as I am still working on the core and efficiency of both bots. For now Virgo serves as a template.
+Virgo is a template bot for now.
 
 #### Available Commands - Stelleri
 

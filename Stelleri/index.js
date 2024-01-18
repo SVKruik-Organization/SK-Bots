@@ -87,7 +87,8 @@ function log(data, type) {
 // Database Connection
 const database = mariadb.createPool({
     host: process.env.HOST,
-    user: process.env.USER,
+    port: process.env.PORT,
+    user: process.env.USERNAME,
     database: process.env.DATABASE,
     password: process.env.PASSWORD,
     multipleStatements: true

@@ -15,7 +15,6 @@ module.exports = {
             });
         }
 
-
         const command = interaction.client.commands.get(interaction.commandName);
         if (!command) return modules.log(`No command matching ${interaction.commandName} was found.`, "warning");
 
@@ -41,11 +40,9 @@ module.exports = {
 
             }
 
-
             timestamps.set(interaction.user.id, now);
             setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
         }
-
 
         try {
             command.execute(interaction);
@@ -54,7 +51,6 @@ module.exports = {
             interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
             console.log(error);
         }
-
 
         modules.database.query("UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = ?; UPDATE tier SET xp = xp + ? WHERE snowflake = ?; SELECT * FROM tier WHERE snowflake = ?",
             [interaction.user.id, config.tier.slashCommand, interaction.user.id, interaction.user.id])

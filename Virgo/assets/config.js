@@ -10,10 +10,12 @@ exports.cooldowns = {
     A: 0,
     B: 5,
     C: 15,
-    D: 30
+    D: 30,
+    E: 86400
 };
 
 exports.tier = {
     normalMessage: 1,
-    slashCommand: 8
+    slashCommand: 8,
+    levelUpThreshold: 30
 };

@@ -19,7 +19,6 @@ module.exports = {
                         return modules.log(`XP increase unsuccessful, ${message.author.username} does not have an account yet.`, "warning");
                     });
                 }
-
             }).catch(() => {
             return modules.log(`XP increase unsuccessful, ${message.author.username} does not have an account yet.`, "warning");
         });

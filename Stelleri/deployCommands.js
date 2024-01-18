@@ -23,7 +23,6 @@ for (const file of commandFiles) {
             );
             modules.log(`Successfully loaded ${data.length} commands for guild ${general.guildId[i]}.`, "info");
         }
-
         console.log("\n");
     } catch (error) {
         console.error(error);
