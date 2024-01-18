@@ -22,7 +22,7 @@ module.exports = {
                     { name: 'Spamming', value: 'Spamming' },
                     { name: 'Other (Please specify)', value: 'Other' }
                 ))
-        .addStringOption(option => option.setName('reason').setDescription('What did the user do wrong? What rules did they break?').setRequired(true).setMaxLength(1000)),
+        .addStringOption(option => option.setName('reason').setDescription('What did the user do wrong? What rules did they break? Max 1000 characters.').setRequired(true).setMaxLength(1000)),
     async execute(interaction) {
         const snowflake = interaction.user.id;
         const username = interaction.user.username;

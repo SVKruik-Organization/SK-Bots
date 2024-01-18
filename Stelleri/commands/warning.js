@@ -8,7 +8,7 @@ module.exports = {
         .setName('warn')
         .setDescription('Warn someone that breaks the rules. Administrator version of report.')
         .addUserOption(option => option.setName('target').setDescription('The target member.').setRequired(true))
-        .addStringOption(option => option.setName('reason').setDescription('The reason for the warning.').setRequired(false).setMaxLength(1000))
+        .addStringOption(option => option.setName('reason').setDescription('The reason for the warning. Max 1000 characters.').setRequired(false).setMaxLength(1000))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
         const targetSnowflake = interaction.options.getUser('target').id;

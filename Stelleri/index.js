@@ -29,7 +29,6 @@ for (let i = 0; i < config.general.guildId.length; i++) {
         log("Guild not found. Aborting.", "fatal");
         return process.exit(1);
     }
-
 }
 
 log("Fetched all guilds.", "info");
@@ -109,9 +108,9 @@ database.query("SELECT snowflake, super, blocked FROM user WHERE super = 1 OR bl
         }
         log("Database connection established.", "info");
     }).catch(() => {
-    log("Connecting to the database went wrong. Aborting.", "fatal");
-    return process.exit(1);
-});
+        log("Connecting to the database went wrong. Aborting.", "fatal");
+        return process.exit(1);
+    });
 
 // Exporting Values & Functions
 module.exports = {

@@ -8,8 +8,8 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('suggestion')
         .setDescription('Pitch a new idea for the project!')
-        .addStringOption(option => option.setName('title').setDescription('The title for your suggestion.').setRequired(true).setMaxLength(50))
-        .addStringOption(option => option.setName('description').setDescription('The description. Pitch your idea, explain why and how to implement.').setRequired(true)),
+        .addStringOption(option => option.setName('title').setDescription('The title for your suggestion. Max 50 characters.').setRequired(true).setMaxLength(50))
+        .addStringOption(option => option.setName('description').setDescription('The description. Pitch your idea, explain why and how to implement. Max 600 characters.').setRequired(true).setMaxLength(600)),
     async execute(interaction) {
         const channel = modules.client.channels.cache.get(config.general.suggestionChannel);
         if (!channel) return interaction.reply({ content: `The suggestion channel could not be found. The channel might have been deleted. Reconfigure the suggestion channel ID, and try again.`, ephemeral: true });

@@ -15,7 +15,7 @@ module.exports = {
                     { name: 'Text', value: 'text' },
                     { name: 'Image', value: 'image' }
                 ))
-        .addStringOption(option => option.setName('prompt').setDescription("Your text or image prompt.").setRequired(true).setMaxLength(100)),
+        .addStringOption(option => option.setName('prompt').setDescription("Your text or image prompt. Max 100 characters.").setRequired(true).setMaxLength(100)),
     async execute(interaction) {
         const actionType = interaction.options.getString('action');
         const prompt = interaction.options.getString('prompt');

@@ -15,7 +15,7 @@ module.exports = {
                     { name: 'Get Pincode', value: 'get' },
                     { name: 'Change Pincode', value: 'change' }
                 ))
-        .addStringOption(option => option.setName('new-pincode').setDescription("Your new pincode. Leave blank if you don't want to change it.").setRequired(false).setMaxLength(4).setMinLength(4)),
+        .addStringOption(option => option.setName('new-pincode').setDescription("Your new pincode. Leave blank if you don't want to change it. Max 4 digits.").setRequired(false).setMaxLength(4).setMinLength(4)),
     async execute(interaction) {
         const snowflake = interaction.user.id;
         const username = interaction.user.username;
