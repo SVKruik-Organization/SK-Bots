@@ -38,7 +38,9 @@ log("Fetched all guilds.", "info");
  * @returns Object with date, time and new Date().
  */
 function getDate() {
-    const today = new Date();
+    const today = new Date(new Date().toLocaleString('en-US', {
+        timeZone: "Europe/Amsterdam"
+    }));
 
     const hh = formatTime(today.getHours());
     const m = formatTime(today.getMinutes());
@@ -88,7 +90,7 @@ function log(data, type) {
 const database = mariadb.createPool({
     host: process.env.HOST,
     port: process.env.PORT,
-    user: process.env.USERNAME,
+    user: process.env.DB_USERNAME,
     database: process.env.DATABASE,
     password: process.env.PASSWORD,
     multipleStatements: true
@@ -108,7 +110,7 @@ database.query("SELECT snowflake, super, blocked FROM user WHERE super = 1 OR bl
             } else blockedUsers.push(userData[i].snowflake);
         }
         log("Database connection established.", "info");
-    }).catch(() => {
+    }).catch((error) => {
         log("Connecting to the database went wrong. Aborting.", "fatal");
         return process.exit(1);
     });
