@@ -2,8 +2,8 @@ require('dotenv').config();
 const fs = require('node:fs');
 const path = require('node:path');
 const mariadb = require('mariadb');
-const config = require('./assets/config.js');
 const { Client, Collection } = require('discord.js');
+const locale = "Europe/Amsterdam";
 const client = new Client({
     intents: [
         'Guilds',
@@ -22,16 +22,96 @@ const client = new Client({
 client.login(process.env.TOKEN);
 log("\n\t------", "none");
 
-// Guild Loading
-for (let i = 0; i < config.general.guildId.length; i++) {
-    const guild = client.guilds.fetch(config.general.guildId[i]);
-    if (!guild) {
-        log("Guild not found. Aborting.", "fatal");
-        return process.exit(1);
+// Database Connection
+const database = mariadb.createPool({
+    host: process.env.HOST,
+    port: process.env.PORT,
+    user: process.env.DB_USERNAME,
+    database: process.env.DATABASE,
+    password: process.env.PASSWORD,
+    multipleStatements: true
+});
+
+// Indexing super & blocked users
+let superUsers = [];
+let blockedUsers = [];
+database.query("SELECT snowflake, super, blocked FROM user WHERE super = 1 OR blocked = 1;")
+    .then((data) => {
+        for (let i = 0; i < data.length; i++) {
+            if (data[i].super === 1) {
+                superUsers.push(data[i].snowflake);
+
+            } else blockedUsers.push(data[i].snowflake);
+        }
+        log("Fetched all users.", "info");
+    }).catch(() => {
+        log("Loading Users went wrong. Aborting.", "fatal");
+    });
+
+// Indexing Guilds and settings
+database.query("SELECT * FROM guild WHERE disabled = 0;")
+    .then((data) => {
+        data.forEach(async (guild) => Promise.resolve(await guildConstructor(guild)).then((data) => module.exports.guilds.push(data)));
+        log("Fetched all guilds.", "info");
+    }).catch(() => {
+        log("Loading Guild settings went wrong. Aborting.", "fatal");
+    });
+
+async function guildConstructor(guild) {
+    // Guild Fetching
+    const fetchedGuild = await client.guilds.fetch(guild.snowflake);
+    if (!fetchedGuild) {
+        log(`Guild '${guild.name}'@'${guild.snowflake}' not found.`, "warning");
+        return;
+    }
+
+    // Channel Fetching Prepare
+    const errorMessage = "is configured, but not found. Corresponding command disabled for this run.";
+    function channelFetch(channelId, name) {
+        let target = false;
+        if (channelId && channelId.length === 19) {
+            const fetchedChannel = client.channels.cache.get(channelId);
+            if (fetchedChannel) {
+                target = fetchedChannel;
+            } else log(`Guild '${guild.name}' ${name} Channel ${errorMessage}`, "warning");
+        }
+        return target;
+    }
+
+    // Channel Fetching
+    const channel_event = channelFetch(guild.channel_event, "Event");
+    const channel_suggestion = channelFetch(guild.channel_suggestion, "Suggestion");
+    const channel_snippet = channelFetch(guild.channel_snippet, "Snippet");
+    const channel_rules = channelFetch(guild.channel_rules, "Rules");
+
+    // Role Fetching
+    let role_blinded = false;
+    if (guild.role_blinded && guild.role_blinded.length === 19) {
+        const fetchedRole = fetchedGuild.roles.cache.find(role => role.id === guild.role_blinded);
+        if (fetchedRole) {
+            role_blinded = fetchedRole;
+        } else log(`Guild '${guild.name}' Blinded Role ${errorMessage}`, "warning");
+    }
+
+    // Completed Guild Object
+    return {
+        "guildObject": fetchedGuild,
+        "name": guild.name,
+        "channel_event": channel_event,
+        "channel_suggestion": channel_suggestion,
+        "channel_snippet": channel_snippet,
+        "channel_rules": channel_rules,
+        "role_power": guild.role_power,
+        "role_blinded": role_blinded,
+        "bot_count": guild.bot_count,
+        "locale": guild.locale,
+        "disabled": guild.disabled
     }
 }
 
-log("Fetched all guilds.", "info");
+function findGuildById(guildId) {
+    return module.exports.guilds.find(guild => guild.guildObject.id === guildId);
+}
 
 /**
  * Timestamp Calculation
@@ -39,7 +119,7 @@ log("Fetched all guilds.", "info");
  */
 function getDate() {
     const today = new Date(new Date().toLocaleString('en-US', {
-        timeZone: "Europe/Amsterdam"
+        timeZone: locale
     }));
 
     const hh = formatTime(today.getHours());
@@ -68,11 +148,13 @@ function getDate() {
 /**
  * Log messages to the log file.
  * @param {string} data The data to log to the file.
- * @param {string} type The type of message. For example: warning, alert, info, fatal.
+ * @param {string} type The type of message. For example: warning, alert, info, fatal, none.
  * @returns Status.
  */
-function log(data, type) {
+function log(data, rawType) {
     let logData;
+    let type = rawType;
+    if (!rawType) type = "none";
     if (type === "none") {
         logData = `${data}\n`;
     } else logData = `${getDate().time} [${type.toUpperCase()}] ${data}\n`;
@@ -83,37 +165,9 @@ function log(data, type) {
         }
     });
     console.log(logData);
+    if (type === "fatal") return process.exit(1);
     return true;
 }
-
-// Database Connection
-const database = mariadb.createPool({
-    host: process.env.HOST,
-    port: process.env.PORT,
-    user: process.env.DB_USERNAME,
-    database: process.env.DATABASE,
-    password: process.env.PASSWORD,
-    multipleStatements: true
-});
-
-// Indexing super & blocked users
-let userData = [];
-let superUsers = [];
-let blockedUsers = [];
-database.query("SELECT snowflake, super, blocked FROM user WHERE super = 1 OR blocked = 1;")
-    .then((data) => {
-        userData = data;
-        for (let i = 0; i < userData.length; i++) {
-            if (userData[i].super === 1) {
-                superUsers.push(userData[i].snowflake);
-
-            } else blockedUsers.push(userData[i].snowflake);
-        }
-        log("Database connection established.", "info");
-    }).catch((error) => {
-        log("Connecting to the database went wrong. Aborting.", "fatal");
-        return process.exit(1);
-    });
 
 // Exporting Values & Functions
 module.exports = {
@@ -122,7 +176,10 @@ module.exports = {
     "getDate": getDate,
     "log": log,
     "superUsers": superUsers,
-    "blockedUsers": blockedUsers
+    "blockedUsers": blockedUsers,
+    "guilds": [],
+    "locale": locale,
+    "findGuildById": findGuildById
 };
 
 // Command Handler

@@ -9,31 +9,26 @@ module.exports = {
         .setDescription('Give yourself a custom role with your own color.')
         .addStringOption(option => option.setName('hex').setDescription('The HEX code for your color. For example: 000000. Hashtag prefix is not needed.').setRequired(true).setMinLength(6).setMaxLength(6)),
     async execute(interaction) {
+        const targetGuild = modules.findGuildById(interaction.guild.id);
+        if (!targetGuild || !targetGuild.role_power) return interaction.reply({
+            content: "This is a server-specific command, and this server is not configured to support it. Please try again later.",
+            ephemeral: true
+        });
         const snowflake = interaction.user.id;
         const color = interaction.options.getString('hex');
         const regex = "^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
-        const role = interaction.guild.roles.cache.find(role => role.name === interaction.user.username);
-        const guild = modules.client.guilds.cache.get(interaction.guildId);
-        const position = guild.roles.cache.size - config.general.highPowerRoles;
-
-        /**
-         * Convert a HEX color to an integer value.
-         * @param {string} hex The hex color to be converted. Without the '#'.
-         * @returns number integer value.
-         */
-        function hexToInt(hex) {
-            return parseInt(hex, 16);
-        }
+        const role = targetGuild.guildObject.roles.cache.find(role => role.name === interaction.user.username);
+        const position = targetGuild.guildObject.roles.cache.size - targetGuild.role_power;
 
         if (role) await role.delete();
         if (color.match(regex)) {
             await interaction.guild.roles.create({
                 position: position,
                 name: interaction.user.username,
-                color: hexToInt(color)
+                color: parseInt(color, 16)
             }).then(async () => {
-                const role = guild.roles.cache.find((r) => r.name === interaction.user.username);
-                await guild.members.fetch(snowflake).then((user) => {
+                const role = targetGuild.guildObject.roles.cache.find((r) => r.name === interaction.user.username);
+                await targetGuild.guildObject.members.fetch(snowflake).then((user) => {
                     user.roles.add(role);
                 });
                 interaction.reply(`\`#${color}\` -- great color! You look awesome!`);

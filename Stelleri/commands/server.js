@@ -9,10 +9,14 @@ module.exports = {
         .setName('server')
         .setDescription('Show some server statistics.'),
     async execute(interaction) {
-        const guild = modules.client.guilds.cache.get(interaction.guildId);
+        const targetGuild = modules.findGuildById(interaction.guild.id);
+        if (!targetGuild || !targetGuild.bot_count) return interaction.reply({
+            content: "This is a server-specific command, and this server is not configured to support it. Please try again later.",
+            ephemeral: true
+        });
         const username = interaction.user.username;
         const pfp = interaction.user.avatarURL();
-        const rawDate = guild.createdAt;
+        const rawDate = targetGuild.guildObject.createdAt;
         const date = `${rawDate.getDate()}/${rawDate.getMonth() + 1}/${rawDate.getFullYear()}`;
 
         const embed = new EmbedBuilder()
@@ -21,11 +25,11 @@ module.exports = {
             .setAuthor({ name: username, iconURL: pfp })
             .addFields({ name: '----', value: 'List' })
             .addFields(
-                { name: 'Name', value: `${guild.name}` },
-                { name: 'Members', value: `\`${guild.memberCount - config.general.memberCountOffset}\`` },
+                { name: 'Name', value: `${targetGuild.guildObject.name}` },
+                { name: 'Members', value: `\`${targetGuild.guildObject.memberCount - targetGuild.bot_count}\`` },
                 { name: 'Created', value: `${date}` },
-                { name: 'Owner', value: `<@${guild.ownerId}>` },
-                { name: 'Rules', value: `<#${guild.rulesChannelId}>` }
+                { name: 'Owner', value: `<@${targetGuild.guildObject.ownerId}>` },
+                { name: 'Rules', value: targetGuild.channel_rules ? `<#${targetGuild.channel_rules.id}>` : "None" }
             )
             .addFields({ name: '----', value: 'Meta' })
             .setTimestamp()

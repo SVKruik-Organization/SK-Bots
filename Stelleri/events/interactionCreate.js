@@ -10,7 +10,7 @@ module.exports = {
         if (!modules.superUsers.includes(interaction.user.id) && modules.blockedUsers.includes(interaction.user.id)) {
             modules.log(`${interaction.user.username} tried using || ${interaction.commandName} || but was unable to because they are blacklisted.`, "info");
             return interaction.reply({
-                content: 'You are not allowed to use my commands. Contact the moderators to appeal if you think this is a mistake.',
+                content: 'You are not allowed to use my commands. Please contact the moderators to appeal if you think this is a mistake.',
                 ephemeral: true
             });
         }

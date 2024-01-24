@@ -1,15 +1,8 @@
 exports.general = {
     name: "Stelleri",
     color: "#E4B081",
-    clientId: ["1071428183003500544", "1150713787784110110", "1151493813836193802"],
-    guildId: ["1022886794510999664", "1148559935743987782", "1153308458108583978"],
-    eventChannel: "1148574058691182732",
-    suggestionChannel: "1148574058691182732",
-    snippetChannel: "1150770471592275978",
-    highPowerRoles: 3,
-    apiLimit: 1,
+    clientId: "1071428183003500544",
     imageURL: "https://i.imgur.com/9X7PIG0.png",
-    memberCountOffset: 2
 };
 
 exports.cooldowns = {

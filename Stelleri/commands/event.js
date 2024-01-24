@@ -15,8 +15,12 @@ module.exports = {
         .addStringOption(option => option.setName('date').setDescription('The date for your event. For example: 05/02/2023.').setRequired(true).setMaxLength(10))
         .addStringOption(option => option.setName('time').setDescription('The time when your event starts. For example: 09:15.').setRequired(true).setMaxLength(5)),
     async execute(interaction) {
-        const channel = modules.client.channels.cache.get(config.general.eventChannel);
-        if (!channel) return interaction.reply({ content: `The event channel could not be found. The channel might have been deleted. Reconfigure the event channel ID, and try again.`, ephemeral: true });
+        const targetGuild = modules.findGuildById(interaction.guild.id);
+        if (!targetGuild || !targetGuild.channel_event) return interaction.reply({
+            content: "This is a server-specific command, and this server is not configured to support it. Please try again later.",
+            ephemeral: true
+        });
+        const channel = targetGuild.channel_event;
         const username = interaction.user.username;
         const pfp = interaction.user.avatarURL();
         const title = interaction.options.getString('title');
@@ -41,7 +45,7 @@ module.exports = {
             .setFooter({ text: `Embed created by ${config.general.name}` })
         channel.send({ embeds: [embed] });
         interaction.reply({
-            content: `Message created. Check your event here: <#${config.general.eventChannel}>.`,
+            content: `Message created. Check your event here: <#${channel.id}>.`,
             ephemeral: true
         });
     }

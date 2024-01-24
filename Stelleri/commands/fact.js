@@ -2,7 +2,6 @@ const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const { EmbedBuilder } = require('discord.js');
 const request = require('request');
-const limit = require('../assets/config.js').general.apiLimit;
 
 module.exports = {
     cooldown: config.cooldowns.B,
@@ -13,7 +12,7 @@ module.exports = {
         const username = interaction.user.username;
 
         request.get({
-            url: 'https://api.api-ninjas.com/v1/facts?limit=' + limit,
+            url: 'https://api.api-ninjas.com/v1/facts?limit=1',
             headers: {
                 'X-Api-Key': process.env.API_TOKEN
             }

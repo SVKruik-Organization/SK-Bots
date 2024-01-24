@@ -55,7 +55,7 @@ module.exports = {
                         content: `User <@${targetSnowflake}> does not have an account yet.`,
                         ephemeral: true
                     });
-                    interaction.reply({ content: `Blocked status of user <@${targetSnowflake}>: \`${data[0].blocked}\`` });
+                    interaction.reply({ content: `Blocked status of user <@${targetSnowflake}>: \`${data[0].blocked ? "true" : "false"}\`` });
                 }).catch(() => {
                 interaction.reply({
                     content: "Something went wrong while checking the block status of this user. Please try again later.",

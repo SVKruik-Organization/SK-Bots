@@ -1,30 +1,40 @@
 require('dotenv').config();
 const { REST, Routes } = require('discord.js');
 const { general } = require('./assets/config.js');
+const mariadb = require('mariadb');
 const fs = require('node:fs');
 const commands = [];
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
-const modules = require('.');
 
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     commands.push(command.data.toJSON());
 }
 
+// Database Connection
+const database = mariadb.createPool({
+    host: process.env.HOST,
+    port: process.env.PORT,
+    user: process.env.DB_USERNAME,
+    database: process.env.DATABASE,
+    password: process.env.PASSWORD,
+    multipleStatements: true
+});
+
 // Deploy
-(async () => {
-    try {
+database.query("SELECT * FROM guild WHERE disabled = 0;")
+    .then(async (queryData) => {
         console.log("\n");
-        for (let i = 0; i < general.guildId.length; i++) {
+        for (let i = 0; i < queryData.length; i++) {
             const data = await rest.put(
-                Routes.applicationGuildCommands(general.clientId[0], general.guildId[i]),
+                Routes.applicationGuildCommands(general.clientId, queryData[i].snowflake),
                 { body: commands },
             );
-            modules.log(`Successfully loaded ${data.length} commands for guild ${general.guildId[i]}.`, "info");
+            console.log(`Successfully loaded ${data.length} commands for guild ${queryData[i].name}.`);
         }
         console.log("\n");
-    } catch (error) {
-        console.error(error);
-    }
-})();
+        process.exit(1);
+    }).catch((error) => {
+        console.log(error);
+    });

@@ -24,9 +24,13 @@ module.exports = {
         .addStringOption(option => option.setName('code').setDescription('The code you want to format. You can just copy and paste it without any modification.').setRequired(true))
         .addStringOption(option => option.setName('title').setDescription('An optional title for your code. For example: JS for-loop.').setRequired(false)),
     async execute(interaction) {
+        const targetGuild = modules.findGuildById(interaction.guild.id);
+        if (!targetGuild || !targetGuild.channel_suggestion) return interaction.reply({
+            content: "This is a server-specific command, and this server is not configured to support it. Please try again later.",
+            ephemeral: true
+        });
+        const channel = targetGuild.channel_snippet;
         const snowflake = interaction.user.id;
-        const channel = modules.client.channels.cache.get(config.general.snippetChannel);
-        if (!channel) return interaction.reply({ content: `The snippet channel could not be found. The channel might have been deleted. Reconfigure the snippet channel ID, and try again.`, ephemeral: true });
         const language = interaction.options.getString('language');
         let code = interaction.options.getString('code');
         let title = interaction.options.getString('title');
@@ -45,7 +49,7 @@ module.exports = {
 
         channel.send({ content: `<@${snowflake}> ${title}\n\n\`\`\`${language}\n${code}\n\`\`\`` });
         interaction.reply({
-            content: `Message created. Check your code-snippet here: <#${config.general.snippetChannel}>.`,
+            content: `Message created. Check your code-snippet here: <#${channel.id}>.`,
             ephemeral: true
         });
     }

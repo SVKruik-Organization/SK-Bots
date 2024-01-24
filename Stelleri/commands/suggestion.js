@@ -11,8 +11,12 @@ module.exports = {
         .addStringOption(option => option.setName('title').setDescription('The title for your suggestion. Max 50 characters.').setRequired(true).setMaxLength(50))
         .addStringOption(option => option.setName('description').setDescription('The description. Pitch your idea, explain why and how to implement. Max 600 characters.').setRequired(true).setMaxLength(600)),
     async execute(interaction) {
-        const channel = modules.client.channels.cache.get(config.general.suggestionChannel);
-        if (!channel) return interaction.reply({ content: `The suggestion channel could not be found. The channel might have been deleted. Reconfigure the suggestion channel ID, and try again.`, ephemeral: true });
+        const targetGuild = modules.findGuildById(interaction.guild.id);
+        if (!targetGuild || !targetGuild.channel_suggestion) return interaction.reply({
+            content: "This is a server-specific command, and this server is not configured to support it. Please try again later.",
+            ephemeral: true
+        });
+        const channel = targetGuild.channel_suggestion;
         const title = interaction.options.getString('title');
         const description = interaction.options.getString('description');
         const username = interaction.user.username;
@@ -30,7 +34,7 @@ module.exports = {
         await embedMessage.react('🟢');
         await embedMessage.react('🔴');
         interaction.reply({
-            content: `Message created. Check your event here: <#${config.general.suggestionChannel}>.`,
+            content: `Message created. Check your event here: <#${channel.id}>.`,
             ephemeral: true
         });
     }

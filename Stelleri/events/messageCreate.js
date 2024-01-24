@@ -5,7 +5,7 @@ const config = require('../assets/config.js');
 module.exports = {
     name: Events.MessageCreate,
     execute(message) {
-        if (config.general.clientId.includes(message.author.id)) return;
+        if (message.author.bot) return;
         modules.database.query("UPDATE tier SET xp = xp + ? WHERE snowflake = ?; SELECT xp, level FROM tier WHERE snowflake = ?;",
             [config.tier.normalMessage, message.author.id, message.author.id])
             .then((data) => {

@@ -18,9 +18,14 @@ module.exports = {
                 ))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
+        const targetGuild = modules.findGuildById(interaction.guild.id);
+        if (!targetGuild || !targetGuild.role_blinded) return interaction.reply({
+            content: "This is a server-specific command, and this server is not configured to support it. Please try again later.",
+            ephemeral: true
+        });
         const user = interaction.options.getUser('target');
         const targetSnowflake = user.id;
-        const role = interaction.guild.roles.cache.find(role => role.name === "Blinded");
+        const role = targetGuild.role_blinded;
         const guild = modules.client.guilds.cache.get(interaction.guildId);
         const action = interaction.options.getString('action');
 
