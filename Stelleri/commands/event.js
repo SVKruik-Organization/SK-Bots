@@ -17,7 +17,7 @@ module.exports = {
     async execute(interaction) {
         const targetGuild = modules.findGuildById(interaction.guild.id);
         if (!targetGuild || !targetGuild.channel_event) return interaction.reply({
-            content: "This is a server-specific command, and this server is not configured to support it. Please try again later.",
+            content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
             ephemeral: true
         });
         const channel = targetGuild.channel_event;
@@ -42,7 +42,7 @@ module.exports = {
             )
             .addFields({ name: '----', value: 'Meta' })
             .setTimestamp()
-            .setFooter({ text: `Embed created by ${config.general.name}` })
+            .setFooter({ text: `Embed created by ${config.general.name}` });
         channel.send({ embeds: [embed] });
         interaction.reply({
             content: `Message created. Check your event here: <#${channel.id}>.`,

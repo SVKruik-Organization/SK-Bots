@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const prettier = require('prettier');
-const modules = require('../index.js');
+const modules = require('..');
 
 module.exports = {
     cooldown: config.cooldowns.B,
@@ -26,7 +26,7 @@ module.exports = {
     async execute(interaction) {
         const targetGuild = modules.findGuildById(interaction.guild.id);
         if (!targetGuild || !targetGuild.channel_suggestion) return interaction.reply({
-            content: "This is a server-specific command, and this server is not configured to support it. Please try again later.",
+            content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
             ephemeral: true
         });
         const channel = targetGuild.channel_snippet;

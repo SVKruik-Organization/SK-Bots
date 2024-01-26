@@ -1,9 +1,9 @@
 require('dotenv').config();
 const fs = require('node:fs');
 const path = require('node:path');
+const config = require('./assets/config.js');
 const mariadb = require('mariadb');
-const { Client, Collection } = require('discord.js');
-const locale = "Europe/Amsterdam";
+const { Client, Collection, EmbedBuilder } = require('discord.js');
 const client = new Client({
     intents: [
         'Guilds',
@@ -57,6 +57,12 @@ database.query("SELECT * FROM guild WHERE disabled = 0;")
         log("Loading Guild settings went wrong. Aborting.", "fatal");
     });
 
+/**
+ * Process raw data from the database to a refined object for further reading from.
+ * Instead of raw channel snowflakes, it puts the entire Discord Channel object.
+ * @param {object} guild A Guild object from the database.
+ * @returns 
+ */
 async function guildConstructor(guild) {
     // Guild Fetching
     const fetchedGuild = await client.guilds.fetch(guild.snowflake);
@@ -97,29 +103,57 @@ async function guildConstructor(guild) {
     return {
         "guildObject": fetchedGuild,
         "name": guild.name,
+        "register_snowflake": guild.register_snowflake,
         "channel_event": channel_event,
         "channel_suggestion": channel_suggestion,
         "channel_snippet": channel_snippet,
         "channel_rules": channel_rules,
         "role_power": guild.role_power,
         "role_blinded": role_blinded,
-        "bot_count": guild.bot_count,
         "locale": guild.locale,
         "disabled": guild.disabled
     }
 }
 
+/**
+ * Default Discord.JS Embed constructor. 
+ * @param {string} title The title of the embed.
+ * @param {string} subfieldTitle The sub-header of the embed.
+ * @param {object} interaction Discord Interaction object.
+ * @param {Array<object>} fields The fields to add. Needs to have a 'name' and 'value' key.
+ * @returns The constructed embed.
+ */
+function embedConstructor(title, subfieldTitle, interaction, fields) {
+    return new EmbedBuilder()
+        .setColor(config.general.color)
+        .setTitle(title)
+        .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
+        .addFields({ name: '----', value: subfieldTitle })
+        .addFields(fields)
+        .addFields({ name: '----', value: 'Meta' })
+        .setTimestamp()
+        .setFooter({ text: `Embed created by ${config.general.name}` });
+}
+
+/**
+ * 
+ * @param {string} guildId Find a specific indexed Guild by snowflake (id).
+ * @returns 
+ */
 function findGuildById(guildId) {
     return module.exports.guilds.find(guild => guild.guildObject.id === guildId);
 }
 
 /**
  * Timestamp Calculation
+ * @param {string} preferredLocale Overwrite default locale.
  * @returns Object with date, time and new Date().
  */
-function getDate() {
-    const today = new Date(new Date().toLocaleString('en-US', {
-        timeZone: locale
+function getDate(preferredLocale) {
+    let locale = "en-US";
+    if (preferredLocale) locale = preferredLocale;
+    const today = new Date(new Date().toLocaleString(locale, {
+        timeZone: "Europe/Amsterdam"
     }));
 
     const hh = formatTime(today.getHours());
@@ -173,13 +207,13 @@ function log(data, rawType) {
 module.exports = {
     "client": client,
     "database": database,
-    "getDate": getDate,
     "log": log,
     "superUsers": superUsers,
     "blockedUsers": blockedUsers,
     "guilds": [],
-    "locale": locale,
-    "findGuildById": findGuildById
+    "findGuildById": findGuildById,
+    "getDate": getDate,
+    "embedConstructor": embedConstructor
 };
 
 // Command Handler
