@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
-const modules = require('..');
+const logger = require('../utils/log.js');
 
 module.exports = {
     cooldown: config.cooldowns.D,
@@ -20,7 +20,7 @@ module.exports = {
         const actionType = interaction.options.getString('action');
         const prompt = interaction.options.getString('prompt');
 
-        modules.log(`${interaction.user.username} used || ai || with type: '${actionType}' and prompt: '${prompt}'.`, "info");
+        logger.log(`${interaction.user.username} used || ai || with type: '${actionType}' and prompt: '${prompt}'.`, "info");
         interaction.reply({ content: "This command is currently disabled. Come back later.", ephemeral: true });
     }
 };

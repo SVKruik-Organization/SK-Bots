@@ -2,13 +2,14 @@ const { Events } = require('discord.js');
 const modules = require('..');
 const { Collection } = require('discord.js');
 const config = require('../assets/config.js');
+const logger = require('../utils/log.js');
 
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
         if (!interaction.isChatInputCommand()) return;
         if (!modules.superUsers.includes(interaction.user.id) && modules.blockedUsers.includes(interaction.user.id)) {
-            modules.log(`${interaction.user.username} tried using || ${interaction.commandName} || but was unable to because they are blacklisted.`, "info");
+            logger.log(`${interaction.user.username} tried using || ${interaction.commandName} || but was unable to because they are blacklisted.`, "info");
             return interaction.reply({
                 content: 'You are not allowed to use my commands. Please contact the moderators to appeal if you think this is a mistake.',
                 ephemeral: true
@@ -16,7 +17,7 @@ module.exports = {
         }
 
         const command = interaction.client.commands.get(interaction.commandName);
-        if (!command) return modules.log(`No command matching ${interaction.commandName} was found.`, "warning");
+        if (!command) return logger.log(`No command matching ${interaction.commandName} was found.`, "warning");
 
         if (!modules.superUsers.includes(interaction.user.id)) {
             const { cooldowns } = modules.client;
@@ -37,7 +38,6 @@ module.exports = {
                         ephemeral: true
                     });
                 }
-
             }
 
             timestamps.set(interaction.user.id, now);
@@ -47,7 +47,7 @@ module.exports = {
         try {
             command.execute(interaction);
         } catch (error) {
-            modules.log(`There was an error while executing || ${interaction.commandName} ||`, "error");
+            logger.log(`There was an error while executing || ${interaction.commandName} ||`, "error");
             interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
             console.log(error);
         }
@@ -63,15 +63,15 @@ module.exports = {
                             channel.send({ content: `Nice! <@${interaction.user.id}> just leveled up and reached level ${newLevel}! 🎉` });
                         }).catch((err) => {
                         console.log(err);
-                        return modules.log(`XP increase unsuccessful, ${interaction.user.username} does not have an account yet.`, "warning");
+                        return logger.log(`XP increase unsuccessful, ${interaction.user.username} does not have an account yet.`, "warning");
                     });
                 }
 
             }).catch((err) => {
             console.log(err);
-            return modules.log(`Command usage increase unsuccessful, ${interaction.user.username} does not have an account yet.`, "warning");
+            return logger.log(`Command usage increase unsuccessful, ${interaction.user.username} does not have an account yet.`, "warning");
         });
 
-        modules.log(`${interaction.user.username} used || ${interaction.commandName} ||`, "info");
+        logger.log(`${interaction.user.username} used || ${interaction.commandName} ||`, "info");
     }
 };

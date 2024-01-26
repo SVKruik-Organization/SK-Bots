@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const modules = require('..');
 const config = require('../assets/config.js');
+const logger = require('../utils/log.js');
 
 module.exports = {
     cooldown: config.cooldowns.D,
@@ -39,7 +40,7 @@ module.exports = {
                         content: `Your pincode has been Successfully changed. New pincode: \`${newPincode}\`.`,
                         ephemeral: true
                     });
-                    modules.log(`${username} has changed their pincode.`, "info");
+                    logger.log(`${username} has changed their pincode.`, "info");
                 }).catch(() => {
                 return interaction.reply({
                     content: "You do not have an account yet. Create an account with the `/register` command.",

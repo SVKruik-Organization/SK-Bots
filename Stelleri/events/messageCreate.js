@@ -1,6 +1,7 @@
 const { Events } = require('discord.js');
 const modules = require('..');
 const config = require('../assets/config.js');
+const logger = require('../utils/log.js');
 
 module.exports = {
     name: Events.MessageCreate,
@@ -16,11 +17,11 @@ module.exports = {
                             const channel = modules.client.channels.cache.get(message.channelId);
                             channel.send({ content: `Nice! <@${message.author.id}> just leveled up and reached level ${newLevel}! 🎉` });
                         }).catch(() => {
-                        return modules.log(`XP increase unsuccessful, ${message.author.username} does not have an account yet.`, "warning");
+                        return logger.log(`XP increase unsuccessful, ${message.author.username} does not have an account yet.`, "warning");
                     });
                 }
             }).catch(() => {
-            return modules.log(`XP increase unsuccessful, ${message.author.username} does not have an account yet.`, "warning");
+            return logger.log(`XP increase unsuccessful, ${message.author.username} does not have an account yet.`, "warning");
         });
     }
 };

@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
-const modules = require('..');
+const guildUtils = require('../utils/guild.js');
 
 module.exports = {
     cooldown: config.cooldowns.C,
@@ -9,7 +9,7 @@ module.exports = {
         .setDescription('Give yourself a custom role with your own color.')
         .addStringOption(option => option.setName('hex').setDescription('The HEX code for your color. For example: 000000. Hashtag prefix is not needed.').setRequired(true).setMinLength(6).setMaxLength(6)),
     async execute(interaction) {
-        const targetGuild = modules.findGuildById(interaction.guild.id);
+        const targetGuild = guildUtils.findGuildById(interaction.guild.id);
         if (!targetGuild || !targetGuild.role_power) return interaction.reply({
             content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
             ephemeral: true

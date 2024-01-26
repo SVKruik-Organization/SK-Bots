@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const modules = require('..');
+const embedConstructor = require('../utils/embed.js');
 
 module.exports = {
     cooldown: config.cooldowns.C,
@@ -14,13 +15,13 @@ module.exports = {
             .then((data) => {
                 const currentXp = data[0].xp + config.tier.slashCommand;
 
-                const embed = modules.embedConstructor("Bits Balance", "Information", interaction, 
-                [
-                    { name: 'Level', value: `\`${data[0].level}\`` },
+                const embed = embedConstructor.create("Bits Balance", "Information", interaction,
+                    [
+                        { name: 'Level', value: `\`${data[0].level}\`` },
                         { name: 'EXP', value: `\`${currentXp}\`` },
                         { name: '-----', value: `Summary` },
                         { name: 'EXP Needed', value: `\`${2 * (data[0].level + 1) + 30 - currentXp}\`` }
-                ]);
+                    ]);
                 interaction.reply({ embeds: [embed] });
             }).catch(() => {
             return interaction.reply({

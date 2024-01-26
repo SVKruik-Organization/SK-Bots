@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const modules = require('..');
+const embedConstructor = require('../utils/embed.js');
 
 module.exports = {
     cooldown: config.cooldowns.C,
@@ -45,7 +46,7 @@ module.exports = {
         } else if (actionType === "balance") {
             modules.database.query("SELECT wallet, bank, (wallet + bank) AS 'total' FROM economy WHERE snowflake = ?;", [snowflake])
                 .then((data) => {
-                    const embed = modules.embedConstructor("Bits Balance", "Accounts", interaction,
+                    const embed = embedConstructor.create("Bits Balance", "Accounts", interaction,
                         [
                             { name: 'Wallet', value: `\`${data[0].wallet}\`` },
                             { name: 'Bank', value: `\`${data[0].bank}\`` },

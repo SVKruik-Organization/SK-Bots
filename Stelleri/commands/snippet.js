@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const prettier = require('prettier');
-const modules = require('..');
+const guildUtils = require('../utils/guild.js');
 
 module.exports = {
     cooldown: config.cooldowns.B,
@@ -24,7 +24,7 @@ module.exports = {
         .addStringOption(option => option.setName('code').setDescription('The code you want to format. You can just copy and paste it without any modification.').setRequired(true))
         .addStringOption(option => option.setName('title').setDescription('An optional title for your code. For example: JS for-loop.').setRequired(false)),
     async execute(interaction) {
-        const targetGuild = modules.findGuildById(interaction.guild.id);
+        const targetGuild = guildUtils.findGuildById(interaction.guild.id);
         if (!targetGuild || !targetGuild.channel_suggestion) return interaction.reply({
             content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
             ephemeral: true

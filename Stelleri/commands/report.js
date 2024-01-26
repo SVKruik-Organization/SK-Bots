@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const modules = require('..');
 const config = require('../assets/config.js');
+const logger = require('../utils/log.js');
 
 module.exports = {
     cooldown: config.cooldowns.D,
@@ -37,7 +38,7 @@ module.exports = {
                     content: "Thank you for your report. We will have a look at it ASAP.",
                     ephemeral: true
                 });
-                modules.log(`${username} has reported someone.`, "info");
+                logger.log(`${username} has reported someone.`, "info");
             }).catch(() => {
             interaction.reply({
                 content: "Something went wrong while reporting this user. Please try again later.",

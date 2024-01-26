@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const modules = require('..');
 const fs = require('fs');
+const embedConstructor = require('../utils/embed.js');
 
 module.exports = {
     cooldown: config.cooldowns.C,
@@ -14,16 +15,16 @@ module.exports = {
         const minutes = Math.floor(modules.client.uptime / 60000) % 60;
         const uptime = `\`${hours}\` hours and \`${minutes}\` minutes.`
 
-        const embed = modules.embedConstructor("Bot Statistics", "Information", interaction, 
-        [
-            { name: 'Name', value: `**${config.general.name}**` },
+        const embed = embedConstructor.create("Bot Statistics", "Information", interaction,
+            [
+                { name: 'Name', value: `**${config.general.name}**` },
                 { name: 'Creator', value: `<@${config.general.creatorId}>` },
                 { name: 'Uptime', value: uptime },
                 { name: 'Ping', value: `\`${modules.client.ws.ping}\`ms` },
                 { name: 'Commands', value: `\`${commands}\` Total` },
-                { name: 'Repository', value: `https://github.com/SVKruik/Discord-Bots-v2` },
+                { name: 'Repository', value: config.general.repository },
                 { name: 'Version', value: `\`v2.3.0\`` }
-        ]);
+            ]);
         interaction.reply({ embeds: [embed] });
     }
 };

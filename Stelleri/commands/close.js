@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const modules = require('..');
 const config = require('../assets/config.js');
+const logger = require('../utils/log.js');
 
 module.exports = {
     cooldown: config.cooldowns.D,
@@ -35,7 +36,7 @@ module.exports = {
                     });
                 }
             }).catch(() => {
-            return modules.log(`Command usage increase unsuccessful, ${username} does not have an account yet.`, "warning");
+            return logger.log(`Command usage increase unsuccessful, ${username} does not have an account yet.`, "warning");
         });
     }
 };

@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const config = require('../assets/config.js');
 const modules = require('..');
+const logger = require('../utils/log.js');
 
 module.exports = {
     cooldown: config.cooldowns.A,
@@ -35,11 +36,11 @@ module.exports = {
                     const index = modules.blockedUsers.indexOf(targetSnowflake);
                     if (status === 0) {
                         if (index > -1) modules.blockedUsers.splice(index, 1);
-                        modules.log(`${targetUsername} was removed from the blacklist by ${interaction.user.username}.`, "alert");
+                        logger.log(`${targetUsername} was removed from the blacklist by ${interaction.user.username}.`, "alert");
                         interaction.reply({ content: `<@${targetSnowflake}> has been removed from the blacklist. They are now able to use my commands again.` });
                     } else if (status === 1) {
                         if (index !== -1) modules.blockedUsers.push(targetSnowflake);
-                        modules.log(`${targetUsername} was added to the blacklist by ${interaction.user.username}.`, "alert");
+                        logger.log(`${targetUsername} was added to the blacklist by ${interaction.user.username}.`, "alert");
                         interaction.reply({ content: `<@${targetSnowflake}> has been added to the blacklist. They are no longer able to use my commands.` });
                     }
                 }).catch(() => {

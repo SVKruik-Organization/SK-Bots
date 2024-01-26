@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const config = require('../assets/config.js');
 const { EmbedBuilder } = require('discord.js');
-const modules = require('..');
+const guildUtils = require('../utils/guild.js');
 
 module.exports = {
     cooldown: config.cooldowns.A,
@@ -15,7 +15,7 @@ module.exports = {
         .addStringOption(option => option.setName('date').setDescription('The date for your event. For example: 05/02/2023.').setRequired(true).setMaxLength(10))
         .addStringOption(option => option.setName('time').setDescription('The time when your event starts. For example: 09:15.').setRequired(true).setMaxLength(5)),
     async execute(interaction) {
-        const targetGuild = modules.findGuildById(interaction.guild.id);
+        const targetGuild = guildUtils.findGuildById(interaction.guild.id);
         if (!targetGuild || !targetGuild.channel_event) return interaction.reply({
             content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
             ephemeral: true

@@ -1,13 +1,14 @@
 const { SlashCommandBuilder } = require('discord.js');
 const modules = require('..');
 const config = require('../assets/config.js');
+const logger = require('../utils/log.js');
 
 module.exports = {
     cooldown: config.cooldowns.E,
     data: new SlashCommandBuilder()
         .setName('dailyreward')
         .setDescription('Collect your daily reward.')
-        .addIntegerOption(option => option.setName('jackpot').setDescription('A number between 200 and 1000. There is a 1 in 800 chance you hit the jackpot.').setRequired(false).setMinValue(200).setMaxValue(1000)),
+        .addIntegerOption(option => option.setName('jackpot').setDescription('A number between 200 and 1000. There is a 1 in 800 chance you hit the jackpot.').setRequired(true).setMinValue(200).setMaxValue(1000)),
     async execute(interaction) {
         const username = interaction.user.username;
         const snowflake = interaction.user.id;
@@ -25,11 +26,11 @@ module.exports = {
         await modules.database.query("UPDATE economy SET wallet = wallet + ? + ? WHERE snowflake = ?;", [jackpotValue, dailyreward, snowflake])
             .then(() => {
                 interaction.reply(`Successfully collected your daily reward: \`${dailyreward}\` Bits. Be sure to come back tomorrow!`);
-                modules.log(`${interaction.user.username} collected their daily reward. They received ${dailyreward} bits.`, "info");
+                logger.log(`${interaction.user.username} collected their daily reward. They received ${dailyreward} bits.`, "info");
                 if (jackpotBoolean === true) {
                     interaction.followUp(`💎 You hit the JACKPOT! 💎 You received \`${jackpotValue}\` more Bits. Congratulations! 🎉`);
                     const total = jackpotValue + dailyreward;
-                    modules.log(`${username} hit the daily reward jackpot. He/she received a total of ${total} Bits.\n`, "info");
+                    logger.log(`${username} hit the daily reward jackpot. He/she received a total of ${total} Bits.\n`, "info");
                 }
             }).catch(() => {
                 return interaction.reply({

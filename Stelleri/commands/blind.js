@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const modules = require('..');
 const config = require('../assets/config.js');
+const guildUtils = require('../utils/guild.js');
 
 module.exports = {
     cooldown: config.cooldowns.A,
@@ -18,7 +19,7 @@ module.exports = {
                 ))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
-        const targetGuild = modules.findGuildById(interaction.guild.id);
+        const targetGuild = guildUtils.findGuildById(interaction.guild.id);
         if (!targetGuild || !targetGuild.role_blinded) return interaction.reply({
             content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
             ephemeral: true

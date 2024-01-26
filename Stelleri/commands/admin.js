@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const config = require('../assets/config.js');
 const modules = require('..');
+const logger = require('../utils/log.js');
 
 module.exports = {
     cooldown: config.cooldowns.A,
@@ -33,10 +34,10 @@ module.exports = {
                 .then((data) => {
                     if (data.affectedRows === 0) return interaction.reply({ content: `User <@${targetSnowflake}> does not have an account yet.` })
                     if (status === 0) {
-                        modules.log(`${targetUsername} was removed from the super users by ${interaction.user.username}.`, "alert");
+                        logger.log(`${targetUsername} was removed from the super users by ${interaction.user.username}.`, "alert");
                         interaction.reply({ content: `<@${targetSnowflake}> has been removed from the super users. They are no longer able to use my admin commands.` });
                     } else if (status === 1) {
-                        modules.log(`${targetUsername} was added to the super users by ${interaction.user.username}.`, "alert");
+                        logger.log(`${targetUsername} was added to the super users by ${interaction.user.username}.`, "alert");
                         interaction.reply({ content: `<@${targetSnowflake}> has been added to the super users. They are now able to use my admin commands.` });
                     }
                 }).catch(() => {

@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const { EmbedBuilder } = require('discord.js');
-const modules = require('..');
+const guildUtils = require('../utils/guild.js');
 
 module.exports = {
     cooldown: config.cooldowns.C,
@@ -11,7 +11,7 @@ module.exports = {
         .addStringOption(option => option.setName('title').setDescription('The title for your suggestion. Max 50 characters.').setRequired(true).setMaxLength(50))
         .addStringOption(option => option.setName('description').setDescription('The description. Pitch your idea, explain why and how to implement. Max 600 characters.').setRequired(true).setMaxLength(600)),
     async execute(interaction) {
-        const targetGuild = modules.findGuildById(interaction.guild.id);
+        const targetGuild = guildUtils.findGuildById(interaction.guild.id);
         if (!targetGuild || !targetGuild.channel_suggestion) return interaction.reply({
             content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
             ephemeral: true

@@ -1,6 +1,8 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const config = require('../assets/config.js');
 const modules = require('..');
+const embedConstructor = require('../utils/embed.js');
+const guildUtils = require('../utils/guild.js');
 
 module.exports = {
     cooldown: config.cooldowns.C,
@@ -27,9 +29,9 @@ module.exports = {
         // Setup
         const actionType = interaction.options.getString('action');
         let newGuild = true;
-        const targetGuild = modules.findGuildById(interaction.guild.id);
+        const targetGuild = guildUtils.findGuildById(interaction.guild.id);
         if (targetGuild) newGuild = false;
-        const guildSnapshot = modules.guilds;
+        const guildSnapshot = guildUtils.guilds;
 
         // Optional Options
         const channel_event = interaction.options.getString('channel_event') || null;
@@ -44,7 +46,7 @@ module.exports = {
             modules.database.query("INSERT INTO guild (register_snowflake, name, channel_event, channel_suggestion, channel_snippet, channel_rules, role_power, role_blinded, locale, snowflake) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", [interaction.user.id, interaction.user.username, channel_event, channel_suggestion, channel_snippet, channel_rules, role_power, role_blinded, interaction.guild.preferredLocale, interaction.guild.id])
                 .then(() => {
                     interaction.reply("Setup successful. Additional commands enabled.");
-                    modules.guilds.push({
+                    guildUtils.guilds.push({
                         "guildObject": interaction.guild,
                         "name": interaction.guild.name,
                         "register_snowflake": interaction.user.id,
@@ -58,7 +60,7 @@ module.exports = {
                         "disabled": false
                     });
                 }).catch(() => {
-                    modules.guilds = guildSnapshot;
+                    guildUtils.guilds = guildSnapshot;
                     interaction.reply({
                         content: "Something went wrong while creating the server configuration. Please try again later.",
                         ephemeral: true
@@ -70,8 +72,8 @@ module.exports = {
             modules.database.query("UPDATE guild SET channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_power = ?, role_blinded = ? WHERE snowflake = ?", [channel_event, channel_suggestion, channel_snippet, channel_rules, role_power, role_blinded, interaction.guild.id])
                 .then(() => {
                     interaction.reply("Setup update successful. Additional commands reloaded or disabled.");
-                    modules.guilds = modules.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);
-                    modules.guilds.push({
+                    guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);
+                    guildUtils.guilds.push({
                         "guildObject": interaction.guild,
                         "name": interaction.guild.name,
                         "register_snowflake": interaction.user.id,
@@ -85,7 +87,7 @@ module.exports = {
                         "disabled": false
                     });
                 }).catch(() => {
-                    modules.guilds = guildSnapshot;
+                    guildUtils.guilds = guildSnapshot;
                     interaction.reply({
                         content: "Something went wrong while updating the server configuration. Please try again later.",
                         ephemeral: true
@@ -99,7 +101,7 @@ module.exports = {
                 ephemeral: true
             });
 
-            const embed = modules.embedConstructor("Server Configuration", "Information", interaction,
+            const embed = embedConstructor.create("Server Configuration", "Information", interaction,
                 [
                     { name: 'Registerer', value: `<@${targetGuild.register_snowflake}>` },
                     { name: 'Event Channel', value: `${targetGuild.channel_event || "Not Configured"}` },
@@ -111,11 +113,20 @@ module.exports = {
                 ]);
             interaction.reply({ embeds: [embed] });
         } else if (actionType === "help") {
-            const embed = modules.embedConstructor("Server Configuration", "Command Usage Help", interaction,
+            const embed = embedConstructor.create("Server Configuration", "Command Usage Help", interaction,
                 [
-                    { name: 'General', value: "This command is reserved for adminstrators that want to check or configure their server configuration. Some commands are server/channel-specific, and therefore require setup." },
-                    { name: 'How-To', value: 'To update or register, please fill the other marked as optional fields. Fields that are left empty, will be stored as empty (resetting the value). Use this command carefully, as erroneous input will disable certain commands.' },
-                    { name: "ID's", value: "When Discord Developer mode is enabled, you can right-click > copy the Text Channel ID. Same goes for Roles and other objects. Just complete all the fields, and you are good to go. No reloading/refreshing is required, i'll handle it from there." }
+                    {
+                        name: 'General',
+                        value: "This command is reserved for adminstrators that want to check or configure their server configuration. Some commands are server/channel-specific, and therefore require setup."
+                    },
+                    {
+                        name: 'How-To',
+                        value: 'To update or register, please fill the other marked as optional fields. Fields that are left empty, will be stored as empty (resetting the value). Use this command carefully, as erroneous input will disable certain commands.'
+                    },
+                    {
+                        name: "ID's",
+                        value: "When Discord Developer mode is enabled, you can right-click > copy the Text Channel ID. Same goes for Roles and other objects. Just complete all the fields, and you are good to go. No reloading/refreshing is required, i'll handle it from there."
+                    }
                 ]);
             interaction.reply({ embeds: [embed] });
         }

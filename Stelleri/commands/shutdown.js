@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const config = require('../assets/config.js');
 const modules = require('..');
+const logger = require('../utils/log.js');
 
 module.exports = {
     cooldown: config.cooldowns.A,
@@ -10,7 +11,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
         await modules.database.end();
-        modules.log("Terminated database connection. Shutting down.", "alert");
+        logger.log("Terminated database connection. Shutting down.", "alert");
         interaction.reply(`${config.general.name} is logging off. Bye!`);
         setTimeout(() => {
             process.exit(0);
