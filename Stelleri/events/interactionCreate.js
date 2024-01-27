@@ -7,6 +7,7 @@ const logger = require('../utils/log.js');
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
+        // Blacklist
         if (!interaction.isChatInputCommand()) return;
         if (!modules.superUsers.includes(interaction.user.id) && modules.blockedUsers.includes(interaction.user.id)) {
             logger.log(`${interaction.user.username} tried using || ${interaction.commandName} || but was unable to because they are blacklisted.`, "info");
@@ -16,13 +17,14 @@ module.exports = {
             });
         }
 
+        // Validation
         const command = interaction.client.commands.get(interaction.commandName);
         if (!command) return logger.log(`No command matching ${interaction.commandName} was found.`, "warning");
 
+        // Cooldown
         if (!modules.superUsers.includes(interaction.user.id)) {
             const { cooldowns } = interaction.client;
-            if (!cooldowns.has(command.data.name))
-                cooldowns.set(command.data.name, new Collection());
+            if (!cooldowns.has(command.data.name)) cooldowns.set(command.data.name, new Collection());
 
             const now = Date.now();
             const timestamps = cooldowns.get(command.data.name);
@@ -44,6 +46,7 @@ module.exports = {
             setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
         }
 
+        // Executing
         try {
             command.execute(interaction);
         } catch (error) {
@@ -52,6 +55,7 @@ module.exports = {
             console.log(error);
         }
 
+        // Experience
         modules.database.query("UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = ?; UPDATE tier SET xp = xp + ? WHERE snowflake = ?; SELECT * FROM tier WHERE snowflake = ?",
             [interaction.user.id, config.tier.slashCommand, interaction.user.id, interaction.user.id])
             .then((data) => {

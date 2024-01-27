@@ -50,8 +50,8 @@ module.exports = {
                         [
                             { name: 'Wallet', value: `\`${data[0].wallet}\`` },
                             { name: 'Bank', value: `\`${data[0].bank}\`` },
-                            { name: '-----', value: `Total Amount` },
-                            { name: 'Both', value: `\`${data[0].total}\`` }
+                            { name: '-----', value: `Summary` },
+                            { name: 'Combined', value: `\`${data[0].total}\`` }
                         ]);
                     interaction.reply({ embeds: [embed] });
                 }).catch(() => {
