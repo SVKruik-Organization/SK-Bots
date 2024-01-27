@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const modules = require('..');
 const config = require('../assets/config.js');
 const guildUtils = require('../utils/guild.js');
 
@@ -27,7 +26,7 @@ module.exports = {
         const user = interaction.options.getUser('target');
         const targetSnowflake = user.id;
         const role = targetGuild.role_blinded;
-        const guild = modules.client.guilds.cache.get(interaction.guildId);
+        const guild = interaction.client.guilds.cache.get(interaction.guildId);
         const action = interaction.options.getString('action');
 
         if (action === "blind") {

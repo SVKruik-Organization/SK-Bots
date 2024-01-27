@@ -41,11 +41,11 @@ module.exports = {
                         interaction.reply({ content: `<@${targetSnowflake}> has been added to the super users. They are now able to use my admin commands.` });
                     }
                 }).catch(() => {
-                interaction.reply({
-                    content: "Something went wrong while modifying the super status of this user. Please try again later.",
-                    ephemeral: true
+                    interaction.reply({
+                        content: "Something went wrong while modifying the super status of this user. Please try again later.",
+                        ephemeral: true
+                    });
                 });
-            });
         } else {
             modules.database.query("SELECT super FROM user WHERE snowflake = ?", [targetSnowflake])
                 .then((data) => {
@@ -55,11 +55,11 @@ module.exports = {
                     });
                     interaction.reply({ content: `Super status of user <@${targetSnowflake}>: \`${data[0].super}\`` });
                 }).catch(() => {
-                interaction.reply({
-                    content: "Something went wrong while checking the super status of this user. Please try again later.",
-                    ephemeral: true
+                    interaction.reply({
+                        content: "Something went wrong while checking the super status of this user. Please try again later.",
+                        ephemeral: true
+                    });
                 });
-            });
         }
     }
 };

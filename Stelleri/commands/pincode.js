@@ -28,11 +28,11 @@ module.exports = {
                 .then((data) => {
                     interaction.reply({ content: `Your Pincode is: \`${data[0].pin}\`.`, ephemeral: true });
                 }).catch(() => {
-                return interaction.reply({
-                    content: "You do not have an account yet. Create an account with the `/register` command.",
-                    ephemeral: true
+                    return interaction.reply({
+                        content: "You do not have an account yet. Create an account with the `/register` command.",
+                        ephemeral: true
+                    });
                 });
-            });
         } else if (actionType === "change" && newPincode != null) {
             modules.database.query("UPDATE user SET pincode = ? WHERE snowflake = ?;", [newPincode, snowflake])
                 .then(() => {
@@ -42,11 +42,11 @@ module.exports = {
                     });
                     logger.log(`${username} has changed their pincode.`, "info");
                 }).catch(() => {
-                return interaction.reply({
-                    content: "You do not have an account yet. Create an account with the `/register` command.",
-                    ephemeral: true
+                    return interaction.reply({
+                        content: "You do not have an account yet. Create an account with the `/register` command.",
+                        ephemeral: true
+                    });
                 });
-            });
         } else {
             interaction.reply({
                 content: "With this actiontype you need to fill in the optional input, the new pincode. Please try again.",

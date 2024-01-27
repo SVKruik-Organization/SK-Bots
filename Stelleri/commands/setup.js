@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, ChannelType } = require('discord.js');
 const config = require('../assets/config.js');
 const modules = require('..');
 const embedConstructor = require('../utils/embed.js');
@@ -18,12 +18,36 @@ module.exports = {
                     { name: 'Check', value: 'check' },
                     { name: 'Help', value: 'help' }
                 ))
-        .addStringOption(option => option.setName('channel_event').setDescription('The ID of the Event Channel. Right-click on the channel and copy the ID.').setRequired(false).setMaxLength(20).setMinLength(18))
-        .addStringOption(option => option.setName('channel_suggestion').setDescription('The ID of the Suggestion Channel. Right-click on the channel and copy the ID').setRequired(false).setMaxLength(20).setMinLength(18))
-        .addStringOption(option => option.setName('channel_snippet').setDescription('The ID of the Snippet Channel. Right-click on the channel and copy the ID').setRequired(false).setMaxLength(20).setMinLength(18))
-        .addStringOption(option => option.setName('channel_rules').setDescription('The ID of the Rules Channel. Right-click on the channel and copy the ID').setRequired(false).setMaxLength(20).setMinLength(18))
+        .addChannelOption(option => option
+            .setName('channel_event')
+            .setDescription('Event Channel')
+            .addChannelTypes(ChannelType.GuildText)
+            .setRequired(false)
+        )
+        .addChannelOption(option => option
+            .setName('channel_suggestion')
+            .setDescription('Suggestion Channel')
+            .addChannelTypes(ChannelType.GuildText)
+            .setRequired(false)
+        )
+        .addChannelOption(option => option
+            .setName('channel_snippet')
+            .setDescription('Snippet Channel')
+            .addChannelTypes(ChannelType.GuildText)
+            .setRequired(false)
+        )
+        .addChannelOption(option => option
+            .setName('channel_rules')
+            .setDescription('Rules Channel')
+            .addChannelTypes(ChannelType.GuildText)
+            .setRequired(false)
+        )
+        .addRoleOption(option => option
+            .setName('role_blinded')
+            .setDescription('Blinded Role')
+            .setRequired(false)
+        )
         .addIntegerOption(option => option.setName('role_power').setDescription('Amount of roles with admin privileges. This makes sure that cosmetic roles will not overpower these.').setRequired(false).setMinValue(1).setMaxValue(30))
-        .addStringOption(option => option.setName('role_blinded').setDescription('The ID of the Blinded Role. Right-click on the role and copy.').setRequired(false).setMaxLength(20).setMinLength(18))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
         // Setup
@@ -34,16 +58,16 @@ module.exports = {
         const guildSnapshot = guildUtils.guilds;
 
         // Optional Options
-        const channel_event = interaction.options.getString('channel_event') || null;
-        const channel_suggestion = interaction.options.getString('channel_suggestion') || null;
-        const channel_snippet = interaction.options.getString('channel_snippet') || null;
-        const channel_rules = interaction.options.getString('channel_rules') || null;
+        const channel_event = interaction.options.getChannel('channel_event') || null;
+        const channel_suggestion = interaction.options.getChannel('channel_suggestion') || null;
+        const channel_snippet = interaction.options.getChannel('channel_snippet') || null;
+        const channel_rules = interaction.options.getChannel('channel_rules') || interaction.client.channels.fetch(interaction.guild.rulesChannelId) || null;
+        const role_blinded = interaction.options.getRole('role_blinded') || null;
         const role_power = interaction.options.getInteger('role_power') || 2;
-        const role_blinded = interaction.options.getString('role_blinded') || null;
 
         // New 
         if (actionType === "register" && newGuild) {
-            modules.database.query("INSERT INTO guild (register_snowflake, name, channel_event, channel_suggestion, channel_snippet, channel_rules, role_power, role_blinded, locale, snowflake) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", [interaction.user.id, interaction.user.username, channel_event, channel_suggestion, channel_snippet, channel_rules, role_power, role_blinded, interaction.guild.preferredLocale, interaction.guild.id])
+            modules.database.query("INSERT INTO guild (register_snowflake, name, channel_event, channel_suggestion, channel_snippet, channel_rules, role_power, role_blinded, locale, snowflake) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", [interaction.user.id, interaction.user.username, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_power, role_blinded ? role_blinded.id : null, interaction.guild.preferredLocale, interaction.guild.id])
                 .then(() => {
                     interaction.reply("Setup successful. Additional commands enabled.");
                     guildUtils.guilds.push({
@@ -69,7 +93,7 @@ module.exports = {
 
             // Update
         } else if (actionType === "register" && !newGuild) {
-            modules.database.query("UPDATE guild SET channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_power = ?, role_blinded = ? WHERE snowflake = ?", [channel_event, channel_suggestion, channel_snippet, channel_rules, role_power, role_blinded, interaction.guild.id])
+            modules.database.query("UPDATE guild SET channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_power = ?, role_blinded = ? WHERE snowflake = ?", [channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_power, role_blinded ? role_blinded.id : null, interaction.guild.id])
                 .then(() => {
                     interaction.reply("Setup update successful. Additional commands reloaded or disabled.");
                     guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);

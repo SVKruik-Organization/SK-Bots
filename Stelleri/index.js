@@ -45,8 +45,8 @@ database.query("SELECT snowflake, super, blocked FROM user WHERE super = 1 OR bl
         }
         logger.log("Fetched all users.", "info");
     }).catch(() => {
-    logger.log("Loading Users went wrong. Aborting.", "fatal");
-});
+        logger.log("Loading Users went wrong. Aborting.", "fatal");
+    });
 
 // Exporting Values
 module.exports = {

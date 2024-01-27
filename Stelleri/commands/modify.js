@@ -72,7 +72,7 @@ module.exports = {
             .then(() => {
                 interaction.reply({ content: "Account data has been successfully changed.", ephemeral: true });
             }).catch(() => {
-            return interaction.reply({ content: "This user doesn't have an account yet.", ephemeral: true });
-        });
+                return interaction.reply({ content: "This user doesn't have an account yet.", ephemeral: true });
+            });
     }
 };

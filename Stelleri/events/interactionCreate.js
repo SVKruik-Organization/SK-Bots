@@ -20,7 +20,7 @@ module.exports = {
         if (!command) return logger.log(`No command matching ${interaction.commandName} was found.`, "warning");
 
         if (!modules.superUsers.includes(interaction.user.id)) {
-            const { cooldowns } = modules.client;
+            const { cooldowns } = interaction.client;
             if (!cooldowns.has(command.data.name))
                 cooldowns.set(command.data.name, new Collection());
 
@@ -59,19 +59,24 @@ module.exports = {
                     modules.database.query("UPDATE tier SET level = level + 1, xp = 0 WHERE snowflake = ?;", [interaction.user.id])
                         .then(() => {
                             const newLevel = data[2][0].level + 1;
-                            const channel = modules.client.channels.cache.get(interaction.channelId);
+                            const channel = interaction.client.channels.cache.get(interaction.channelId);
                             channel.send({ content: `Nice! <@${interaction.user.id}> just leveled up and reached level ${newLevel}! 🎉` });
                         }).catch((err) => {
-                        console.log(err);
-                        return logger.log(`XP increase unsuccessful, ${interaction.user.username} does not have an account yet.`, "warning");
-                    });
+                            console.log(err);
+                            return logger.log(`XP increase unsuccessful, ${interaction.user.username} does not have an account yet.`, "warning");
+                        });
                 }
-
             }).catch((err) => {
-            console.log(err);
-            return logger.log(`Command usage increase unsuccessful, ${interaction.user.username} does not have an account yet.`, "warning");
-        });
+                console.log(err);
+                return logger.log(`Command usage increase unsuccessful, ${interaction.user.username} does not have an account yet.`, "warning");
+            });
 
-        logger.log(`${interaction.user.username} used || ${interaction.commandName} ||`, "info");
+        // Logging
+        let options = [];
+        interaction.options._hoistedOptions.forEach(element => {
+            options.push(`${element.name}: ${element.value}`);
+        });
+        const processedOptions = ` with the following options: ${JSON.stringify(options)}`;
+        logger.log(`${interaction.user.username} used || ${interaction.commandName} ||${options.length > 0 ? processedOptions : ""}`, "info");
     }
 };

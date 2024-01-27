@@ -44,11 +44,11 @@ module.exports = {
                         interaction.reply({ content: `<@${targetSnowflake}> has been added to the blacklist. They are no longer able to use my commands.` });
                     }
                 }).catch(() => {
-                interaction.reply({
-                    content: "Something went wrong while modifying the block status of this user. Please try again later.",
-                    ephemeral: true
+                    interaction.reply({
+                        content: "Something went wrong while modifying the block status of this user. Please try again later.",
+                        ephemeral: true
+                    });
                 });
-            });
         } else {
             modules.database.query("SELECT blocked FROM user WHERE snowflake = ?", [targetSnowflake])
                 .then((data) => {
@@ -58,11 +58,11 @@ module.exports = {
                     });
                     interaction.reply({ content: `Blocked status of user <@${targetSnowflake}>: \`${data[0].blocked ? "true" : "false"}\`` });
                 }).catch(() => {
-                interaction.reply({
-                    content: "Something went wrong while checking the block status of this user. Please try again later.",
-                    ephemeral: true
+                    interaction.reply({
+                        content: "Something went wrong while checking the block status of this user. Please try again later.",
+                        ephemeral: true
+                    });
                 });
-            });
         }
     }
 };

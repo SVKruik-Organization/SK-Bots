@@ -36,5 +36,5 @@ database.query("SELECT * FROM guild WHERE disabled = 0;")
         console.log("\n");
         process.exit(1);
     }).catch((error) => {
-    console.log(error);
-});
+        console.log(error);
+    });

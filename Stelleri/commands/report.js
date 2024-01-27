@@ -40,10 +40,10 @@ module.exports = {
                 });
                 logger.log(`${username} has reported someone.`, "info");
             }).catch(() => {
-            interaction.reply({
-                content: "Something went wrong while reporting this user. Please try again later.",
-                ephemeral: true
+                interaction.reply({
+                    content: "Something went wrong while reporting this user. Please try again later.",
+                    ephemeral: true
+                });
             });
-        });
     }
 };

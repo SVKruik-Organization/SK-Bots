@@ -7,8 +7,8 @@ modules.database.query("SELECT * FROM guild WHERE disabled = 0;")
         data.forEach(async (guild) => Promise.resolve(await guildConstructor(guild, modules.client)).then((data) => module.exports.guilds.push(data)));
         logger.log("Fetched all guilds.", "info");
     }).catch(() => {
-    logger.log("Loading Guild settings went wrong. Aborting.", "fatal");
-});
+        logger.log("Loading Guild settings went wrong. Aborting.", "fatal");
+    });
 
 /**
  * Process raw data from the database to a refined object for further reading from.
@@ -28,25 +28,34 @@ async function guildConstructor(guild, client) {
     // Channel Fetching Prepare
     const errorMessage = "is configured, but not found. Corresponding command disabled for this run.";
 
-    function channelFetch(channelId, name) {
-        let target = false;
-        if (channelId && channelId.length === 19) {
-            const fetchedChannel = client.channels.cache.get(channelId);
+    /**
+     * Fetch a Discord Channel. Only works when the target channel is indexed/cached.
+     * @param {string} channelId The ID of the channel.
+     * @param {string} name The name of the channel.
+     * @returns Channel
+     */
+    async function channelFetch(channelId, name) {
+        let target = null;
+        if (!channelId) return target;
+        try {
+            const fetchedChannel = await client.channels.fetch(channelId);
             if (fetchedChannel) {
                 target = fetchedChannel;
             } else logger.log(`Guild '${guild.name}' ${name} Channel ${errorMessage}`, "warning");
+        } catch (error) {
+            return target;
         }
         return target;
     }
 
     // Channel Fetching
-    const channel_event = channelFetch(guild.channel_event, "Event");
-    const channel_suggestion = channelFetch(guild.channel_suggestion, "Suggestion");
-    const channel_snippet = channelFetch(guild.channel_snippet, "Snippet");
-    const channel_rules = channelFetch(guild.channel_rules, "Rules");
+    const channel_event = await channelFetch(guild.channel_event, "Event");
+    const channel_suggestion = await channelFetch(guild.channel_suggestion, "Suggestion");
+    const channel_snippet = await channelFetch(guild.channel_snippet, "Snippet");
+    const channel_rules = await channelFetch(guild.channel_rules, "Rules") || client.channels.cache.get(fetchedGuild.rulesChannelId) || null;
 
     // Role Fetching
-    let role_blinded = false;
+    let role_blinded = null;
     if (guild.role_blinded && guild.role_blinded.length === 19) {
         const fetchedRole = fetchedGuild.roles.cache.find(role => role.id === guild.role_blinded);
         if (fetchedRole) {

@@ -27,21 +27,15 @@ module.exports = {
         } else if (random === "Rock") {
             if (type === "Scissors") {
                 reply = "🪨 - You lose!";
-            } else {
-                reply = "🪨 - You win!";
-            }
+            } else reply = "🪨 - You win!";
         } else if (random === "Paper") {
             if (type === "Rock") {
                 reply = "📃 - You lose!";
-            } else {
-                reply = "📃 - You win!";
-            }
+            } else reply = "📃 - You win!";
         } else if (random === "Scissors") {
             if (type === "Paper") {
                 reply = "✂ - You lose!";
-            } else {
-                reply = "✂ - You win!";
-            }
+            } else reply = "✂ - You win!";
         }
 
         interaction.reply(`I chose: ${reply}`);

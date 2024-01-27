@@ -21,17 +21,20 @@ module.exports = {
             [
                 {
                     name: 'Name',
-                    value: `${targetGuild.guildObject.name}` },
+                    value: `${targetGuild.guildObject.name}`
+                },
                 {
                     name: 'Members',
                     value: `\`${targetGuild.guildObject.members.cache.filter(member => !member.user.bot).size}\``
                 },
                 {
                     name: 'Created',
-                    value: `${date}` },
+                    value: `${date}`
+                },
                 {
                     name: 'Owner',
-                    value: `<@${targetGuild.guildObject.ownerId}>` },
+                    value: `<@${targetGuild.guildObject.ownerId}>`
+                },
                 {
                     name: 'Rules Channel',
                     value: targetGuild.channel_rules ? `<#${targetGuild.channel_rules.id}>` : "Not Configured"

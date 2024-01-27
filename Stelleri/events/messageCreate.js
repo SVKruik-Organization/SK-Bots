@@ -14,14 +14,14 @@ module.exports = {
                     modules.database.query("UPDATE tier SET level = level + 1, xp = 0 WHERE snowflake = ?;", [message.author.id])
                         .then(() => {
                             const newLevel = data[1][0].level + 1;
-                            const channel = modules.client.channels.cache.get(message.channelId);
+                            const channel = modules.client.channels.fetch(message.channelId);
                             channel.send({ content: `Nice! <@${message.author.id}> just leveled up and reached level ${newLevel}! 🎉` });
                         }).catch(() => {
-                        return logger.log(`XP increase unsuccessful, ${message.author.username} does not have an account yet.`, "warning");
-                    });
+                            return logger.log(`XP increase unsuccessful, ${message.author.username} does not have an account yet.`, "warning");
+                        });
                 }
             }).catch(() => {
-            return logger.log(`XP increase unsuccessful, ${message.author.username} does not have an account yet.`, "warning");
-        });
+                return logger.log(`XP increase unsuccessful, ${message.author.username} does not have an account yet.`, "warning");
+            });
     }
 };

@@ -24,11 +24,11 @@ module.exports = {
                                 ephemeral: true
                             });
                         }).catch(() => {
-                        interaction.reply({
-                            content: "This command requires you to have an account. Create an account with the `/register` command.",
-                            ephemeral: true
+                            interaction.reply({
+                                content: "This command requires you to have an account. Create an account with the `/register` command.",
+                                ephemeral: true
+                            });
                         });
-                    });
                 } else {
                     interaction.reply({
                         content: "Your pincode is not correct. If you forgot your pincode, you can request it with `/pincode`.",
@@ -36,7 +36,7 @@ module.exports = {
                     });
                 }
             }).catch(() => {
-            return logger.log(`Command usage increase unsuccessful, ${username} does not have an account yet.`, "warning");
-        });
+                return logger.log(`Command usage increase unsuccessful, ${username} does not have an account yet.`, "warning");
+            });
     }
 };

@@ -18,10 +18,10 @@ module.exports = {
             .then(() => {
                 interaction.reply(`User <@${targetSnowflake}> has been warned for: \`${reason}\``);
             }).catch(() => {
-            return interaction.reply({
-                content: "Something went wrong while warning this user. Please try again later.",
-                ephemeral: true
+                return interaction.reply({
+                    content: "Something went wrong while warning this user. Please try again later.",
+                    ephemeral: true
+                });
             });
-        });
     }
 };
