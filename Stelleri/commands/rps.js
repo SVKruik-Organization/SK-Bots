@@ -6,15 +6,15 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('rps')
         .setDescription('Play a game of Rock, Paper, Scissors.')
-        .addStringOption(option =>
-            option.setName('type')
-                .setDescription('What is your pick?')
-                .setRequired(true)
-                .addChoices(
-                    { name: 'Rock', value: 'Rock' },
-                    { name: 'Paper', value: 'Paper' },
-                    { name: 'Scissors', value: 'Scissors' }
-                )),
+        .addStringOption(option => option
+            .setName('type')
+            .setDescription('What is your pick?')
+            .setRequired(true)
+            .addChoices(
+                { name: 'Rock', value: 'Rock' },
+                { name: 'Paper', value: 'Paper' },
+                { name: 'Scissors', value: 'Scissors' }
+            )),
     async execute(interaction) {
         const type = interaction.options.getString('type');
         let reply = undefined;

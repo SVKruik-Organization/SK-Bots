@@ -7,30 +7,35 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('modify')
         .setDescription('Modify database data. For example, XP and coins.')
-        .addUserOption(option => option.setName('target').setDescription('The target member.').setRequired(true))
-        .addStringOption(option =>
-            option.setName('section')
-                .setDescription('Choose whether you want to change their tier or economy.')
-                .setRequired(true)
-                .addChoices(
-                    { name: 'Tier - Level', value: 'rnk-lvl' },
-                    { name: 'Tier - XP', value: 'rnk-xp' },
-                    { name: 'Economy - Wallet', value: 'eco-wal' },
-                    { name: 'Economy - Bank', value: 'eco-bnk' }
-                ))
-        .addStringOption(option =>
-            option.setName('action')
-                .setDescription('Choose what type of edit you want to make.')
-                .setRequired(true)
-                .addChoices(
-                    { name: 'Set', value: 'set' },
-                    { name: 'Increase', value: 'inc' },
-                    { name: 'Decrease', value: 'dec' },
-                    { name: 'Multiply', value: 'mult' },
-                    { name: 'Divide', value: 'div' }
-                ))
-        .addIntegerOption(option => option.setName('amount').setDescription("The amount for the chosen action.").setRequired(true).setMinValue(0))
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .addUserOption(option => option
+            .setName('target')
+            .setDescription('The target member.')
+            .setRequired(true))
+        .addStringOption(option => option
+            .setName('section')
+            .setDescription('Choose whether you want to change their tier or economy.')
+            .setRequired(true)
+            .addChoices(
+                { name: 'Tier - Level', value: 'rnk-lvl' },
+                { name: 'Tier - XP', value: 'rnk-xp' },
+                { name: 'Economy - Wallet', value: 'eco-wal' },
+                { name: 'Economy - Bank', value: 'eco-bnk' }))
+        .addStringOption(option => option
+            .setName('action')
+            .setDescription('Choose what type of edit you want to make.')
+            .setRequired(true)
+            .addChoices(
+                { name: 'Set', value: 'set' },
+                { name: 'Increase', value: 'inc' },
+                { name: 'Decrease', value: 'dec' },
+                { name: 'Multiply', value: 'mult' },
+                { name: 'Divide', value: 'div' }))
+        .addIntegerOption(option => option
+            .setName('amount')
+            .setDescription("The amount for the chosen action.")
+            .setRequired(true)
+            .setMinValue(0)),
     async execute(interaction) {
         const sectionType = interaction.options.getString('section');
         const actionType = interaction.options.getString('action');

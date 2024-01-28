@@ -1,6 +1,6 @@
 const { Events } = require('discord.js');
 const config = require('../assets/config.js');
-const logger = require('../utils/log.js');
+const logger = require('../utils/logger.js');
 const rawDate = require('../utils/date.js').getDate();
 
 module.exports = {

@@ -7,20 +7,23 @@ module.exports = {
     cooldown: config.cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('tier')
-        .setDescription('Information about your tier progression. View level, experience etc.'),
+        .setDescription('Information about your tier progression. View Level, Experience etcetera.'),
     async execute(interaction) {
         const snowflake = interaction.user.id;
 
-        modules.database.query("SELECT level, xp FROM tier WHERE snowflake = ?;", [snowflake])
+        modules.database.query("SELECT level, xp, xp15, xp50, xp_active FROM tier LEFT JOIN user_inventory ON user_inventory.snowflake = tier.snowflake WHERE tier.snowflake = ?;", [snowflake])
             .then((data) => {
                 const currentXp = data[0].xp + config.tier.slashCommand;
 
-                const embed = embedConstructor.create("Bits Balance", "Information", interaction,
+                const embed = embedConstructor.create("Tier Overview", "Information", interaction,
                     [
                         { name: 'Level', value: `\`${data[0].level}\`` },
-                        { name: 'EXP', value: `\`${currentXp}\`` },
+                        { name: 'Experience', value: `\`${currentXp}\`` },
                         { name: '-----', value: `Summary` },
-                        { name: 'EXP Needed', value: `\`${2 * (data[0].level + 1) + 30 - currentXp}\`` }
+                        { name: 'EXP Needed', value: `\`${20 * (data[0].level + 1) + 300 - currentXp}\`` },
+                        { name: 'Active Booster', value: `\`${data[0].xp_active}\`` },
+                        { name: '+15% Boosters', value: `\`${data[0].xp15}\`` },
+                        { name: '+50% Boosters', value: `\`${data[0].xp50}\`` }
                     ]);
                 interaction.reply({ embeds: [embed] });
             }).catch(() => {

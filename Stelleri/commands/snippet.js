@@ -8,21 +8,26 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('snippet')
         .setDescription('Format a piece of code.')
-        .addStringOption(option =>
-            option.setName('language')
-                .setDescription('Choose what you want to do with your pincode.')
-                .setRequired(true)
-                .addChoices(
-                    { name: 'HTML', value: 'html' },
-                    { name: 'CSS', value: 'css' },
-                    { name: 'JavaScript', value: 'javascript' },
-                    { name: 'TypeScript', value: 'typescript' },
-                    { name: 'JSON', value: 'json' },
-                    { name: 'Vue', value: 'vue' },
-                    { name: 'Markdown', value: 'markdown' }
-                ))
-        .addStringOption(option => option.setName('code').setDescription('The code you want to format. You can just copy and paste it without any modification.').setRequired(true))
-        .addStringOption(option => option.setName('title').setDescription('An optional title for your code. For example: JS for-loop.').setRequired(false)),
+        .addStringOption(option => option
+            .setName('language')
+            .setDescription('Choose what you want to do with your pincode.')
+            .setRequired(true)
+            .addChoices(
+                { name: 'HTML', value: 'html' },
+                { name: 'CSS', value: 'css' },
+                { name: 'JavaScript', value: 'javascript' },
+                { name: 'TypeScript', value: 'typescript' },
+                { name: 'JSON', value: 'json' },
+                { name: 'Vue', value: 'vue' },
+                { name: 'Markdown', value: 'markdown' }))
+        .addStringOption(option => option
+            .setName('code')
+            .setDescription('The code you want to format. You can just copy and paste it without any modification.')
+            .setRequired(true))
+        .addStringOption(option => option
+            .setName('title')
+            .setDescription('An optional title for your code. For example: JS for-loop.')
+            .setRequired(false)),
     async execute(interaction) {
         const targetGuild = guildUtils.findGuildById(interaction.guild.id);
         if (!targetGuild || !targetGuild.channel_suggestion) return interaction.reply({

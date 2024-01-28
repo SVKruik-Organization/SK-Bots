@@ -2,15 +2,62 @@ const { Events } = require('discord.js');
 const modules = require('..');
 const { Collection } = require('discord.js');
 const config = require('../assets/config.js');
-const logger = require('../utils/log.js');
+const logger = require('../utils/logger.js');
+const shopInteractionHandler = require('../handlers/shopInteractionHandler.js');
+const xpIncreaseHandler = require('../handlers/xpIncreaseHandler.js');
+const boosterInteractionHandler = require('../handlers/boosterInteractionHandler.js');
 
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
-        // Blacklist
+        // Select Menu Interactions
+        if (interaction.isStringSelectMenu()) {
+            // View Shop Options
+            if (interaction.customId === "shopSelectMenu" && interaction.values[0] === "catalog") {
+                interaction.reply({ content: "Received. Catalog is WIP.", ephemeral: true });
+
+                // View Shop Options
+            } else if (interaction.customId === "shopSelectMenu" && interaction.values[0] === "buy") {
+                shopInteractionHandler.shopOptions(interaction);
+
+                // View Shop Purschase Options
+            } else if (interaction.customId === "shopBuyMenu") {
+                shopInteractionHandler.purschaseOptions(interaction, interaction.values[0]);
+
+                // Activate XP-Booster
+            } else if (interaction.customId === "activateBoosterMenu") {
+                boosterInteractionHandler.confirmActivateDialog(interaction, interaction.values[0]);
+            }
+        }
+
+        // Button Interactions
+        if (interaction.isButton()) {
+            // Purschase Quantity Modal Open
+            if (interaction.customId === 'openShopBuyModal') {
+                await shopInteractionHandler.modal(interaction, interaction.message.components[0].components[0].data.label.split(" ")[1]);
+
+                // Confirm Booster Activation
+            } else if (interaction.customId === "confirmBoosterActivate") {
+                boosterInteractionHandler.confirmActivate(interaction);
+
+                // Cancel Booster Activation
+            } else if (interaction.customId === "cancelBoosterActivate") {
+                boosterInteractionHandler.cancelActivate(interaction);
+            }
+        }
+
+        // Modal Interactions
+        if (interaction.isModalSubmit()) {
+            if (interaction.customId === "shopBuyModal") {
+                shopInteractionHandler.modalInputHandler(interaction);
+            }
+        }
+
+        // Normal Slash Interactions
         if (!interaction.isChatInputCommand()) return;
+        // Blacklist
         if (!modules.superUsers.includes(interaction.user.id) && modules.blockedUsers.includes(interaction.user.id)) {
-            logger.log(`${interaction.user.username} tried using || ${interaction.commandName} || but was unable to because they are blacklisted.`, "info");
+            logger.log(`'${interaction.user.username}@${interaction.user.id}' tried using the || ${interaction.commandName} || command, but was unable to because they are blacklisted.`, "info");
             return interaction.reply({
                 content: 'You are not allowed to use my commands. Please contact the moderators to appeal if you think this is a mistake.',
                 ephemeral: true
@@ -56,24 +103,7 @@ module.exports = {
         }
 
         // Experience
-        modules.database.query("UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = ?; UPDATE tier SET xp = xp + ? WHERE snowflake = ?; SELECT * FROM tier WHERE snowflake = ?",
-            [interaction.user.id, config.tier.slashCommand, interaction.user.id, interaction.user.id])
-            .then((data) => {
-                if (data[2][0].xp >= (2 * (data[2][0].level + 1) + 30)) {
-                    modules.database.query("UPDATE tier SET level = level + 1, xp = 0 WHERE snowflake = ?;", [interaction.user.id])
-                        .then(() => {
-                            const newLevel = data[2][0].level + 1;
-                            const channel = interaction.client.channels.cache.get(interaction.channelId);
-                            channel.send({ content: `Nice! <@${interaction.user.id}> just leveled up and reached level ${newLevel}! 🎉` });
-                        }).catch((err) => {
-                            console.log(err);
-                            return logger.log(`XP increase unsuccessful, ${interaction.user.username} does not have an account yet.`, "warning");
-                        });
-                }
-            }).catch((err) => {
-                console.log(err);
-                return logger.log(`Command usage increase unsuccessful, ${interaction.user.username} does not have an account yet.`, "warning");
-            });
+        xpIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, config.tier.slashCommand, true, interaction.channelId, interaction.client);
 
         // Logging
         let options = [];
@@ -81,6 +111,6 @@ module.exports = {
             options.push(`${element.name}: ${element.value}`);
         });
         const processedOptions = ` with the following options: ${JSON.stringify(options)}`;
-        logger.log(`${interaction.user.username} used || ${interaction.commandName} ||${options.length > 0 ? processedOptions : ""}`, "info");
+        logger.log(`'${interaction.user.username}@${interaction.user.id}' used || ${interaction.commandName} || command${options.length > 0 ? processedOptions : ""} in guild '${interaction.guild.name}@${interaction.guild.id}'`, "info");
     }
 };

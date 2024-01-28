@@ -1,3 +1,5 @@
+const config = require('../assets/config.js');
+
 /**
  * Timestamp Calculation
  * @param {string} preferredLocale Overwrite default locale.
@@ -7,7 +9,7 @@ function getDate(preferredLocale) {
     let locale = "en-US";
     if (preferredLocale) locale = preferredLocale;
     const today = new Date(new Date().toLocaleString(locale, {
-        timeZone: "Europe/Amsterdam"
+        timeZone: config.general.timezone
     }));
 
     const hh = formatTime(today.getHours());

@@ -9,11 +9,33 @@ module.exports = {
         .setName('event')
         .setDescription('Create a new event in the event channel. Users can see when a new meeting takes place.')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-        .addStringOption(option => option.setName('title').setDescription('The title for your event. Max 20 characters.').setRequired(true).setMaxLength(20))
-        .addStringOption(option => option.setName('description').setDescription('The description for the event. What is your event all about? Max 600 characters.').setRequired(true).setMaxLength(600))
-        .addStringOption(option => option.setName('location').setDescription('Location for your event. This can be a call or a physical location. Max 50 characters.').setRequired(true).setMaxLength(50))
-        .addStringOption(option => option.setName('date').setDescription('The date for your event. For example: 05/02/2023.').setRequired(true).setMaxLength(10))
-        .addStringOption(option => option.setName('time').setDescription('The time when your event starts. For example: 09:15.').setRequired(true).setMaxLength(5)),
+        .addStringOption(option => option
+            .setName('title')
+            .setDescription('The title for your event. Max 20 characters.')
+            .setRequired(true)
+            .setMaxLength(20))
+        .addStringOption(option => option
+            .setName('description')
+            .setDescription('The description for the event. What is your event all about? Max 600 characters.')
+            .setRequired(true)
+            .setMaxLength(600))
+        .addStringOption(option => option
+            .setName('location')
+            .setDescription('Location for your event. This can be a call or a physical location. Max 50 characters.')
+            .setRequired(true)
+            .setMaxLength(50))
+        .addStringOption(option => option
+            .setName('date')
+            .setDescription('The date for your event. Format: 05/02/2023.')
+            .setRequired(true)
+            .setMinLength(10)
+            .setMaxLength(10))
+        .addStringOption(option => option
+            .setName('time')
+            .setDescription('The time when your event starts. Format: 09:15')
+            .setRequired(true)
+            .setMinLength(5)
+            .setMaxLength(5)),
     async execute(interaction) {
         const targetGuild = guildUtils.findGuildById(interaction.guild.id);
         if (!targetGuild || !targetGuild.channel_event) return interaction.reply({

@@ -6,14 +6,14 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('coin')
         .setDescription('Flip a coin!')
-        .addStringOption(option =>
-            option.setName('side')
-                .setDescription('Choose which coin side will be winning for you.')
-                .setRequired(true)
-                .addChoices(
-                    { name: 'Heads', value: 'heads' },
-                    { name: 'Tails', value: 'tails' }
-                )),
+        .addStringOption(option => option
+            .setName('side')
+            .setDescription('Choose which coin side will be winning for you.')
+            .setRequired(true)
+            .addChoices(
+                { name: 'Heads', value: 'heads' },
+                { name: 'Tails', value: 'tails' }
+            )),
     async execute(interaction) {
         const winningSide = interaction.options.getString('side');
         const list = ["heads", "tails"];

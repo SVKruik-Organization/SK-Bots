@@ -7,7 +7,12 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('role')
         .setDescription('Give yourself a custom role with your own color.')
-        .addStringOption(option => option.setName('hex').setDescription('The HEX code for your color. For example: 000000. Hashtag prefix is not needed.').setRequired(true).setMinLength(6).setMaxLength(6)),
+        .addStringOption(option => option
+            .setName('hex')
+            .setDescription('The HEX code for your color. For example: 000000. Hashtag prefix is not needed.')
+            .setRequired(true)
+            .setMinLength(6)
+            .setMaxLength(6)),
     async execute(interaction) {
         const targetGuild = guildUtils.findGuildById(interaction.guild.id);
         if (!targetGuild || !targetGuild.role_power) return interaction.reply({

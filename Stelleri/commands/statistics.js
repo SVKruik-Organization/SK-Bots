@@ -17,12 +17,13 @@ module.exports = {
         const embed = embedConstructor.create("Bot Statistics", "Information", interaction,
             [
                 { name: 'Name', value: `**${config.general.name}**` },
+                { name: 'Servers', value: `\`${client.guilds.cache.size}\` Total` },
                 { name: 'Creator', value: `<@${config.general.creatorId}>` },
                 { name: 'Uptime', value: uptime },
                 { name: 'Ping', value: `\`${interaction.client.ws.ping}\`ms` },
                 { name: 'Commands', value: `\`${commands}\` Total` },
                 { name: 'Repository', value: config.general.repository },
-                { name: 'Version', value: `\`v2.3.0\`` }
+                { name: 'Version', value: `\`v2.5.0\`` }
             ]);
         interaction.reply({ embeds: [embed] });
     }

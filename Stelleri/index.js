@@ -3,7 +3,7 @@ const mariadb = require('mariadb');
 const { Client, Collection } = require('discord.js');
 const commandHandler = require('./handlers/commandHandler.js');
 const eventHandler = require('./handlers/eventHandler.js');
-const logger = require('./utils/log.js');
+const logger = require('./utils/logger.js');
 const client = new Client({
     intents: [
         'Guilds',

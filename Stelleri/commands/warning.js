@@ -7,9 +7,16 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('warn')
         .setDescription('Warn someone that breaks the rules. Administrator version of report.')
-        .addUserOption(option => option.setName('target').setDescription('The target member.').setRequired(true))
-        .addStringOption(option => option.setName('reason').setDescription('The reason for the warning. Max 1000 characters.').setRequired(false).setMaxLength(1000))
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .addUserOption(option => option
+            .setName('target')
+            .setDescription('The target member.')
+            .setRequired(true))
+        .addStringOption(option => option
+            .setName('reason')
+            .setDescription('The reason for the warning. Max 1000 characters.')
+            .setRequired(false)
+            .setMaxLength(1000)),
     async execute(interaction) {
         const targetSnowflake = interaction.options.getUser('target').id;
         let reason = interaction.options.getString('reason') ?? 'No reason provided';

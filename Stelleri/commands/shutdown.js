@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const config = require('../assets/config.js');
 const modules = require('..');
-const logger = require('../utils/log.js');
+const logger = require('../utils/logger.js');
 
 module.exports = {
     cooldown: config.cooldowns.A,

@@ -7,23 +7,32 @@ module.exports = {
     cooldown: config.cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('economy')
-        .setDescription('Controls for the economy system. View balance, withdraw etc.')
-        .addStringOption(option =>
-            option.setName('action')
-                .setDescription('Choose what you want to do.')
+        .setDescription('Controls for the economy system. View balance, withdraw and deposit.')
+        .addSubcommand(option => option
+            .setName('withdraw')
+            .setDescription("Withdraw Bits from your Bank to your Wallet account.")
+            .addIntegerOption(option => option
+                .setName('amount')
+                .setDescription("Amount to withdraw. You must have enough Bits to do this.")
                 .setRequired(true)
-                .addChoices(
-                    { name: 'Withdraw from Bank', value: 'withdraw' },
-                    { name: 'Deposit to Bank', value: 'deposit' },
-                    { name: 'View Balance', value: 'balance' }
-                ))
-        .addIntegerOption(option => option.setName('amount').setDescription("Amount to withdraw/deposit, if you have selected that option.").setRequired(false).setMinValue(1)),
+                .setMinValue(1)))
+        .addSubcommand(option => option
+            .setName('deposit')
+            .setDescription("Deposit Bits from your wallet to your bank account.")
+            .addIntegerOption(option => option
+                .setName('amount')
+                .setDescription("Amount to deposit. You must have enough Bits to do this.")
+                .setRequired(true)
+                .setMinValue(100)))
+        .addSubcommand(option => option
+            .setName('balance')
+            .setDescription("Check your current balance.")),
     async execute(interaction) {
         const snowflake = interaction.user.id;
-        const actionType = interaction.options.getString('action');
         const amount = interaction.options.getInteger('amount');
+        const actionType = interaction.options.getSubcommand();
 
-        if (actionType === "withdraw" && amount != null) {
+        if (actionType === "withdraw") {
             modules.database.query("UPDATE economy SET wallet = wallet + ?, bank = bank - ? WHERE snowflake = ?;", [amount, amount, snowflake])
                 .then(() => {
                     interaction.reply(`Successfully withdrew \`${amount}\` Bits.`);
@@ -33,7 +42,7 @@ module.exports = {
                         ephemeral: true
                     });
                 });
-        } else if (actionType === "deposit" && amount != null) {
+        } else if (actionType === "deposit") {
             modules.database.query("UPDATE economy SET wallet = wallet - ?, bank = bank + ? WHERE snowflake = ?;", [amount, amount, snowflake])
                 .then(() => {
                     interaction.reply(`Successfully deposited \`${amount}\` Bits.`);
@@ -60,8 +69,6 @@ module.exports = {
                         ephemeral: true
                     });
                 });
-        } else {
-            interaction.reply({ content: "You need to give the amount to withdraw or deposit.", ephemeral: true });
         }
     }
 };

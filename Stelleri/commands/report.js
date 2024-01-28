@@ -1,29 +1,35 @@
 const { SlashCommandBuilder } = require('discord.js');
 const modules = require('..');
 const config = require('../assets/config.js');
-const logger = require('../utils/log.js');
+const logger = require('../utils/logger.js');
 
 module.exports = {
     cooldown: config.cooldowns.D,
     data: new SlashCommandBuilder()
         .setName('report')
         .setDescription('Report someone for breaking the rules. We will have a look at it.')
-        .addUserOption(option => option.setName('target').setDescription('The target member.').setRequired(true))
-        .addStringOption(option =>
-            option.setName('category')
-                .setDescription('Type of report.')
-                .setRequired(true)
-                .addChoices(
-                    { name: 'Swearing', value: 'Swearing' },
-                    { name: 'Bullying', value: 'Bullying' },
-                    { name: 'Scamming', value: 'Scamming' },
-                    { name: 'Exploiting', value: 'Exploiting' },
-                    { name: 'Dating', value: 'Dating' },
-                    { name: 'Harassment', value: 'Harassment' },
-                    { name: 'Spamming', value: 'Spamming' },
-                    { name: 'Other (Please specify)', value: 'Other' }
-                ))
-        .addStringOption(option => option.setName('reason').setDescription('What did the user do wrong? What rules did they break? Max 1000 characters.').setRequired(true).setMaxLength(1000)),
+        .addUserOption(option => option
+            .setName('target')
+            .setDescription('The target member.')
+            .setRequired(true))
+        .addStringOption(option => option
+            .setName('category')
+            .setDescription('Type of report.')
+            .setRequired(true)
+            .addChoices(
+                { name: 'Swearing', value: 'Swearing' },
+                { name: 'Bullying', value: 'Bullying' },
+                { name: 'Scamming', value: 'Scamming' },
+                { name: 'Exploiting', value: 'Exploiting' },
+                { name: 'Dating', value: 'Dating' },
+                { name: 'Harassment', value: 'Harassment' },
+                { name: 'Spamming', value: 'Spamming' },
+                { name: 'Other (Please specify)', value: 'Other' }))
+        .addStringOption(option => option
+            .setName('reason')
+            .setDescription('What did the user do wrong? What rules did they break? Max 1000 characters.')
+            .setRequired(true)
+            .setMaxLength(1000)),
     async execute(interaction) {
         const snowflake = interaction.user.id;
         const username = interaction.user.username;

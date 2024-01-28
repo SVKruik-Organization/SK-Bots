@@ -4,13 +4,13 @@ Welcome to my second Discord bot repository. You can have a look at the old bots
 
 Below you will find a list of statistics, information and commands. I will update this regularly. Last updated on:
 
-**04/01/2024**.
+**29/01/2024**.
 
 #### Bots Overview
 
 | Name | Type | Commands | Info |
 | - | - | - | - |
-| Stelleri | General Purpose | `29` | [Steller's Eider](https://en.wikipedia.org/wiki/Steller%27s_eider) |
+| Stelleri | General Purpose | `33` | [Steller's Eider](https://en.wikipedia.org/wiki/Steller%27s_eider) |
 | Virgo | Trading | `2` | [Demoiselle Crane](https://en.wikipedia.org/wiki/Demoiselle_crane) |
 
 #### Bot Information
@@ -34,18 +34,22 @@ Virgo is a template bot for now.
 | `delete` | Remove an old or duplicate slash command. | `id` | `true` | Moderation |
 | `dice` | Roll the dice. Returns random number. | - | `false` | Fun |
 | `economy` | Controls for economy system. Withdraw, deposit or view your balance. | `action` optional: `amount` | `false` | Economy |
-| `event` | Create a scheduled event.The bot will send a message in a dedicated channel. | `title` `description` `location` `date` `time` | `true` | Tools |
+| `event` | Create a scheduled event. The bot will send a message in a dedicated channel. | `title` `description` `location` `date` `time` | `true` | Tools |
 | `fact` | Get a random interesting fact. Works with the API Ninja's API. | - | `false` | Fun |
+| `inventory` | View the items that you have, or activate/disable a XP-Booster. | - | `false` | Account |
 | `math` | Solve a math problem. You can use all math operators like `*` and `/`. | `problem` | `false` | Tools |
 | `modify` | Modify the amount of `param2` a user has. | `target` `section` `action` `amount` | `true` | Moderation |
-| `pincode` | Request or change your pincode, depending on `param1`.  | `action` optional: `new-pincode` | `false` | Account |
+| `pincode` | Change your pincode. | `old-pincode` `new-pincode` | `false` | Account |
 | `ping` | Check if the bot is online and working. If so, the bot will respond with a random chosen message. | - | `false` | Tools |
 | `random` | Generate a random number between 1 and `param1`. | `maximum` | `false` | Tools |
 | `register` | Create a new account. You will also have to set your pincode, used for sensitive commands like `close`. | `pincode` | `false` | Account |
+| `reload` | Reload a specific or all Guild and Global commands. | `action` `command` | `true` | Moderation |
 | `report` | Report someone for misbehaving and/or breaking the rules of conduct. You can select the type, and then further explain the incident. | `target` `category` `reason` | `false` | Moderation |
 | `role` | Style yourself with a custom HEX role color. Prefix `#` is not needed. | `hex` | `false` | Fun |
 | `rps` | Play a game of rock, paper and scissors! | `type` | `false` | Fun |
 | `server` | Get information about the current server the bot is in. | - | `false` | Tools |
+| `setup` | Configure the bot for server specific commands to work. | `action` `action-options` | `true` | Tools |
+| `shop` | Spend your Bits on cool perks or cosmetics. | `action` `action-options` | `false` | Tools |
 | `shutdown` | Shutdown the bot remotely. | - | `true` | Tools |
 | `snippet` | Let the bot format a piece of code for you, and send it to a dedicated channel. | `language` `code` optional: `title` | `false` | Tools |
 | `statistics` | Get information about the bot. | - | `false` | Tools |
@@ -64,5 +68,5 @@ Virgo is a template bot for now.
 
 - Node.js version: `v20.10.0 LTS`
 - Discord.js version: `v14.7.1`
-- Project version: `v2.3.0`
+- Project version: `v2.5.0`
 - Database: `MariaDB`

@@ -1,5 +1,5 @@
 const modules = require('..');
-const logger = require('./log.js');
+const logger = require('./logger.js');
 
 // Indexing Guilds and settings
 modules.database.query("SELECT * FROM guild WHERE disabled = 0;")

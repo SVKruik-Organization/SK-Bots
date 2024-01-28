@@ -1,7 +1,7 @@
 const { Collection } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
-const logger = require('../utils/log.js');
+const logger = require('../utils/logger.js');
 
 /**
  * Initialise the Command Handler, and load all the commands.

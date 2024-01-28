@@ -4,7 +4,8 @@ exports.general = {
     clientId: "1071428183003500544",
     imageURL: "https://i.imgur.com/9X7PIG0.png",
     creatorId: "422704748488163332",
-    repository: "https://github.com/SVKruik/Discord-Bots-v2"
+    repository: "https://github.com/SVKruik/Discord-Bots-v2",
+    timezone: "Europe/Amsterdam"
 };
 
 exports.cooldowns = {
@@ -16,7 +17,7 @@ exports.cooldowns = {
 };
 
 exports.tier = {
-    normalMessage: 1,
-    slashCommand: 8,
-    levelUpThreshold: 30
+    normalMessage: 10,
+    purschase: 50,
+    slashCommand: 80
 };

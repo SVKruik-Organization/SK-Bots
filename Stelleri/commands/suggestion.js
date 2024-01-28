@@ -7,9 +7,17 @@ module.exports = {
     cooldown: config.cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('suggestion')
-        .setDescription('Pitch a new idea for the project!')
-        .addStringOption(option => option.setName('title').setDescription('The title for your suggestion. Max 50 characters.').setRequired(true).setMaxLength(50))
-        .addStringOption(option => option.setName('description').setDescription('The description. Pitch your idea, explain why and how to implement. Max 600 characters.').setRequired(true).setMaxLength(600)),
+        .setDescription('Pitch a new idea for the server!')
+        .addStringOption(option => option
+            .setName('title')
+            .setDescription('The title for your suggestion. Max 50 characters.')
+            .setRequired(true)
+            .setMaxLength(50))
+        .addStringOption(option => option
+            .setName('description')
+            .setDescription('The description. Pitch your idea, explain why and how to implement. Max 600 characters.')
+            .setRequired(true)
+            .setMaxLength(600)),
     async execute(interaction) {
         const targetGuild = guildUtils.findGuildById(interaction.guild.id);
         if (!targetGuild || !targetGuild.channel_suggestion) return interaction.reply({

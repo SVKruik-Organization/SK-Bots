@@ -9,49 +9,49 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('setup')
         .setDescription('Setup or check the server configuration. Requires Developer Mode.')
-        .addStringOption(option =>
-            option.setName('action')
-                .setDescription('Whether you want to (re-)register or check current configuration.')
-                .setRequired(true)
-                .addChoices(
-                    { name: '(Re-)Register', value: 'register' },
-                    { name: 'Check', value: 'check' },
-                    { name: 'Help', value: 'help' }
-                ))
-        .addChannelOption(option => option
-            .setName('channel_event')
-            .setDescription('Event Channel')
-            .addChannelTypes(ChannelType.GuildText)
-            .setRequired(false)
-        )
-        .addChannelOption(option => option
-            .setName('channel_suggestion')
-            .setDescription('Suggestion Channel')
-            .addChannelTypes(ChannelType.GuildText)
-            .setRequired(false)
-        )
-        .addChannelOption(option => option
-            .setName('channel_snippet')
-            .setDescription('Snippet Channel')
-            .addChannelTypes(ChannelType.GuildText)
-            .setRequired(false)
-        )
-        .addChannelOption(option => option
-            .setName('channel_rules')
-            .setDescription('Rules Channel')
-            .addChannelTypes(ChannelType.GuildText)
-            .setRequired(false)
-        )
-        .addRoleOption(option => option
-            .setName('role_blinded')
-            .setDescription('Blinded Role')
-            .setRequired(false)
-        )
-        .addIntegerOption(option => option.setName('role_power').setDescription('Amount of roles with admin privileges. This makes sure that cosmetic roles will not overpower these.').setRequired(false).setMinValue(1).setMaxValue(30))
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .addSubcommand(option => option
+            .setName("register")
+            .setDescription("Create or update the current configuration.")
+            .addChannelOption(option => option
+                .setName('channel_event')
+                .setDescription('Event Channel')
+                .addChannelTypes(ChannelType.GuildText)
+                .setRequired(false))
+            .addChannelOption(option => option
+                .setName('channel_suggestion')
+                .setDescription('Suggestion Channel')
+                .addChannelTypes(ChannelType.GuildText)
+                .setRequired(false))
+            .addChannelOption(option => option
+                .setName('channel_snippet')
+                .setDescription('Snippet Channel')
+                .addChannelTypes(ChannelType.GuildText)
+                .setRequired(false))
+            .addChannelOption(option => option
+                .setName('channel_rules')
+                .setDescription('Rules Channel')
+                .addChannelTypes(ChannelType.GuildText)
+                .setRequired(false))
+            .addRoleOption(option => option
+                .setName('role_blinded')
+                .setDescription('Blinded Role')
+                .setRequired(false))
+            .addIntegerOption(option => option
+                .setName('role_power')
+                .setDescription('Amount of roles with admin privileges. This makes sure that cosmetic roles will not overpower these.')
+                .setMinValue(1)
+                .setMaxValue(30)
+                .setRequired(false)))
+        .addSubcommand(option => option
+            .setName('check')
+            .setDescription('Check the current server configuration.'))
+        .addSubcommand(option => option
+            .setName('help')
+            .setDescription('Read about how-to and why to use this command.')),
     async execute(interaction) {
         // Setup
-        const actionType = interaction.options.getString('action');
+        const actionType = interaction.options.getSubcommand('action');
         let newGuild = true;
         const targetGuild = guildUtils.findGuildById(interaction.guild.id);
         if (targetGuild) newGuild = false;
@@ -61,15 +61,15 @@ module.exports = {
         const channel_event = interaction.options.getChannel('channel_event') || null;
         const channel_suggestion = interaction.options.getChannel('channel_suggestion') || null;
         const channel_snippet = interaction.options.getChannel('channel_snippet') || null;
-        const channel_rules = interaction.options.getChannel('channel_rules') || interaction.client.channels.fetch(interaction.guild.rulesChannelId) || null;
+        const channel_rules = interaction.options.getChannel('channel_rules') || interaction.guild.rulesChannelId ? interaction.client.channels.fetch(interaction.guild.rulesChannelId) : null;
         const role_blinded = interaction.options.getRole('role_blinded') || null;
-        const role_power = interaction.options.getInteger('role_power') || 2;
+        const role_power = interaction.options.getInteger('role_power') || 1;
 
         // New 
         if (actionType === "register" && newGuild) {
-            modules.database.query("INSERT INTO guild (register_snowflake, name, channel_event, channel_suggestion, channel_snippet, channel_rules, role_power, role_blinded, locale, snowflake) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", [interaction.user.id, interaction.user.username, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_power, role_blinded ? role_blinded.id : null, interaction.guild.preferredLocale, interaction.guild.id])
+            modules.database.query("INSERT INTO guild (register_snowflake, name, channel_event, channel_suggestion, channel_snippet, channel_rules, role_power, role_blinded, locale, snowflake) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?); INSERT INTO guild_settings (snowflake) VALUES (?);", [interaction.user.id, interaction.user.username, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_power, role_blinded ? role_blinded.id : null, interaction.guild.preferredLocale, interaction.guild.id, interaction.guild.id])
                 .then(() => {
-                    interaction.reply("Setup successful. Additional commands enabled.");
+                    interaction.reply("Setup successful. Additional commands enabled. For other settings like welcome messages and other paramaters, please consult my website (WIP).");
                     guildUtils.guilds.push({
                         "guildObject": interaction.guild,
                         "name": interaction.guild.name,
@@ -95,7 +95,7 @@ module.exports = {
         } else if (actionType === "register" && !newGuild) {
             modules.database.query("UPDATE guild SET channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_power = ?, role_blinded = ? WHERE snowflake = ?", [channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_power, role_blinded ? role_blinded.id : null, interaction.guild.id])
                 .then(() => {
-                    interaction.reply("Setup update successful. Additional commands reloaded or disabled.");
+                    interaction.reply("Setup update successful. Additional commands reloaded or disabled. For other settings like welcome messages and other paramaters, please consult my website (WIP).");
                     guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);
                     guildUtils.guilds.push({
                         "guildObject": interaction.guild,
