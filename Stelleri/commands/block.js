@@ -38,20 +38,29 @@ module.exports = {
                 modules.database.query("UPDATE user SET blocked = ? WHERE snowflake = ?", [status, targetSnowflake])
                     .then((data) => {
                         // Validation
-                        if (data.affectedRows === 0) return interaction.reply({ content: `User <@${targetSnowflake}> does not have an account yet.` });
+                        if (data.affectedRows === 0) return interaction.reply({
+                            content: `User <@${targetSnowflake}> does not have an account yet.`,
+                            ephemeral: true
+                        });
                         const index = modules.blockedUsers.indexOf(targetSnowflake);
 
                         // Remove
                         if (status === 0) {
                             if (index > -1) modules.blockedUsers.splice(index, 1);
-                            logger.log(`${targetUsername} was removed from the blacklist by '${interaction.user.username}@${interaction.user.id}'.`, "alert");
-                            interaction.reply({ content: `<@${targetSnowflake}> has been removed from the blacklist. They are now able to use my commands again.` });
+                            logger.log(`${targetUsername} was removed from the blacklist by '${interaction.user.username}@${interaction.user.id}'.`, "warning");
+                            interaction.reply({
+                                content: `<@${targetSnowflake}> has been removed from the blacklist. They are now able to use my commands again.`,
+                                ephemeral: true
+                            });
 
                             // Add
                         } else if (status === 1) {
                             if (index !== -1) modules.blockedUsers.push(targetSnowflake);
-                            logger.log(`${targetUsername} was added to the blacklist by '${interaction.user.username}@${interaction.user.id}'.`, "alert");
-                            interaction.reply({ content: `<@${targetSnowflake}> has been added to the blacklist. They are no longer able to use my commands.` });
+                            logger.log(`${targetUsername} was added to the blacklist by '${interaction.user.username}@${interaction.user.id}'.`, "warning");
+                            interaction.reply({
+                                content: `<@${targetSnowflake}> has been added to the blacklist. They are no longer able to use my commands.`,
+                                ephemeral: true
+                            });
                         }
                     }).catch(() => {
                         interaction.reply({
@@ -68,7 +77,10 @@ module.exports = {
                             ephemeral: true
                         });
 
-                        interaction.reply({ content: `Blocked status of user <@${targetSnowflake}>: \`${data[0].blocked ? "true" : "false"}\`` });
+                        interaction.reply({
+                            content: `Blocked status of user <@${targetSnowflake}>: \`${data[0].blocked ? "true" : "false"}\``,
+                            ephemeral: true
+                        });
                     }).catch(() => {
                         interaction.reply({
                             content: "Something went wrong while checking the block status of this user. Please try again later.",

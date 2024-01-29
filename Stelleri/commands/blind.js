@@ -38,12 +38,12 @@ module.exports = {
         if (action === "blind") {
             await guild.members.fetch(targetSnowflake).then((user) => {
                 user.roles.add(role);
-                interaction.reply(`<@${targetSnowflake}> has been blinded. He/she no longer has access to the general voice and text channels.`);
+                interaction.reply({ content: `<@${targetSnowflake}> has been blinded. He/she no longer has access to the general voice and text channels.` });
             });
         } else if (action === "unblind") {
             await guild.members.fetch(targetSnowflake).then((user) => {
                 user.roles.remove(role);
-                interaction.reply(`<@${targetSnowflake}> has been unblinded. Welcome back!`);
+                interaction.reply({ content: `<@${targetSnowflake}> has been unblinded. Welcome back!` });
             });
         }
     }

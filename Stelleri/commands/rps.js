@@ -38,6 +38,6 @@ module.exports = {
             } else reply = "✂ - You win!";
         }
 
-        interaction.reply(`I chose: ${reply}`);
+        interaction.reply({ content: `I chose: ${reply}` });
     }
 };

@@ -37,7 +37,10 @@ module.exports = {
                 await targetGuild.guildObject.members.fetch(snowflake).then((user) => {
                     user.roles.add(role);
                 });
-                interaction.reply(`\`#${color}\` -- great color! You look awesome!`);
+                interaction.reply({
+                    content: `\`#${color}\` -- great color! You look awesome!`,
+                    ephemeral: true
+                });
             }).catch((error) => {
                 console.error(error);
                 interaction.reply({

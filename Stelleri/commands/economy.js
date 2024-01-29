@@ -36,7 +36,10 @@ module.exports = {
             if (actionType === "withdraw") {
                 modules.database.query("UPDATE economy SET wallet = wallet + ?, bank = bank - ? WHERE snowflake = ?;", [amount, amount, snowflake])
                     .then(() => {
-                        interaction.reply(`Successfully withdrew \`${amount}\` Bits.`);
+                        interaction.reply({
+                            content: `Successfully withdrew \`${amount}\` Bits.`,
+                            ephemeral: true
+                        });
                     }).catch(() => {
                         return interaction.reply({
                             content: "You do not have an account yet. Create an account with the `/register` command.",
@@ -46,7 +49,10 @@ module.exports = {
             } else if (actionType === "deposit") {
                 modules.database.query("UPDATE economy SET wallet = wallet - ?, bank = bank + ? WHERE snowflake = ?;", [amount, amount, snowflake])
                     .then(() => {
-                        interaction.reply(`Successfully deposited \`${amount}\` Bits.`);
+                        interaction.reply({
+                            content: `Successfully deposited \`${amount}\` Bits.`,
+                            ephemeral: true
+                        });
                     }).catch(() => {
                         return interaction.reply({
                             content: "You do not have an account yet. Create an account with the `/register` command.",
@@ -63,7 +69,7 @@ module.exports = {
                                 { name: '-----', value: `Summary` },
                                 { name: 'Combined', value: `\`${data[0].total}\`` }
                             ]);
-                        interaction.reply({ embeds: [embed] });
+                        interaction.reply({ embeds: [embed], ephemeral: true });
                     }).catch(() => {
                         return interaction.reply({
                             content: "You do not have an account yet. Create an account with the `/register` command.",

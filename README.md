@@ -26,20 +26,20 @@ Virgo is a template bot for now.
 | `admin` | Add or remove someone from the super users. | `target` `action` | `true` | Moderation |
 | `ai` | Prompt ChatGPT or Dall-E for text or image generation. Requires funding, and is currently not operational. | `type` | `false` | Fun |
 | `blind` | Add or remove someone from the blinded users. If you have the `Blinded` role, you can only see a the selected channels. | `target` `action` | `true` | Moderation |
-| `block` | Add or remove someone from the blocked users. | `target` `action` | `true` | Moderation |
+| `block` | Add or remove someone from the blocked users. If you are blocked, you are unable to use the bot's commands. | `target` `action` | `true` | Moderation |
 | `clear` | Bulk delete `param1` amount of messages. | `amount` | `true` | Moderation |
 | `close` | Close your account. Pincode input for verification. | `pincode` | `false` | Account |
 | `coin` | Flip a coin. `param1` to choose which side you placed your bet on. | `side` | `false` | Fun |
-| `dailyreward` | Collect your daily reward. There is a chance you get the jackpot. | - | `false` | Economy |
+| `dailyreward` | Collect your daily reward. There is a 1 in 50 chance you win the jackpot. | - | `false` | Economy |
 | `delete` | Remove an old or duplicate slash command. | `id` | `true` | Moderation |
 | `dice` | Roll the dice. Returns random number. | - | `false` | Fun |
-| `economy` | Controls for economy system. Withdraw, deposit or view your balance. | `action` optional: `amount` | `false` | Economy |
+| `economy` | Controls for the Economy system. Withdraw, deposit or view your balance. | `action` `amount` | `false` | Economy |
 | `event` | Create a scheduled event. The bot will send a message in a dedicated channel. | `title` `description` `location` `date` `time` | `true` | Tools |
-| `fact` | Get a random interesting fact. Works with the API Ninja's API. | - | `false` | Fun |
+| `fact` | Get a random interesting fact. Works with "API Ninja's" Fact endpoint. | - | `false` | Fun |
 | `inventory` | View the items that you have, or activate/disable a XP-Booster. | - | `false` | Account |
-| `math` | Solve a math problem. You can use all math operators like `*` and `/`. | `problem` | `false` | Tools |
+| `math` | Solve a math problem. You can use all math operators like `*` and `/`. | `expression` | `false` | Tools |
 | `modify` | Modify the amount of `param2` a user has. | `target` `section` `action` `amount` | `true` | Moderation |
-| `pincode` | Change your pincode. | `old-pincode` `new-pincode` | `false` | Account |
+| `pincode` | Change your pincode. Note that you have to know your current pincode, as 'Forgot Pincode' is WIP. | `old-pincode` `new-pincode` | `false` | Account |
 | `ping` | Check if the bot is online and working. If so, the bot will respond with a random chosen message. | - | `false` | Tools |
 | `random` | Generate a random number between 1 and `param1`. | `maximum` | `false` | Tools |
 | `register` | Create a new account. You will also have to set your pincode, used for sensitive commands like `close`. | `pincode` | `false` | Account |

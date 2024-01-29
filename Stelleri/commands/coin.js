@@ -30,7 +30,7 @@ module.exports = {
          * @param {string} side The side that has been chosen.
          */
         function win(side) {
-            interaction.reply(`:coin: ${side}! -- You win. :green_circle:`);
+            interaction.reply({ content: `:coin: ${side}! -- You win. :green_circle:` });
         }
 
         /**
@@ -38,7 +38,7 @@ module.exports = {
          * @param {string} side The side that has been chosen.
          */
         function lose(side) {
-            interaction.reply(`:coin: ${side}! -- You lose. :red_circle:`);
+            interaction.reply({ content: `:coin: ${side}! -- You lose. :red_circle:` });
         }
     }
 };

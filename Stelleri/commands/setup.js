@@ -70,7 +70,10 @@ module.exports = {
             if (actionType === "register" && newGuild) {
                 modules.database.query("UPDATE guild SET register_snowflake = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_power = ?, role_blinded = ?, locale = ? WHERE snowflake = ?;", [interaction.user.id, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_power, role_blinded ? role_blinded.id : null, interaction.guild.preferredLocale, interaction.guild.id])
                     .then(() => {
-                        interaction.reply("Setup successful. Additional commands enabled. For other settings like welcome messages and other paramaters, please consult my website (WIP).");
+                        interaction.reply({
+                            content: "Setup successful. Additional commands enabled. For other settings like welcome messages and other paramaters, please consult my website (WIP).",
+                            ephemeral: true
+                        });
                         guildUtils.guilds.push({
                             "guildObject": interaction.guild,
                             "name": interaction.guild.name,
@@ -96,7 +99,10 @@ module.exports = {
             } else if (actionType === "register" && !newGuild) {
                 modules.database.query("UPDATE guild SET channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_power = ?, role_blinded = ?, date_update = CURRENT_TIMESTAMP WHERE snowflake = ?", [channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_power, role_blinded ? role_blinded.id : null, interaction.guild.id])
                     .then(() => {
-                        interaction.reply("Setup update successful. Additional commands reloaded or disabled. For other settings like welcome messages and other paramaters, please consult my website (WIP).");
+                        interaction.reply({
+                            content: "Setup update successful. Additional commands reloaded or disabled. For other settings like welcome messages and other paramaters, please consult my website (WIP).",
+                            ephemeral: true
+                        });
                         guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);
                         guildUtils.guilds.push({
                             "guildObject": interaction.guild,
@@ -136,7 +142,7 @@ module.exports = {
                         { name: 'Power Roles', value: `\`${targetGuild.role_power || 0}\`` },
                         { name: 'Blinded Role', value: `${targetGuild.role_blinded || "Not Configured"}` }
                     ]);
-                interaction.reply({ embeds: [embed] });
+                interaction.reply({ embeds: [embed], ephemeral: true });
             } else if (actionType === "help") {
                 const embed = embedConstructor.create("Server Configuration", "Command Usage Help", interaction,
                     [
@@ -153,7 +159,7 @@ module.exports = {
                             value: "When Discord Developer mode is enabled, you can right-click > copy the Text Channel ID. Same goes for Roles and other objects. Just complete all the fields, and you are good to go. No reloading/refreshing is required, i'll handle it from there."
                         }
                     ]);
-                interaction.reply({ embeds: [embed] });
+                interaction.reply({ embeds: [embed], ephemeral: true });
             }
         } catch (error) {
             console.error(error);

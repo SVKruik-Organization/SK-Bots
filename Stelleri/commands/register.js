@@ -20,7 +20,7 @@ module.exports = {
             const pincode = interaction.options.getString('pincode');
 
             modules.database.query("INSERT INTO user (snowflake, username, pincode, created_on) VALUES (?, ?, ?, CURRENT_TIMESTAMP); INSERT INTO tier (snowflake) VALUES (?); INSERT INTO economy (snowflake) VALUES (?); INSERT INTO user_inventory (snowflake) VALUES (?);",
-            [snowflake, username, pincode, snowflake, snowflake, snowflake])
+                [snowflake, username, pincode, snowflake, snowflake, snowflake])
                 .then(() => {
                     interaction.reply({
                         content: "Thank you for your registration! You can now use all commands.",
@@ -28,7 +28,10 @@ module.exports = {
                     });
                 }).catch((error) => {
                     if (error.code === "ER_DUP_ENTRY") {
-                        return interaction.reply({ content: "You already have an account. Display your statistics with `/economy`, and `/tier`.", ephemeral: true });
+                        return interaction.reply({
+                            content: "You already have an account. Display your statistics with `/economy`, and `/tier`.",
+                            ephemeral: true
+                        });
                     } else return interaction.reply({
                         content: "Something went wrong while registering your account. Please try again later.",
                         ephemeral: true

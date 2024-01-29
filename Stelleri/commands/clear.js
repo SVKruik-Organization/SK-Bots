@@ -15,7 +15,10 @@ module.exports = {
             .setMaxValue(50)),
     async execute(interaction) {
         const amount = interaction.options.getInteger('amount');
-        interaction.reply("Deleting `" + amount + "` messages . . .");
+        interaction.reply({
+            content: `Deleting ${amount} messages . . .`,
+            ephemeral: true
+        });
 
         // Bulk Delete
         setTimeout(() => {

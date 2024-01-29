@@ -39,17 +39,26 @@ module.exports = {
                 modules.database.query("UPDATE user SET super = ? WHERE snowflake = ?", [status, targetSnowflake])
                     .then((data) => {
                         // Validation
-                        if (data.affectedRows === 0) return interaction.reply({ content: `User <@${targetSnowflake}> does not have an account yet.` })
+                        if (data.affectedRows === 0) return interaction.reply({
+                            content: `User <@${targetSnowflake}> does not have an account yet.`,
+                            ephemeral: true
+                        })
 
                         // Remove
                         if (status === 0) {
                             logger.log(`${targetUsername} was removed from the super users by '${interaction.user.username}@${interaction.user.id}'.`, "alert");
-                            interaction.reply({ content: `<@${targetSnowflake}> has been removed from the super users. They are no longer able to use my admin commands.` });
+                            interaction.reply({
+                                content: `<@${targetSnowflake}> has been removed from the super users. They are no longer able to use my admin commands.`,
+                                ephemeral: true
+                            });
 
                             // Add
                         } else if (status === 1) {
                             logger.log(`${targetUsername} was added to the super users by '${interaction.user.username}@${interaction.user.id}'.`, "alert");
-                            interaction.reply({ content: `<@${targetSnowflake}> has been added to the super users. They are now able to use my admin commands.` });
+                            interaction.reply({
+                                content: `<@${targetSnowflake}> has been added to the super users. They are now able to use my admin commands.`,
+                                ephemeral: true
+                            });
                         }
                     }).catch(() => {
                         interaction.reply({
@@ -68,7 +77,10 @@ module.exports = {
                             ephemeral: true
                         });
 
-                        await interaction.reply({ content: `Super status of user <@${targetSnowflake}>: \`${data[0].super === 1}\`` });
+                        interaction.reply({
+                            content: `Super status of user <@${targetSnowflake}>: \`${data[0].super === 1}\``,
+                            ephemeral: true
+                        });
                     }).catch(() => {
                         interaction.reply({
                             content: "Something went wrong while checking the super status of this user. Please try again later.",

@@ -76,9 +76,15 @@ module.exports = {
 
             modules.database.query(`UPDATE ${table}${action}${where}`)
                 .then(() => {
-                    interaction.reply({ content: "Account data has been successfully changed.", ephemeral: true });
+                    interaction.reply({
+                        content: "Account data has been successfully changed.",
+                        ephemeral: true
+                    });
                 }).catch(() => {
-                    return interaction.reply({ content: "This user doesn't have an account yet.", ephemeral: true });
+                    return interaction.reply({
+                        content: "This user doesn't have an account yet.",
+                        ephemeral: true
+                    });
                 });
         } catch (error) {
             console.error(error);

@@ -24,7 +24,7 @@ module.exports = {
 
             modules.database.query("INSERT INTO warning (snowflake, snowflake_recv, reason, date, guild_snowflake) VALUES (?, ?, ?, CURRENT_TIMESTAMP(), ?);", [interaction.user.id, targetSnowflake, reason, interaction.guild.id])
                 .then(() => {
-                    interaction.reply(`User <@${targetSnowflake}> has been warned for: \`${reason}\``);
+                    interaction.reply({ content: `User <@${targetSnowflake}> has been warned for: \`${reason}\`` });
                 }).catch(() => {
                     return interaction.reply({
                         content: "Something went wrong while warning this user. Please try again later.",

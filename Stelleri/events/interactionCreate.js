@@ -98,7 +98,7 @@ module.exports = {
             command.execute(interaction);
         } catch (error) {
             logger.log(`There was an error while executing || ${interaction.commandName} ||`, "error");
-            interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+            interaction.reply({ content: 'There was an fatal error while executing this command!', ephemeral: true });
             console.error(error);
         }
 
