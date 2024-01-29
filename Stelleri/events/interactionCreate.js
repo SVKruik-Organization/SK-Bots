@@ -7,6 +7,7 @@ const shopInteractionHandler = require('../handlers/shopInteractionHandler.js');
 const xpIncreaseHandler = require('../handlers/xpIncreaseHandler.js');
 const boosterInteractionHandler = require('../handlers/boosterInteractionHandler.js');
 const { customShopCatalog } = require('../utils/embed.js');
+const closeInteractionHandler = require('../handlers/closeInteractionHandler.js');
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -44,6 +45,15 @@ module.exports = {
                 // Cancel Booster Activation
             } else if (interaction.customId === "cancelBoosterActivate") {
                 boosterInteractionHandler.cancelActivate(interaction);
+
+                // Confirm Account Close
+            } else if (interaction.customId === "confirmAccountClose") {
+                closeInteractionHandler.confirmAccountClose(interaction);
+
+                // Cancel Account Close
+            } else if (interaction.customId === "cancelAccountClose") {
+                closeInteractionHandler.cancelAccountClose(interaction);
+
             }
         }
 

@@ -21,7 +21,7 @@ function disabledButtons(interaction) {
         .setLabel(`Cancel`)
         .setStyle('Danger')
         .setDisabled(true);
-    return new ActionRowBuilder().addComponents(disabledConfirm, disabledCancel)
+    return new ActionRowBuilder().addComponents(disabledConfirm, disabledCancel);
 }
 
 /**
