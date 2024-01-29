@@ -25,7 +25,8 @@ const database = mariadb.createPool({
 });
 
 // Deploy
-database.query("SELECT * FROM guild WHERE disabled = 0;")
+try {
+    database.query("SELECT * FROM guild WHERE disabled = 0;")
     .then(async (queryData) => {
         console.log("\n");
         for (let i = 0; i < queryData.length; i++) {
@@ -38,5 +39,8 @@ database.query("SELECT * FROM guild WHERE disabled = 0;")
         console.log("\n");
         process.exit(1);
     }).catch((error) => {
-        console.log(error);
+        console.error(error);
     });
+} catch (error) {
+    console.error(error);
+}

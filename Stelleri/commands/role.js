@@ -23,7 +23,8 @@ module.exports = {
         const color = interaction.options.getString('hex');
         const regex = "^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
         const role = targetGuild.guildObject.roles.cache.find(role => role.name === interaction.user.username);
-        const position = targetGuild.guildObject.roles.cache.size - targetGuild.role_power;
+        let position = targetGuild.guildObject.roles.cache.size - targetGuild.role_power;
+        if (position < 2) position = 2;
 
         if (role) await role.delete();
         if (color.match(regex)) {
@@ -37,7 +38,8 @@ module.exports = {
                     user.roles.add(role);
                 });
                 interaction.reply(`\`#${color}\` -- great color! You look awesome!`);
-            }).catch(() => {
+            }).catch((error) => {
+                console.error(error);
                 interaction.reply({
                     content: "Something went wrong while creating your role. Please try again later.",
                     ephemeral: true

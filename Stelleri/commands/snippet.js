@@ -27,10 +27,12 @@ module.exports = {
         .addStringOption(option => option
             .setName('title')
             .setDescription('An optional title for your code. For example: JS for-loop.')
-            .setRequired(false)),
+            .setRequired(false)
+            .setMinLength(1)
+            .setMaxLength(50)),
     async execute(interaction) {
         const targetGuild = guildUtils.findGuildById(interaction.guild.id);
-        if (!targetGuild || !targetGuild.channel_suggestion) return interaction.reply({
+        if (!targetGuild || !targetGuild.channel_snippet) return interaction.reply({
             content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
             ephemeral: true
         });

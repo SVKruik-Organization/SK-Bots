@@ -9,8 +9,6 @@ module.exports = {
         .setName('fact')
         .setDescription('Get a random fact.'),
     async execute(interaction) {
-        const username = interaction.user.username;
-
         request.get({
             url: 'https://api.api-ninjas.com/v1/facts?limit=1',
             headers: {
@@ -26,7 +24,7 @@ module.exports = {
                 const data = (JSON.parse(body))[0].fact;
                 const embed = new EmbedBuilder()
                     .setColor(config.general.color)
-                    .setAuthor({ name: username, iconURL: interaction.user.avatarURL() })
+                    .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
                     .addFields({ name: 'Random Fact', value: data })
                     .setTimestamp()
                     .setFooter({ text: `Embed created by ${config.general.name}` })

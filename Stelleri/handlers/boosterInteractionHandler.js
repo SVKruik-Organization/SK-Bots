@@ -1,6 +1,7 @@
 const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
-const logger = require('../utils/logger');
+const logger = require('../utils/logger.js');
 const modules = require('..');
+const { dueAdd } = require('../utils/due.js');
 
 /**
  * Returns a set of disabled buttons.
@@ -64,34 +65,39 @@ function confirmActivateDialog(interaction, value) {
  * @returns On error.
  */
 function confirmActivate(interaction) {
-    const boosterType = interaction.message.components[0].components[0].data.label.split(" ")[1];
+    try {
+        const boosterType = interaction.message.components[0].components[0].data.label.split(" ")[1];
 
-    // Sanitizing against SQL injection
-    let row = null;
-    if (boosterType === "xp15") {
-        row = boosterType
-    } else if (boosterType === "xp50") row = boosterType;
-    if (!row) return interaction.update({
-        content: `Something went wrong while preparing the systems. Please try again later.`,
-        components: [],
-        ephemeral: true
-    });
-
-    modules.database.query(`UPDATE user_inventory SET ${row} = ${row} - 1, xp_active = ?, xp_active_expiry = DATE_ADD(NOW(), INTERVAL 25 HOUR) WHERE snowflake = ?;`, [boosterType, interaction.user.id])
-        .then(() => {
-            logger.log(`'${interaction.user.username}@${interaction.user.id}' has activated a XP-Booster ${boosterType} in guild '${interaction.guild.name}@${interaction.guild.id}'.`, "info");
-            interaction.update({
-                content: `Success! Your XP-Booster has been activated for 24 hours, and is applied to all gained Experience.`,
-                components: [disabledButtons(interaction)],
-                ephemeral: true
-            });
-        }).catch(() => {
-            interaction.update({
-                content: `Something went wrong while updating your information. Please try again later.`,
-                components: [],
-                ephemeral: true
-            });
+        // Sanitizing against SQL injection
+        let row = null;
+        if (boosterType === "xp15") {
+            row = boosterType
+        } else if (boosterType === "xp50") row = boosterType;
+        if (!row) return interaction.update({
+            content: `Something went wrong while preparing the systems. Please try again later.`,
+            components: [],
+            ephemeral: true
         });
+
+        modules.database.query(`UPDATE user_inventory SET ${row} = ${row} - 1, xp_active = ?, xp_active_expiry = DATE_ADD(NOW(), INTERVAL 1 DAY) WHERE snowflake = ?;`, [boosterType, interaction.user.id])
+            .then(() => {
+                logger.log(`'${interaction.user.username}@${interaction.user.id}' has activated a XP-Booster ${boosterType} in guild '${interaction.guild.name}@${interaction.guild.id}'.`, "info");
+                dueAdd(interaction.user.id, boosterType);
+                interaction.update({
+                    content: `Success! Your XP-Booster has been activated for 24 hours, and is applied to all gained Experience.`,
+                    components: [disabledButtons(interaction)],
+                    ephemeral: true
+                });
+            }).catch(() => {
+                interaction.update({
+                    content: `Something went wrong while updating your information. Please try again later.`,
+                    components: [],
+                    ephemeral: true
+                });
+            });
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 /**

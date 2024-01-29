@@ -17,7 +17,7 @@ module.exports = {
         const embed = embedConstructor.create("Bot Statistics", "Information", interaction,
             [
                 { name: 'Name', value: `**${config.general.name}**` },
-                { name: 'Servers', value: `\`${client.guilds.cache.size}\` Total` },
+                { name: 'Servers', value: `\`${interaction.client.guilds.cache.size}\` Total` },
                 { name: 'Creator', value: `<@${config.general.creatorId}>` },
                 { name: 'Uptime', value: uptime },
                 { name: 'Ping', value: `\`${interaction.client.ws.ping}\`ms` },

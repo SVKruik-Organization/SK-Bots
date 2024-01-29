@@ -31,25 +31,29 @@ module.exports = {
             .setRequired(true)
             .setMaxLength(1000)),
     async execute(interaction) {
-        const snowflake = interaction.user.id;
-        const username = interaction.user.username;
-        const targetSnowflake = interaction.options.getUser('target').id;
-        const reason = interaction.options.getString('reason');
-        const category = interaction.options.getString('category');
+        try {
+            const snowflake = interaction.user.id;
+            const username = interaction.user.username;
+            const target = interaction.options.getUser('target');
+            const reason = interaction.options.getString('reason');
+            const category = interaction.options.getString('category');
 
-        modules.database.query("INSERT INTO report (snowflake, snowflake_recv, reason, date, category) VALUES (?, ?, ?, CURRENT_TIMESTAMP(), ?);",
-            [snowflake, targetSnowflake, reason, category])
-            .then(() => {
-                interaction.reply({
-                    content: "Thank you for your report. We will have a look at it ASAP.",
-                    ephemeral: true
+            modules.database.query("INSERT INTO report (snowflake, snowflake_recv, reason, date, category, guild_snowflake) VALUES (?, ?, ?, CURRENT_TIMESTAMP(), ?, ?);",
+                [snowflake, target.id, reason, category, interaction.guild.id])
+                .then(() => {
+                    interaction.reply({
+                        content: "Thank you for your report. We will have a look at it ASAP.",
+                        ephemeral: true
+                    });
+                    logger.log(`'${username}@${snowflake}' has reported '${target.username}@${target.id}' for ${category}.`, "info");
+                }).catch(() => {
+                    interaction.reply({
+                        content: "Something went wrong while reporting this user. Please try again later.",
+                        ephemeral: true
+                    });
                 });
-                logger.log(`${username} has reported someone.`, "info");
-            }).catch(() => {
-                interaction.reply({
-                    content: "Something went wrong while reporting this user. Please try again later.",
-                    ephemeral: true
-                });
-            });
+        } catch (error) {
+            console.error(error);
+        }
     }
 };

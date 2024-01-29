@@ -40,7 +40,7 @@ module.exports = {
             .addIntegerOption(option => option
                 .setName('role_power')
                 .setDescription('Amount of roles with admin privileges. This makes sure that cosmetic roles will not overpower these.')
-                .setMinValue(1)
+                .setMinValue(2)
                 .setMaxValue(30)
                 .setRequired(false)))
         .addSubcommand(option => option
@@ -50,109 +50,113 @@ module.exports = {
             .setName('help')
             .setDescription('Read about how-to and why to use this command.')),
     async execute(interaction) {
-        // Setup
-        const actionType = interaction.options.getSubcommand('action');
-        let newGuild = true;
-        const targetGuild = guildUtils.findGuildById(interaction.guild.id);
-        if (targetGuild) newGuild = false;
-        const guildSnapshot = guildUtils.guilds;
+        try {
+            // Setup
+            const actionType = interaction.options.getSubcommand('action');
+            let newGuild = true;
+            const targetGuild = guildUtils.findGuildById(interaction.guild.id);
+            if (targetGuild) newGuild = false;
+            const guildSnapshot = guildUtils.guilds;
 
-        // Optional Options
-        const channel_event = interaction.options.getChannel('channel_event') || null;
-        const channel_suggestion = interaction.options.getChannel('channel_suggestion') || null;
-        const channel_snippet = interaction.options.getChannel('channel_snippet') || null;
-        const channel_rules = interaction.options.getChannel('channel_rules') || interaction.guild.rulesChannelId ? interaction.client.channels.fetch(interaction.guild.rulesChannelId) : null;
-        const role_blinded = interaction.options.getRole('role_blinded') || null;
-        const role_power = interaction.options.getInteger('role_power') || 1;
+            // Optional Options
+            const channel_event = interaction.options.getChannel('channel_event') || null;
+            const channel_suggestion = interaction.options.getChannel('channel_suggestion') || null;
+            const channel_snippet = interaction.options.getChannel('channel_snippet') || null;
+            const channel_rules = interaction.options.getChannel('channel_rules') || interaction.guild.rulesChannelId ? await interaction.client.channels.fetch(interaction.guild.rulesChannelId) : null;
+            const role_blinded = interaction.options.getRole('role_blinded') || null;
+            const role_power = interaction.options.getInteger('role_power') || 2;
 
-        // New 
-        if (actionType === "register" && newGuild) {
-            modules.database.query("INSERT INTO guild (register_snowflake, name, channel_event, channel_suggestion, channel_snippet, channel_rules, role_power, role_blinded, locale, snowflake) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?); INSERT INTO guild_settings (snowflake) VALUES (?);", [interaction.user.id, interaction.user.username, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_power, role_blinded ? role_blinded.id : null, interaction.guild.preferredLocale, interaction.guild.id, interaction.guild.id])
-                .then(() => {
-                    interaction.reply("Setup successful. Additional commands enabled. For other settings like welcome messages and other paramaters, please consult my website (WIP).");
-                    guildUtils.guilds.push({
-                        "guildObject": interaction.guild,
-                        "name": interaction.guild.name,
-                        "register_snowflake": interaction.user.id,
-                        "channel_event": channel_event,
-                        "channel_suggestion": channel_suggestion,
-                        "channel_snippet": channel_snippet,
-                        "channel_rules": channel_rules,
-                        "role_power": role_power,
-                        "role_blinded": role_blinded,
-                        "locale": interaction.guild.preferredLocale,
-                        "disabled": false
+            // New 
+            if (actionType === "register" && newGuild) {
+                modules.database.query("UPDATE guild SET register_snowflake = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_power = ?, role_blinded = ?, locale = ? WHERE snowflake = ?;", [interaction.user.id, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_power, role_blinded ? role_blinded.id : null, interaction.guild.preferredLocale, interaction.guild.id])
+                    .then(() => {
+                        interaction.reply("Setup successful. Additional commands enabled. For other settings like welcome messages and other paramaters, please consult my website (WIP).");
+                        guildUtils.guilds.push({
+                            "guildObject": interaction.guild,
+                            "name": interaction.guild.name,
+                            "register_snowflake": interaction.user.id,
+                            "channel_event": channel_event,
+                            "channel_suggestion": channel_suggestion,
+                            "channel_snippet": channel_snippet,
+                            "channel_rules": channel_rules,
+                            "role_power": role_power,
+                            "role_blinded": role_blinded,
+                            "locale": interaction.guild.preferredLocale,
+                            "disabled": false
+                        });
+                    }).catch(() => {
+                        guildUtils.guilds = guildSnapshot;
+                        interaction.reply({
+                            content: "Something went wrong while creating the server configuration. Please try again later.",
+                            ephemeral: true
+                        });
                     });
-                }).catch(() => {
-                    guildUtils.guilds = guildSnapshot;
-                    interaction.reply({
-                        content: "Something went wrong while creating the server configuration. Please try again later.",
-                        ephemeral: true
+
+                // Update
+            } else if (actionType === "register" && !newGuild) {
+                modules.database.query("UPDATE guild SET channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_power = ?, role_blinded = ?, date_update = CURRENT_TIMESTAMP WHERE snowflake = ?", [channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_power, role_blinded ? role_blinded.id : null, interaction.guild.id])
+                    .then(() => {
+                        interaction.reply("Setup update successful. Additional commands reloaded or disabled. For other settings like welcome messages and other paramaters, please consult my website (WIP).");
+                        guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);
+                        guildUtils.guilds.push({
+                            "guildObject": interaction.guild,
+                            "name": interaction.guild.name,
+                            "register_snowflake": interaction.user.id,
+                            "channel_event": channel_event,
+                            "channel_suggestion": channel_suggestion,
+                            "channel_snippet": channel_snippet,
+                            "channel_rules": channel_rules,
+                            "role_power": role_power,
+                            "role_blinded": role_blinded,
+                            "locale": interaction.guild.preferredLocale,
+                            "disabled": false
+                        });
+                    }).catch(() => {
+                        guildUtils.guilds = guildSnapshot;
+                        interaction.reply({
+                            content: "Something went wrong while updating the server configuration. Please try again later.",
+                            ephemeral: true
+                        });
                     });
+
+                // Check
+            } else if (actionType === "check") {
+                if (!targetGuild) return interaction.reply({
+                    content: "This server is not registred yet. Please register with the other option `(Re-Register)`, and try again.",
+                    ephemeral: true
                 });
 
-            // Update
-        } else if (actionType === "register" && !newGuild) {
-            modules.database.query("UPDATE guild SET channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_power = ?, role_blinded = ? WHERE snowflake = ?", [channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_power, role_blinded ? role_blinded.id : null, interaction.guild.id])
-                .then(() => {
-                    interaction.reply("Setup update successful. Additional commands reloaded or disabled. For other settings like welcome messages and other paramaters, please consult my website (WIP).");
-                    guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);
-                    guildUtils.guilds.push({
-                        "guildObject": interaction.guild,
-                        "name": interaction.guild.name,
-                        "register_snowflake": interaction.user.id,
-                        "channel_event": channel_event,
-                        "channel_suggestion": channel_suggestion,
-                        "channel_snippet": channel_snippet,
-                        "channel_rules": channel_rules,
-                        "role_power": role_power,
-                        "role_blinded": role_blinded,
-                        "locale": interaction.guild.preferredLocale,
-                        "disabled": false
-                    });
-                }).catch(() => {
-                    guildUtils.guilds = guildSnapshot;
-                    interaction.reply({
-                        content: "Something went wrong while updating the server configuration. Please try again later.",
-                        ephemeral: true
-                    });
-                });
-
-            // Check
-        } else if (actionType === "check") {
-            if (!targetGuild) return interaction.reply({
-                content: "This server is not registred yet. Please register with the other option `(Re-Register)`, and try again.",
-                ephemeral: true
-            });
-
-            const embed = embedConstructor.create("Server Configuration", "Information", interaction,
-                [
-                    { name: 'Registerer', value: `<@${targetGuild.register_snowflake}>` },
-                    { name: 'Event Channel', value: `${targetGuild.channel_event || "Not Configured"}` },
-                    { name: 'Suggestion Channel', value: `${targetGuild.channel_suggestion || "Not Configured"}` },
-                    { name: 'Snippet Channel', value: `${targetGuild.channel_snippet || "Not Configured"}` },
-                    { name: 'Rules Channel', value: `${targetGuild.channel_rules || "Not Configured"}` },
-                    { name: 'Power Roles', value: `\`${targetGuild.role_power || 0}\`` },
-                    { name: 'Blinded Role', value: `${targetGuild.role_blinded || "Not Configured"}` }
-                ]);
-            interaction.reply({ embeds: [embed] });
-        } else if (actionType === "help") {
-            const embed = embedConstructor.create("Server Configuration", "Command Usage Help", interaction,
-                [
-                    {
-                        name: 'General',
-                        value: "This command is reserved for adminstrators that want to check or configure their server configuration. Some commands are server/channel-specific, and therefore require setup."
-                    },
-                    {
-                        name: 'How-To',
-                        value: 'To update or register, please fill the other marked as optional fields. Fields that are left empty, will be stored as empty (resetting the value). Use this command carefully, as erroneous input will disable certain commands.'
-                    },
-                    {
-                        name: "ID's",
-                        value: "When Discord Developer mode is enabled, you can right-click > copy the Text Channel ID. Same goes for Roles and other objects. Just complete all the fields, and you are good to go. No reloading/refreshing is required, i'll handle it from there."
-                    }
-                ]);
-            interaction.reply({ embeds: [embed] });
+                const embed = embedConstructor.create("Server Configuration", "Information", interaction,
+                    [
+                        { name: 'Registerer', value: `${targetGuild.register_snowflake ? '<@' + targetGuild.register_snowflake + '>' : "Not Configured"}` },
+                        { name: 'Event Channel', value: `${targetGuild.channel_event || "Not Configured"}` },
+                        { name: 'Suggestion Channel', value: `${targetGuild.channel_suggestion || "Not Configured"}` },
+                        { name: 'Snippet Channel', value: `${targetGuild.channel_snippet || "Not Configured"}` },
+                        { name: 'Rules Channel', value: `${targetGuild.channel_rules || "Not Configured"}` },
+                        { name: 'Power Roles', value: `\`${targetGuild.role_power || 0}\`` },
+                        { name: 'Blinded Role', value: `${targetGuild.role_blinded || "Not Configured"}` }
+                    ]);
+                interaction.reply({ embeds: [embed] });
+            } else if (actionType === "help") {
+                const embed = embedConstructor.create("Server Configuration", "Command Usage Help", interaction,
+                    [
+                        {
+                            name: 'General',
+                            value: "This command is reserved for adminstrators that want to check or configure their server configuration. Some commands are server/channel-specific, and therefore require setup."
+                        },
+                        {
+                            name: 'How-To',
+                            value: 'To update or register, please fill the other marked as optional fields. Fields that are left empty, will be stored as empty (resetting the value). Use this command carefully, as erroneous input will disable certain commands.'
+                        },
+                        {
+                            name: "ID's",
+                            value: "When Discord Developer mode is enabled, you can right-click > copy the Text Channel ID. Same goes for Roles and other objects. Just complete all the fields, and you are good to go. No reloading/refreshing is required, i'll handle it from there."
+                        }
+                    ]);
+                interaction.reply({ embeds: [embed] });
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
 };

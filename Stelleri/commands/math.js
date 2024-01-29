@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const math = require('mathjs');
 const config = require('../assets/config.js');
 
@@ -16,8 +16,16 @@ module.exports = {
 
         try {
             const answer = math.evaluate(expression).toString();
-            interaction.reply(`Expression: \`${expression}\`\n\nResult: \`${answer}\``);
-        } catch (err) {
+            const embed = new EmbedBuilder()
+                .setColor(config.general.color)
+                .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
+                .addFields(
+                    { name: 'Math Expression', value: `\`${expression}\`` },
+                    { name: 'Result', value: `\`${answer}\`` })
+                .setTimestamp()
+                .setFooter({ text: `Embed created by ${config.general.name}` })
+            interaction.reply({ embeds: [embed] });
+        } catch (error) {
             interaction.reply({ content: `Invalid expression.`, ephemeral: true });
         }
     }

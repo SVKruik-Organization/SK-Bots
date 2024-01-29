@@ -28,47 +28,51 @@ module.exports = {
             .setName('balance')
             .setDescription("Check your current balance.")),
     async execute(interaction) {
-        const snowflake = interaction.user.id;
-        const amount = interaction.options.getInteger('amount');
-        const actionType = interaction.options.getSubcommand();
+        try {
+            const snowflake = interaction.user.id;
+            const amount = interaction.options.getInteger('amount');
+            const actionType = interaction.options.getSubcommand();
 
-        if (actionType === "withdraw") {
-            modules.database.query("UPDATE economy SET wallet = wallet + ?, bank = bank - ? WHERE snowflake = ?;", [amount, amount, snowflake])
-                .then(() => {
-                    interaction.reply(`Successfully withdrew \`${amount}\` Bits.`);
-                }).catch(() => {
-                    return interaction.reply({
-                        content: "You do not have an account yet. Create an account with the `/register` command.",
-                        ephemeral: true
+            if (actionType === "withdraw") {
+                modules.database.query("UPDATE economy SET wallet = wallet + ?, bank = bank - ? WHERE snowflake = ?;", [amount, amount, snowflake])
+                    .then(() => {
+                        interaction.reply(`Successfully withdrew \`${amount}\` Bits.`);
+                    }).catch(() => {
+                        return interaction.reply({
+                            content: "You do not have an account yet. Create an account with the `/register` command.",
+                            ephemeral: true
+                        });
                     });
-                });
-        } else if (actionType === "deposit") {
-            modules.database.query("UPDATE economy SET wallet = wallet - ?, bank = bank + ? WHERE snowflake = ?;", [amount, amount, snowflake])
-                .then(() => {
-                    interaction.reply(`Successfully deposited \`${amount}\` Bits.`);
-                }).catch(() => {
-                    return interaction.reply({
-                        content: "You do not have an account yet. Create an account with the `/register` command.",
-                        ephemeral: true
+            } else if (actionType === "deposit") {
+                modules.database.query("UPDATE economy SET wallet = wallet - ?, bank = bank + ? WHERE snowflake = ?;", [amount, amount, snowflake])
+                    .then(() => {
+                        interaction.reply(`Successfully deposited \`${amount}\` Bits.`);
+                    }).catch(() => {
+                        return interaction.reply({
+                            content: "You do not have an account yet. Create an account with the `/register` command.",
+                            ephemeral: true
+                        });
                     });
-                });
-        } else if (actionType === "balance") {
-            modules.database.query("SELECT wallet, bank, (wallet + bank) AS 'total' FROM economy WHERE snowflake = ?;", [snowflake])
-                .then((data) => {
-                    const embed = embedConstructor.create("Bits Balance", "Accounts", interaction,
-                        [
-                            { name: 'Wallet', value: `\`${data[0].wallet}\`` },
-                            { name: 'Bank', value: `\`${data[0].bank}\`` },
-                            { name: '-----', value: `Summary` },
-                            { name: 'Combined', value: `\`${data[0].total}\`` }
-                        ]);
-                    interaction.reply({ embeds: [embed] });
-                }).catch(() => {
-                    return interaction.reply({
-                        content: "You do not have an account yet. Create an account with the `/register` command.",
-                        ephemeral: true
+            } else if (actionType === "balance") {
+                modules.database.query("SELECT wallet, bank, (wallet + bank) AS 'total' FROM economy WHERE snowflake = ?;", [snowflake])
+                    .then((data) => {
+                        const embed = embedConstructor.create("Bits Balance", "Accounts", interaction,
+                            [
+                                { name: 'Wallet', value: `\`${data[0].wallet}\`` },
+                                { name: 'Bank', value: `\`${data[0].bank}\`` },
+                                { name: '-----', value: `Summary` },
+                                { name: 'Combined', value: `\`${data[0].total}\`` }
+                            ]);
+                        interaction.reply({ embeds: [embed] });
+                    }).catch(() => {
+                        return interaction.reply({
+                            content: "You do not have an account yet. Create an account with the `/register` command.",
+                            ephemeral: true
+                        });
                     });
-                });
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
 };

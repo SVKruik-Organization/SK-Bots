@@ -18,17 +18,21 @@ module.exports = {
             .setRequired(false)
             .setMaxLength(1000)),
     async execute(interaction) {
-        const targetSnowflake = interaction.options.getUser('target').id;
-        let reason = interaction.options.getString('reason') ?? 'No reason provided';
+        try {
+            const targetSnowflake = interaction.options.getUser('target').id;
+            let reason = interaction.options.getString('reason') ?? 'No reason provided';
 
-        modules.database.query("INSERT INTO warning (snowflake_recv, reason, date) VALUES (?, ?, CURRENT_TIMESTAMP());", [targetSnowflake, reason])
-            .then(() => {
-                interaction.reply(`User <@${targetSnowflake}> has been warned for: \`${reason}\``);
-            }).catch(() => {
-                return interaction.reply({
-                    content: "Something went wrong while warning this user. Please try again later.",
-                    ephemeral: true
+            modules.database.query("INSERT INTO warning (snowflake, snowflake_recv, reason, date, guild_snowflake) VALUES (?, ?, ?, CURRENT_TIMESTAMP(), ?);", [interaction.user.id, targetSnowflake, reason, interaction.guild.id])
+                .then(() => {
+                    interaction.reply(`User <@${targetSnowflake}> has been warned for: \`${reason}\``);
+                }).catch(() => {
+                    return interaction.reply({
+                        content: "Something went wrong while warning this user. Please try again later.",
+                        ephemeral: true
+                    });
                 });
-            });
+        } catch (error) {
+            console.error(error);
+        }
     }
 };

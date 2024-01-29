@@ -7,6 +7,6 @@ module.exports = {
     name: Events.MessageCreate,
     execute(message) {
         if (message.author.bot) return;
-        xpIncreaseHandler.increaseXp(message.author.id, message.author.username, config.tier.normalMessage, false, message.channelId, modules.client)
+        xpIncreaseHandler.increaseXp(message.author.id, message.author.username, config.tier.normalMessage, false, message.channelId, modules.client);
     }
 };

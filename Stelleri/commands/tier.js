@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const modules = require('..');
 const embedConstructor = require('../utils/embed.js');
+const date = require('../utils/date.js');
 
 module.exports = {
     cooldown: config.cooldowns.C,
@@ -9,28 +10,37 @@ module.exports = {
         .setName('tier')
         .setDescription('Information about your tier progression. View Level, Experience etcetera.'),
     async execute(interaction) {
-        const snowflake = interaction.user.id;
+        try {
+            const snowflake = interaction.user.id;
 
-        modules.database.query("SELECT level, xp, xp15, xp50, xp_active FROM tier LEFT JOIN user_inventory ON user_inventory.snowflake = tier.snowflake WHERE tier.snowflake = ?;", [snowflake])
-            .then((data) => {
-                const currentXp = data[0].xp + config.tier.slashCommand;
-
-                const embed = embedConstructor.create("Tier Overview", "Information", interaction,
-                    [
-                        { name: 'Level', value: `\`${data[0].level}\`` },
-                        { name: 'Experience', value: `\`${currentXp}\`` },
-                        { name: '-----', value: `Summary` },
-                        { name: 'EXP Needed', value: `\`${20 * (data[0].level + 1) + 300 - currentXp}\`` },
-                        { name: 'Active Booster', value: `\`${data[0].xp_active}\`` },
-                        { name: '+15% Boosters', value: `\`${data[0].xp15}\`` },
-                        { name: '+50% Boosters', value: `\`${data[0].xp50}\`` }
-                    ]);
-                interaction.reply({ embeds: [embed] });
-            }).catch(() => {
-                return interaction.reply({
-                    content: "You do not have an account yet. Create an account with the `/register` command.",
-                    ephemeral: true
+            modules.database.query("SELECT level, xp, xp15, xp50, xp_active, xp_active_expiry FROM tier LEFT JOIN user_inventory ON user_inventory.snowflake = tier.snowflake WHERE tier.snowflake = ?;", [snowflake])
+                .then((data) => {
+                    if (data.length === 0) return interaction.reply({
+                        content: "You do not have an account yet. Create an account with the `/register` command.",
+                        ephemeral: true
+                    });
+                    const currentXp = data[0].xp + config.tier.slashCommand;
+                    let hoursLeft = "";
+                    if (data[0].xp_active_expiry) hoursLeft = ` (${date.difference(data[0].xp_active_expiry, date.getDate(null, null).today).remainingHours} hours remaining)`;
+                    const embed = embedConstructor.create("Tier Overview", "Information", interaction,
+                        [
+                            { name: 'Level', value: `\`${data[0].level}\`` },
+                            { name: 'Experience', value: `\`${currentXp}\`` },
+                            { name: '-----', value: `Summary` },
+                            { name: 'XP Needed', value: `\`${20 * (data[0].level + 1) + 300 - currentXp}\`` },
+                            { name: 'Active Booster', value: `\`${data[0].xp_active}\`${hoursLeft}` },
+                            { name: '+15% Boosters', value: `\`${data[0].xp15}\`` },
+                            { name: '+50% Boosters', value: `\`${data[0].xp50}\`` }
+                        ]);
+                    interaction.reply({ embeds: [embed], ephemeral: true });
+                }).catch(() => {
+                    return interaction.reply({
+                        content: "Something went wrong while retrieving the required information. Please try again later.",
+                        ephemeral: true
+                    });
                 });
-            });
+        } catch (error) {
+            console.error(error);
+        }
     }
 };

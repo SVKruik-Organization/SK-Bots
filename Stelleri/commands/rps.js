@@ -17,13 +17,13 @@ module.exports = {
             )),
     async execute(interaction) {
         const type = interaction.options.getString('type');
-        let reply = undefined;
+        let reply = "";
 
         const choices = ["Rock", "Paper", "Scissors"];
         const random = choices[Math.floor(Math.random() * choices.length)];
 
         if (type === random) {
-            reply = "🌟 - It's a tie!";
+            reply = `${random} - It's a tie!`;
         } else if (random === "Rock") {
             if (type === "Scissors") {
                 reply = "🪨 - You lose!";

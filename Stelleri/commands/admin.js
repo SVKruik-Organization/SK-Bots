@@ -23,57 +23,61 @@ module.exports = {
                 { name: 'Check', value: 'check' }
             )),
     async execute(interaction) {
-        const targetUsername = interaction.options.getUser('target').username;
-        const targetSnowflake = interaction.options.getUser('target').id;
-        const actionType = interaction.options.getString('action');
+        try {
+            const targetUsername = interaction.options.getUser('target').username;
+            const targetSnowflake = interaction.options.getUser('target').id;
+            const actionType = interaction.options.getString('action');
 
-        // Action Filtering
-        let status = 2;
-        if (actionType === "add") {
-            status = 1;
-        } else if (actionType === "remove") status = 0;
+            // Action Filtering
+            let status = 2;
+            if (actionType === "add") {
+                status = 1;
+            } else if (actionType === "remove") status = 0;
 
-        // Modify
-        if (status < 2) {
-            modules.database.query("UPDATE user SET super = ? WHERE snowflake = ?", [status, targetSnowflake])
-                .then((data) => {
-                    // Validation
-                    if (data.affectedRows === 0) return interaction.reply({ content: `User <@${targetSnowflake}> does not have an account yet.` })
+            // Modify
+            if (status < 2) {
+                modules.database.query("UPDATE user SET super = ? WHERE snowflake = ?", [status, targetSnowflake])
+                    .then((data) => {
+                        // Validation
+                        if (data.affectedRows === 0) return interaction.reply({ content: `User <@${targetSnowflake}> does not have an account yet.` })
 
-                    // Remove
-                    if (status === 0) {
-                        logger.log(`${targetUsername} was removed from the super users by '${interaction.user.username}@${interaction.user.id}'.`, "alert");
-                        interaction.reply({ content: `<@${targetSnowflake}> has been removed from the super users. They are no longer able to use my admin commands.` });
+                        // Remove
+                        if (status === 0) {
+                            logger.log(`${targetUsername} was removed from the super users by '${interaction.user.username}@${interaction.user.id}'.`, "alert");
+                            interaction.reply({ content: `<@${targetSnowflake}> has been removed from the super users. They are no longer able to use my admin commands.` });
 
-                        // Add
-                    } else if (status === 1) {
-                        logger.log(`${targetUsername} was added to the super users by '${interaction.user.username}@${interaction.user.id}'.`, "alert");
-                        interaction.reply({ content: `<@${targetSnowflake}> has been added to the super users. They are now able to use my admin commands.` });
-                    }
-                }).catch(() => {
-                    interaction.reply({
-                        content: "Something went wrong while modifying the super status of this user. Please try again later.",
-                        ephemeral: true
-                    });
-                });
-
-            // Check
-        } else {
-            modules.database.query("SELECT super FROM user WHERE snowflake = ?", [targetSnowflake])
-                .then(async (data) => {
-                    // Validation
-                    if (!data.length) return interaction.reply({
-                        content: `User <@${targetSnowflake}> does not have an account yet.`,
-                        ephemeral: true
+                            // Add
+                        } else if (status === 1) {
+                            logger.log(`${targetUsername} was added to the super users by '${interaction.user.username}@${interaction.user.id}'.`, "alert");
+                            interaction.reply({ content: `<@${targetSnowflake}> has been added to the super users. They are now able to use my admin commands.` });
+                        }
+                    }).catch(() => {
+                        interaction.reply({
+                            content: "Something went wrong while modifying the super status of this user. Please try again later.",
+                            ephemeral: true
+                        });
                     });
 
-                    await interaction.reply({ content: `Super status of user <@${targetSnowflake}>: \`${data[0].super === 1}\`` });
-                }).catch(() => {
-                    interaction.reply({
-                        content: "Something went wrong while checking the super status of this user. Please try again later.",
-                        ephemeral: true
+                // Check
+            } else {
+                modules.database.query("SELECT super FROM user WHERE snowflake = ?", [targetSnowflake])
+                    .then(async (data) => {
+                        // Validation
+                        if (!data.length) return interaction.reply({
+                            content: `User <@${targetSnowflake}> does not have an account yet.`,
+                            ephemeral: true
+                        });
+
+                        await interaction.reply({ content: `Super status of user <@${targetSnowflake}>: \`${data[0].super === 1}\`` });
+                    }).catch(() => {
+                        interaction.reply({
+                            content: "Something went wrong while checking the super status of this user. Please try again later.",
+                            ephemeral: true
+                        });
                     });
-                });
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
 };

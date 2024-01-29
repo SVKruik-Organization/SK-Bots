@@ -33,34 +33,39 @@ const database = mariadb.createPool({
 });
 
 // Indexing super & blocked users
-let superUsers = [];
-let blockedUsers = [];
-database.query("SELECT snowflake, super, blocked FROM user WHERE super = 1 OR blocked = 1;")
-    .then((data) => {
-        for (let i = 0; i < data.length; i++) {
-            if (data[i].super === 1) {
-                superUsers.push(data[i].snowflake);
-
-            } else blockedUsers.push(data[i].snowflake);
-        }
-        logger.log("Fetched all users.", "info");
-    }).catch(() => {
-        logger.log("Loading Users went wrong. Aborting.", "fatal");
-    });
+const superUsers = [];
+const blockedUsers = [];
+try {
+    database.query("SELECT snowflake, super, blocked FROM user WHERE super = true OR blocked = true;")
+        .then((data) => {
+            for (let i = 0; i <= data.length; i++) {
+                if (data.length === i) {
+                    logger.log("Fetched all users.", "info");
+                } else {
+                    if (data[i].super === true) {
+                        superUsers.push(data[i].snowflake);
+                    } else if (data[i].blocked === true) blockedUsers.push(data[i].snowflake);
+                }
+            }
+        }).catch(() => {
+            logger.log("Loading Users went wrong. Aborting.", "fatal");
+        });
+} catch (error) {
+    console.error(error);
+}
 
 // Exporting Values
 module.exports = {
     "client": client,
     "database": database,
     "superUsers": superUsers,
-    "blockedUsers": blockedUsers
+    "blockedUsers": blockedUsers,
+    "dueDates": []
 };
 
-// Command Handler
+// Initializers
 commandHandler.init(client);
-
-// Event Handler
 eventHandler.init(client);
-
-// Cooldowns
 client.cooldowns = new Collection();
+require('./utils/due.js').dueDates;
+require('./utils/interest.js').init();
