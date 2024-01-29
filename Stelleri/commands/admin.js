@@ -39,7 +39,7 @@ module.exports = {
                 modules.database.query("UPDATE user SET super = ? WHERE snowflake = ?", [status, targetSnowflake])
                     .then((data) => {
                         // Validation
-                        if (data.affectedRows === 0) return interaction.reply({
+                        if (!data.affectedRows) return interaction.reply({
                             content: `User <@${targetSnowflake}> does not have an account yet.`,
                             ephemeral: true
                         })
@@ -61,7 +61,7 @@ module.exports = {
                             });
                         }
                     }).catch(() => {
-                        interaction.reply({
+                        return interaction.reply({
                             content: "Something went wrong while modifying the super status of this user. Please try again later.",
                             ephemeral: true
                         });
@@ -82,7 +82,7 @@ module.exports = {
                             ephemeral: true
                         });
                     }).catch(() => {
-                        interaction.reply({
+                        return interaction.reply({
                             content: "Something went wrong while checking the super status of this user. Please try again later.",
                             ephemeral: true
                         });

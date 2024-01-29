@@ -47,7 +47,7 @@ module.exports = {
                     });
                     logger.log(`'${username}@${snowflake}' has reported '${target.username}@${target.id}' for ${category}.`, "info");
                 }).catch(() => {
-                    interaction.reply({
+                    return interaction.reply({
                         content: "Something went wrong while reporting this user. Please try again later.",
                         ephemeral: true
                     });

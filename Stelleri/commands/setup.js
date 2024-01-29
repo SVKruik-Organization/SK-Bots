@@ -69,7 +69,13 @@ module.exports = {
             // New 
             if (actionType === "register" && newGuild) {
                 modules.database.query("UPDATE guild SET register_snowflake = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_power = ?, role_blinded = ?, locale = ? WHERE snowflake = ?;", [interaction.user.id, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_power, role_blinded ? role_blinded.id : null, interaction.guild.preferredLocale, interaction.guild.id])
-                    .then(() => {
+                    .then((data) => {
+                        // Validation
+                        if (!data.affectedRows) return interaction.reply({
+                            content: "It seems like something went wrong at the initial setup when I joined this server. Please contact moderation.",
+                            ephemeral: true
+                        });
+
                         interaction.reply({
                             content: "Setup successful. Additional commands enabled. For other settings like welcome messages and other paramaters, please consult my website (WIP).",
                             ephemeral: true
@@ -89,7 +95,7 @@ module.exports = {
                         });
                     }).catch(() => {
                         guildUtils.guilds = guildSnapshot;
-                        interaction.reply({
+                        return interaction.reply({
                             content: "Something went wrong while creating the server configuration. Please try again later.",
                             ephemeral: true
                         });
@@ -98,7 +104,13 @@ module.exports = {
                 // Update
             } else if (actionType === "register" && !newGuild) {
                 modules.database.query("UPDATE guild SET channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_power = ?, role_blinded = ?, date_update = CURRENT_TIMESTAMP WHERE snowflake = ?", [channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_power, role_blinded ? role_blinded.id : null, interaction.guild.id])
-                    .then(() => {
+                    .then((data) => {
+                        // Validation
+                        if (!data.affectedRows) return interaction.reply({
+                            content: "It seems like something went wrong at the initial setup when I joined this server. Please contact moderation.",
+                            ephemeral: true
+                        });
+
                         interaction.reply({
                             content: "Setup update successful. Additional commands reloaded or disabled. For other settings like welcome messages and other paramaters, please consult my website (WIP).",
                             ephemeral: true
@@ -119,7 +131,7 @@ module.exports = {
                         });
                     }).catch(() => {
                         guildUtils.guilds = guildSnapshot;
-                        interaction.reply({
+                        return interaction.reply({
                             content: "Something went wrong while updating the server configuration. Please try again later.",
                             ephemeral: true
                         });
@@ -132,7 +144,7 @@ module.exports = {
                     ephemeral: true
                 });
 
-                const embed = embedConstructor.create("Server Configuration", "Information", interaction,
+                const embed = embedConstructor.create("Server Configuration", `${interaction.guild.name} Setup`, interaction,
                     [
                         { name: 'Registerer', value: `${targetGuild.register_snowflake ? '<@' + targetGuild.register_snowflake + '>' : "Not Configured"}` },
                         { name: 'Event Channel', value: `${targetGuild.channel_event || "Not Configured"}` },
@@ -141,7 +153,7 @@ module.exports = {
                         { name: 'Rules Channel', value: `${targetGuild.channel_rules || "Not Configured"}` },
                         { name: 'Power Roles', value: `\`${targetGuild.role_power || 0}\`` },
                         { name: 'Blinded Role', value: `${targetGuild.role_blinded || "Not Configured"}` }
-                    ]);
+                    ], ["server"]);
                 interaction.reply({ embeds: [embed], ephemeral: true });
             } else if (actionType === "help") {
                 const embed = embedConstructor.create("Server Configuration", "Command Usage Help", interaction,
@@ -158,7 +170,7 @@ module.exports = {
                             name: "ID's",
                             value: "When Discord Developer mode is enabled, you can right-click > copy the Text Channel ID. Same goes for Roles and other objects. Just complete all the fields, and you are good to go. No reloading/refreshing is required, i'll handle it from there."
                         }
-                    ]);
+                    ], ["server"]);
                 interaction.reply({ embeds: [embed], ephemeral: true });
             }
         } catch (error) {

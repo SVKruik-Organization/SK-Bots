@@ -28,7 +28,7 @@ module.exports = {
                     ephemeral: true
                 });
             }).catch(() => {
-                interaction.reply({
+                return interaction.reply({
                     content: "Something went wrong while reloading the commands. Please try again later.",
                     ephemeral: true
                 });

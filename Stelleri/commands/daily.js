@@ -36,7 +36,13 @@ module.exports = {
 
             // Process
             modules.database.query("UPDATE economy SET wallet = wallet + ? WHERE snowflake = ?;", [dailyreward, interaction.user.id])
-                .then(() => {
+                .then((data) => {
+                    // Validation
+                    if (!data.affectedRows) return interaction.reply({
+                        content: "This command requires you to have an account. Create an account with the `/register` command.",
+                        ephemeral: true
+                    });
+
                     dueAdd(interaction.user.id, "daily");
                     if (jackpotBoolean) {
                         interaction.reply({ content: `💎 You hit the JACKPOT! 💎 You received a grand total of \`${dailyreward}\` Bits. Congratulations! 🎉` });
@@ -46,8 +52,8 @@ module.exports = {
                         ephemeral: true
                     });
                 }).catch(() => {
-                    interaction.reply({
-                        content: "You do not have an account yet. Create an account with the `/register` command.",
+                    return interaction.reply({
+                        content: "Something went wrong while updating your information. Please try again later.",
                         ephemeral: true
                     });
                 });

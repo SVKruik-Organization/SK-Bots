@@ -48,7 +48,7 @@ try {
                 }
             }
         }).catch(() => {
-            logger.log("Loading Users went wrong. Aborting.", "fatal");
+            return logger.log("Loading Users went wrong. Aborting.", "fatal");
         });
 } catch (error) {
     console.error(error);

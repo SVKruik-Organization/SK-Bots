@@ -22,7 +22,7 @@ module.exports = {
                     const currentXp = data[0].xp + config.tier.slashCommand;
                     let hoursLeft = "";
                     if (data[0].xp_active_expiry) hoursLeft = ` (${date.difference(data[0].xp_active_expiry, date.getDate(null, null).today).remainingHours} hours remaining)`;
-                    const embed = embedConstructor.create("Tier Overview", "Information", interaction,
+                    const embed = embedConstructor.create("Tier Overview", "Level System Progression", interaction,
                         [
                             { name: 'Level', value: `\`${data[0].level}\`` },
                             { name: 'Experience', value: `\`${currentXp}\`` },
@@ -31,7 +31,7 @@ module.exports = {
                             { name: 'Active Booster', value: `\`${data[0].xp_active}\`${hoursLeft}` },
                             { name: '+15% Boosters', value: `\`${data[0].xp15}\`` },
                             { name: '+50% Boosters', value: `\`${data[0].xp50}\`` }
-                        ]);
+                        ], ["inventory"]);
                     interaction.reply({ embeds: [embed], ephemeral: true });
                 }).catch(() => {
                     return interaction.reply({

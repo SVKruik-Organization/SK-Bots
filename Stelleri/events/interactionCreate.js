@@ -6,17 +6,18 @@ const logger = require('../utils/logger.js');
 const shopInteractionHandler = require('../handlers/shopInteractionHandler.js');
 const xpIncreaseHandler = require('../handlers/xpIncreaseHandler.js');
 const boosterInteractionHandler = require('../handlers/boosterInteractionHandler.js');
+const { customShopCatalog } = require('../utils/embed.js');
 
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
         // Select Menu Interactions
         if (interaction.isStringSelectMenu()) {
-            // View Shop Options
+            // View Shop Options Overview
             if (interaction.customId === "shopSelectMenu" && interaction.values[0] === "catalog") {
-                interaction.reply({ content: "Received. Catalog is WIP.", ephemeral: true });
+                customShopCatalog(interaction);
 
-                // View Shop Options
+                // View Shop Buy Options
             } else if (interaction.customId === "shopSelectMenu" && interaction.values[0] === "buy") {
                 shopInteractionHandler.shopOptions(interaction);
 

@@ -80,7 +80,13 @@ function confirmActivate(interaction) {
         });
 
         modules.database.query(`UPDATE user_inventory SET ${row} = ${row} - 1, xp_active = ?, xp_active_expiry = DATE_ADD(NOW(), INTERVAL 1 DAY) WHERE snowflake = ?;`, [boosterType, interaction.user.id])
-            .then(() => {
+            .then((data) => {
+                // Validation
+                if (!data.affectedRows) return interaction.reply({
+                    content: "This command requires you to have an account. Create an account with the `/register` command.",
+                    ephemeral: true
+                });
+
                 logger.log(`'${interaction.user.username}@${interaction.user.id}' has activated a XP-Booster ${boosterType} in guild '${interaction.guild.name}@${interaction.guild.id}'.`, "info");
                 dueAdd(interaction.user.id, boosterType);
                 interaction.update({
@@ -89,7 +95,7 @@ function confirmActivate(interaction) {
                     ephemeral: true
                 });
             }).catch(() => {
-                interaction.update({
+                return interaction.update({
                     content: `Something went wrong while updating your information. Please try again later.`,
                     components: [],
                     ephemeral: true

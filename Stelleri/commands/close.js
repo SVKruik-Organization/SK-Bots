@@ -21,14 +21,19 @@ module.exports = {
                     const dataPincode = data[0].pin;
                     if (inputPincode === dataPincode) {
                         modules.database.query("DELETE FROM user WHERE snowflake = ?;", [snowflake])
-                            .then(() => {
+                            .then((data) => {
+                                if (!data.affectedRows) return interaction.reply({
+                                    content: "This command requires you to have an account. Create an account with the `/register` command.",
+                                    ephemeral: true
+                                });
+
                                 interaction.reply({
                                     content: "Your account has been successfully closed. If you change your mind, you can always create a new account with the `/register` command.",
                                     ephemeral: true
                                 });
                             }).catch(() => {
-                                interaction.reply({
-                                    content: "This command requires you to have an account. Create an account with the `/register` command.",
+                                return interaction.reply({
+                                    content: "Something went wrong while closing your account. Please try again later.",
                                     ephemeral: true
                                 });
                             });
@@ -39,7 +44,7 @@ module.exports = {
                         });
                     }
                 }).catch(() => {
-                    interaction.reply({
+                    return interaction.reply({
                         content: "Something went wrong while closing your account. Please try again later.",
                         ephemeral: true
                     });

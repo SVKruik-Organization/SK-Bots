@@ -2,6 +2,7 @@ const { SlashCommandBuilder, StringSelectMenuOptionBuilder, StringSelectMenuBuil
 const config = require('../assets/config.js');
 const modules = require('..');
 const date = require('../utils/date.js');
+const embedConstructor = require('../utils/embed.js');
 
 module.exports = {
     cooldown: config.cooldowns.C,
@@ -13,7 +14,10 @@ module.exports = {
             .setDescription("Activate a XP-Booster."))
         .addSubcommand(option => option
             .setName('disable')
-            .setDescription("Disable the currently activated XP-Booster. You will not get refunded.")),
+            .setDescription("Disable the currently activated XP-Booster. You will not get refunded."))
+        .addSubcommand(option => option
+            .setName('overview')
+            .setDescription("Check your resources.")),
     async execute(interaction) {
         try {
             const actionType = interaction.options.getSubcommand();
@@ -60,11 +64,38 @@ module.exports = {
                     });
             } else if (actionType === "disable") {
                 modules.database.query('UPDATE user_inventory SET xp_active = "None", xp_active_expiry = NULL WHERE snowflake = ?', [interaction.user.id])
-                    .then(() => {
+                    .then((data) => {
+                        // Validation
+                        if (!data.affectedRows) return interaction.reply({
+                            content: "You do not have an account yet. Create an account with the `/register` command.",
+                            ephemeral: true
+                        });
+
                         return interaction.reply({
                             content: "Successfully removed the active XP-Booster, if there was any. To activate a XP-Booster use the \`/inventory active\` command.",
                             ephemeral: true
                         });
+                    }).catch(() => {
+                        return interaction.reply({
+                            content: 'Something went wrong while retrieving the required information. Please try again later.',
+                            ephemeral: true
+                        });
+                    });
+            } else if (actionType === "overview") {
+                modules.database.query("SELECT * FROM user_inventory WHERE snowflake = ?;", [interaction.user.id])
+                    .then((data) => {
+                        if (data.length === 0) return interaction.reply({
+                            content: "This command requires you to have an account. Create an account with the `/register` command.",
+                            ephemeral: true
+                        });
+
+                        const embed = embedConstructor.create("Inventory Overview", "Your XP-Boosters and other items.", interaction,
+                            [
+                                { name: 'Role Colors', value: `\`${data[0].role_color}\`` },
+                                { name: 'XP +15%', value: `\`${data[0].xp15}\`` },
+                                { name: 'XP +50%', value: `\`${data[0].xp50}\`` }
+                            ], ["shop", "economy", "tier"]);
+                        interaction.reply({ embeds: [embed], ephemeral: true });
                     }).catch(() => {
                         return interaction.reply({
                             content: 'Something went wrong while retrieving the required information. Please try again later.',

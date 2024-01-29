@@ -25,7 +25,9 @@ module.exports = {
                 const embed = new EmbedBuilder()
                     .setColor(config.general.color)
                     .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
-                    .addFields({ name: 'Random Fact', value: data })
+                    .addFields(
+                        { name: 'Random Fact', value: data },
+                        { name: 'Related Commands', value: "\`/rps\` \`/coin\` \`/math\`" })
                     .setTimestamp()
                     .setFooter({ text: `Embed created by ${config.general.name}` })
                 interaction.reply({ embeds: [embed] });

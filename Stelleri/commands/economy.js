@@ -35,44 +35,60 @@ module.exports = {
 
             if (actionType === "withdraw") {
                 modules.database.query("UPDATE economy SET wallet = wallet + ?, bank = bank - ? WHERE snowflake = ?;", [amount, amount, snowflake])
-                    .then(() => {
+                    .then((data) => {
+                        // Validation
+                        if (!data.affectedRows) return interaction.reply({
+                            content: "This command requires you to have an account. Create an account with the `/register` command.",
+                            ephemeral: true
+                        });
+
                         interaction.reply({
                             content: `Successfully withdrew \`${amount}\` Bits.`,
                             ephemeral: true
                         });
                     }).catch(() => {
                         return interaction.reply({
-                            content: "You do not have an account yet. Create an account with the `/register` command.",
+                            content: "Something went wrong while updating your information. Please try again later.",
                             ephemeral: true
                         });
                     });
             } else if (actionType === "deposit") {
                 modules.database.query("UPDATE economy SET wallet = wallet - ?, bank = bank + ? WHERE snowflake = ?;", [amount, amount, snowflake])
-                    .then(() => {
+                    .then((data) => {
+                        // Validation
+                        if (!data.affectedRows) return interaction.reply({
+                            content: "This command requires you to have an account. Create an account with the `/register` command.",
+                            ephemeral: true
+                        });
+
                         interaction.reply({
                             content: `Successfully deposited \`${amount}\` Bits.`,
                             ephemeral: true
                         });
                     }).catch(() => {
                         return interaction.reply({
-                            content: "You do not have an account yet. Create an account with the `/register` command.",
+                            content: "Something went wrong while trying to update your information. Please try again later.",
                             ephemeral: true
                         });
                     });
             } else if (actionType === "balance") {
                 modules.database.query("SELECT wallet, bank, (wallet + bank) AS 'total' FROM economy WHERE snowflake = ?;", [snowflake])
                     .then((data) => {
-                        const embed = embedConstructor.create("Bits Balance", "Accounts", interaction,
+                        if (data.length === 0) return interaction.reply({
+                            content: "This command requires you to have an account. Create an account with the `/register` command.",
+                            ephemeral: true
+                        });
+                        const embed = embedConstructor.create("Bits Balance", "Economy Accounts", interaction,
                             [
                                 { name: 'Wallet', value: `\`${data[0].wallet}\`` },
                                 { name: 'Bank', value: `\`${data[0].bank}\`` },
                                 { name: '-----', value: `Summary` },
                                 { name: 'Combined', value: `\`${data[0].total}\`` }
-                            ]);
+                            ], ["shop"]);
                         interaction.reply({ embeds: [embed], ephemeral: true });
                     }).catch(() => {
                         return interaction.reply({
-                            content: "You do not have an account yet. Create an account with the `/register` command.",
+                            content: "Something went wrong while retrieving the required information. Please try again later.",
                             ephemeral: true
                         });
                     });

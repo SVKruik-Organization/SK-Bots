@@ -21,7 +21,8 @@ module.exports = {
                 .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
                 .addFields(
                     { name: 'Math Expression', value: `\`${expression}\`` },
-                    { name: 'Result', value: `\`${answer}\`` })
+                    { name: 'Result', value: `\`${answer}\`` },
+                    { name: 'Related Commands', value: "\`/rps\` \`/coin\` \`/fact\`" })
                 .setTimestamp()
                 .setFooter({ text: `Embed created by ${config.general.name}` })
             interaction.reply({ embeds: [embed] });

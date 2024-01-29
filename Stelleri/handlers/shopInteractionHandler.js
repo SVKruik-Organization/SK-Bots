@@ -18,6 +18,10 @@ async function shopOptions(interaction) {
                     .setCustomId('shopBuyMenu')
                     .setPlaceholder('Make a selection.')
                     .addOptions(new StringSelectMenuOptionBuilder()
+                        .setLabel('Role Color')
+                        .setDescription(`Give your name a custom color. One change. Cost: ${data[0].role_color} Bits`)
+                        .setValue('role_color'))
+                    .addOptions(new StringSelectMenuOptionBuilder()
                         .setLabel('XP-Boost 15% 24H')
                         .setDescription(`Temporary XP-boost on all gained Experience. Cost: ${data[0].xp15} Bits`)
                         .setValue('xp15'))
@@ -52,7 +56,7 @@ async function purschaseOptions(interaction, purschaseOption) {
     const button = new ButtonBuilder()
         .setCustomId('openShopBuyModal')
         .setLabel(`Buy ${purschaseOption}`)
-        .setStyle('Primary');
+        .setStyle('Success');
 
     await interaction.update({
         content: 'Thank you for your selection. Click this button to fill in the quantity.',
@@ -99,7 +103,7 @@ async function modalInputHandler(interaction) {
         amount = parseInt(amount);
         if (amount === 0) return interaction.update({ content: 'You must atleast buy one item. Please try again.', ephemeral: true });
 
-        modules.database.query("SELECT xp15, xp50, wallet, bank, (wallet + bank) as total FROM guild_settings LEFT JOIN economy ON 1 = 1 WHERE guild_settings.snowflake = ? AND economy.snowflake = ?;", [interaction.guild.id, interaction.user.id])
+        modules.database.query("SELECT xp15, xp50, role_color, wallet, bank, (wallet + bank) as total FROM guild_settings LEFT JOIN economy ON 1 = 1 WHERE guild_settings.snowflake = ? AND economy.snowflake = ?;", [interaction.guild.id, interaction.user.id])
             .then((data) => {
                 if (data.length === 0) return interaction.reply({
                     content: "This command requires you to have an account. Create an account with the `/register` command.",
@@ -117,11 +121,17 @@ async function modalInputHandler(interaction) {
                     });
                 } else {
                     modules.database.query("UPDATE economy SET wallet = wallet - ? WHERE snowflake = ?;", [total, interaction.user.id])
-                        .then(async () => {
+                        .then(async (data) => {
+                            // Validation
+                            if (!data.affectedRows) return interaction.reply({
+                                content: "This command requires you to have an account. Create an account with the `/register` command.",
+                                ephemeral: true
+                            });
+
                             const remaining = data[0].wallet - total;
                             logger.log(`'${interaction.user.username}@${interaction.user.id}' has purschased ${amount} ${product}${amount > 1 ? "'s" : ""} for a total price of ${total} Bits in guild '${interaction.guild.name}@${interaction.guild.id}'. Bits remaining: ${remaining}.`, "info");
                             xpIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, config.tier.purschase, true, interaction.channelId, interaction.client);
-                            const historyResponse = await purschaseHistory.post(total, product, amount, "Shop Command Purschase", interaction.user.id, remaining, interaction.guild.id);
+                            const historyResponse = await purschaseHistory.post(total, product, amount, "Shop Command Purschase", interaction, remaining, interaction.guild.id);
                             if (historyResponse) {
                                 interaction.reply({
                                     content: `All set! Thank you so much for your purschase! Your new Wallet balance is \`${remaining}\` Bits.${product.indexOf("xp") >= 0 ? " Remember that you have to activate XP-Boosters for them to work. You can do this by using the \`/inventory activate\` command." : ""}`,
@@ -132,7 +142,10 @@ async function modalInputHandler(interaction) {
                                 ephemeral: true
                             });
                         }).catch(() => {
-                            logger.log("Something went wrong while updating your information. You have not been charged. Please try again later.", "warning");
+                            return interaction.reply({
+                                content: "Something went wrong while updating your information. You have not been charged. Please try again later.",
+                                ephemeral: true
+                            });
                         });
                 }
             }).catch((error) => {

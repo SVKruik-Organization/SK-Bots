@@ -75,14 +75,20 @@ module.exports = {
             }
 
             modules.database.query(`UPDATE ${table}${action}${where}`)
-                .then(() => {
+                .then((data) => {
+                    // Validation
+                    if (!data.affectedRows) return interaction.reply({
+                        content: "This user does not have an account yet.",
+                        ephemeral: true
+                    });
+
                     interaction.reply({
                         content: "Account data has been successfully changed.",
                         ephemeral: true
                     });
                 }).catch(() => {
                     return interaction.reply({
-                        content: "This user doesn't have an account yet.",
+                        content: "Something went wrong while trying to update their information. Please try again later.",
                         ephemeral: true
                     });
                 });

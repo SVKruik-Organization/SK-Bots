@@ -44,7 +44,13 @@ module.exports = {
 
                     // Update
                     modules.database.query("UPDATE user SET pincode = ? WHERE snowflake = ?;", [newPincode, snowflake])
-                        .then(() => {
+                        .then((data) => {
+                            // Validation
+                            if (!data.affectedRows) return interaction.reply({
+                                content: "This command requires you to have an account. Create an account with the `/register` command.",
+                                ephemeral: true
+                            });
+
                             interaction.reply({
                                 content: `Your pincode has been updated successfully. New pincode: \`${newPincode}\`. Safe it save!`,
                                 ephemeral: true
@@ -52,13 +58,13 @@ module.exports = {
                             logger.log(`${username} has changed their pincode.`, "info");
                         }).catch(() => {
                             return interaction.reply({
-                                content: "You do not have an account yet. Create an account with the `/register` command.",
+                                content: "Something went wrong while trying to update your information. Please try again later.",
                                 ephemeral: true
                             });
                         });
                 }).catch(() => {
                     return interaction.reply({
-                        content: "You do not have an account yet. Create an account with the `/register` command.",
+                        content: "Something went wrong while trying to update your information. Please try again later.",
                         ephemeral: true
                     });
                 });

@@ -14,17 +14,17 @@ module.exports = {
         const minutes = Math.floor(interaction.client.uptime / 60000) % 60;
         const uptime = `\`${hours}\` hours and \`${minutes}\` minutes.`
 
-        const embed = embedConstructor.create("Bot Statistics", "Information", interaction,
+        const embed = embedConstructor.create("Bot Statistics", `${config.general.name} Information`, interaction,
             [
                 { name: 'Name', value: `**${config.general.name}**` },
                 { name: 'Servers', value: `\`${interaction.client.guilds.cache.size}\` Total` },
                 { name: 'Creator', value: `<@${config.general.creatorId}>` },
                 { name: 'Uptime', value: uptime },
-                { name: 'Ping', value: `\`${interaction.client.ws.ping}\`ms` },
+                { name: 'Ping', value: `\`${Math.abs(interaction.client.ws.ping)}\`ms` },
                 { name: 'Commands', value: `\`${commands}\` Total` },
                 { name: 'Repository', value: config.general.repository },
                 { name: 'Version', value: `\`v2.5.0\`` }
-            ]);
+            ], ["server"]);
         interaction.reply({ embeds: [embed] });
     }
 };

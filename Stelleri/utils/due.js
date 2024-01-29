@@ -42,7 +42,10 @@ function dueAdd(snowflake, type) {
         // Daily Reward Collection
         if (type === "daily") {
             modules.database.query("UPDATE user SET daily_expiry = DATE_ADD(NOW(), INTERVAL 1 DAY) WHERE snowflake = ?;", [snowflake])
-                .then(() => {
+                .then((data) => {
+                    // Validation
+                    if (!data.affectedRows) return logger.log(`Could not update due date, as user '${snowflake}' does not have an account yet.`, "warning");
+
                     logger.log(`Successfully added Daily Reward cooldown for user '${snowflake}' ${type}@${newDate.toLocaleDateString()} to the database.`, "info");
                     modules.dueDates.push({
                         "snowflake": snowflake,
@@ -50,7 +53,7 @@ function dueAdd(snowflake, type) {
                         "description": type
                     });
                 }).catch(() => {
-                    logger.log("Something went wrong while updating due dates.", "warning");
+                    return logger.log("Something went wrong while updating due dates.", "warning");
                 });
 
             // XP-Booster Activation
@@ -85,12 +88,12 @@ function purgeExpired() {
             if (expiredDueDates[i].description === "daily") {
                 modules.database.query("UPDATE user SET daily_expiry = NULL WHERE snowflake = ?", [expiredDueDates[i].snowflake])
                     .catch(() => {
-                        logger.log("Updating expired due dates went wrong for type 'daily'.", "warning");
+                        return logger.log("Updating expired due dates went wrong for type 'daily'.", "warning");
                     });
             } else if (expiredDueDates[i].description === "xp15" || expiredDueDates[i].description === "xp50") {
                 modules.database.query("UPDATE user_inventory SET xp_active = 'None', xp_active_expiry = NULL WHERE snowflake = ?", [expiredDueDates[i].snowflake])
                     .catch(() => {
-                        logger.log(`Updating expired due dates went wrong for type '${expiredDueDates[i].description}'.`, "warning");
+                        return logger.log(`Updating expired due dates went wrong for type '${expiredDueDates[i].description}'.`, "warning");
                     });
             }
         }

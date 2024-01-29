@@ -33,7 +33,7 @@ module.exports = {
                         ephemeral: true
                     });
                 }).catch(() => {
-                    interaction.reply({
+                    return interaction.reply({
                         content: "Something went wrong while deleting the Guild commands. Please try again later.",
                         ephemeral: true
                     });
@@ -47,7 +47,7 @@ module.exports = {
                         ephemeral: true
                     });
                 }).catch(() => {
-                    interaction.followUp({
+                    return interaction.followUp({
                         content: "Something went wrong while deleting the Global commands. Please try again later.",
                         ephemeral: true
                     });

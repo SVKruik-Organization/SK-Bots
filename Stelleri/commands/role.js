@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const guildUtils = require('../utils/guild.js');
+const modules = require('..');
 
 module.exports = {
     cooldown: config.cooldowns.C,
@@ -26,33 +27,67 @@ module.exports = {
         let position = targetGuild.guildObject.roles.cache.size - targetGuild.role_power;
         if (position < 2) position = 2;
 
-        if (role) await role.delete();
-        if (color.match(regex)) {
-            await interaction.guild.roles.create({
-                position: position,
-                name: interaction.user.username,
-                color: parseInt(color, 16)
-            }).then(async () => {
-                const role = targetGuild.guildObject.roles.cache.find((r) => r.name === interaction.user.username);
-                await targetGuild.guildObject.members.fetch(snowflake).then((user) => {
-                    user.roles.add(role);
-                });
-                interaction.reply({
-                    content: `\`#${color}\` -- great color! You look awesome!`,
-                    ephemeral: true
-                });
+        modules.database.query("SELECT role_color FROM user_inventory WHERE snowflake = ?", [interaction.user.id])
+            .then((data) => {
+                if (data.length === 0) {
+                    return interaction.reply({
+                        content: "This command requires you to have an account. Create an account with the `/register` command.",
+                        ephemeral: true
+                    });
+                } else if (data[0].role_color < 1) {
+                    return interaction.reply({
+                        content: "You don't have any Role Color changes left. Purschase one with the `/shop` command.",
+                        ephemeral: true
+                    });
+                }
+
+                modules.database.query("UPDATE user_inventory SET role_color = role_color - 1 WHERE snowflake = ?", [interaction.user.id])
+                    .then(async (data) => {
+                        // Validation
+                        if (!data.affectedRows) return interaction.reply({
+                            content: "This command requires you to have an account. Create an account with the `/register` command.",
+                            ephemeral: true
+                        });
+
+                        if (color.match(regex)) {
+                            if (role) await role.delete();
+                            await interaction.guild.roles.create({
+                                position: position,
+                                name: interaction.user.username,
+                                color: parseInt(color, 16)
+                            }).then(async () => {
+                                const role = targetGuild.guildObject.roles.cache.find((r) => r.name === interaction.user.username);
+                                await targetGuild.guildObject.members.fetch(snowflake).then((user) => {
+                                    user.roles.add(role);
+                                });
+                                interaction.reply({
+                                    content: `\`#${color}\` -- great color! You look awesome!`,
+                                    ephemeral: true
+                                });
+                            }).catch(() => {
+                                return interaction.reply({
+                                    content: "Something went wrong while creating your role. Please try again later.",
+                                    ephemeral: true
+                                });
+                            });
+                        } else {
+                            interaction.reply({
+                                content: "Your color is invalid. Make sure your color is in HEX format, like so: `000000`. Hashtag prefix is not needed.",
+                                ephemeral: true
+                            });
+                        }
+                    }).catch(() => {
+                        return interaction.reply({
+                            content: "Something went wrong while updating your information. You have not been charged. Please try again later.",
+                            ephemeral: true
+                        });
+                    });
             }).catch((error) => {
-                console.error(error);
-                interaction.reply({
-                    content: "Something went wrong while creating your role. Please try again later.",
+                console.log(error);
+                return interaction.reply({
+                    content: "Something went wrong while retrieving the required information. Please try again later.",
                     ephemeral: true
                 });
-            });
-        } else {
-            interaction.reply({
-                content: "Your color is invalid. Make sure your color is in HEX format, like so: `000000`. Hashtag prefix is not needed.",
-                ephemeral: true
-            });
-        }
+            })
     }
 };

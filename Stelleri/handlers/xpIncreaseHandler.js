@@ -33,22 +33,37 @@ function increaseXp(snowflake, username, amount, commandIncrease, channelId, cli
                 if (commandIncrease) paramaterArray.push(snowflake);
                 modules.database.query(`UPDATE tier SET xp = xp + ? WHERE snowflake = ?; SELECT * FROM tier WHERE snowflake = ?; ${commandIncrease ? "UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = ?;" : ""}`, paramaterArray)
                     .then((tierData) => {
+                        // Validation
+                        if ((tierData[0] && tierData[0].affectedRows === 0) || (tierData[1] && tierData[1].affectedRows === 0)) return interaction.reply({
+                            content: "This command requires you to have an account. Create an account with the `/register` command.",
+                            ephemeral: true
+                        });
+
                         const responseData = tierData[1][0];
                         if (responseData.xp >= (20 * (responseData.level + 1) + 300)) {
                             modules.database.query("UPDATE tier SET level = level + 1, xp = 0 WHERE snowflake = ?;", [snowflake])
-                                .then(() => {
+                                .then((data) => {
+                                    // Validation
+                                    if (!data.affectedRows) return interaction.reply({
+                                        content: "This command requires you to have an account. Create an account with the `/register` command.",
+                                        ephemeral: true
+                                    });
+
                                     const newLevel = responseData.level + 1;
                                     const channel = client.channels.cache.get(channelId);
-                                    channel.send({ content: `Nice! <@${snowflake}> just leveled up and reached level ${newLevel}! 🎉` });
-                                }).catch(() => {
-                                    return logger.log(`Level increase unsuccessful, '${username}@${snowflake}' does not have an account yet.`, "warning");
+                                    if (channel) channel.send({ content: `Nice! <@${snowflake}> just leveled up and reached level ${newLevel}! 🎉` });
+                                }).catch((error) => {
+                                    console.error(error);
+                                    return logger.log(`Something went wrong while trying to update the Command Usage/XP count for user '${username}@${snowflake}'.`, "warning");
                                 });
                         }
-                    }).catch(() => {
-                        return logger.log(`Command usage/XP increase unsuccessful, '${username}@${snowflake}' does not have an account yet.`, "warning");
+                    }).catch((error) => {
+                        console.error(error);
+                        return logger.log(`Something went wrong while trying to update the Command Usage/XP count for user '${username}@${snowflake}'.`, "warning");
                     });
-            }).catch(() => {
-                return logger.log(`XP multiplier check unsuccessful, '${username}@${snowflake}' does not have an account yet.`, "warning");
+            }).catch((error) => {
+                console.error(error);
+                return logger.log(`Something went wrong while trying to update the Command Usage/XP count for user '${username}@${snowflake}'.`, "warning");
             });
     } catch (error) {
         console.error(error);

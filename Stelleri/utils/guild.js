@@ -13,7 +13,7 @@ try {
                 } else guilds.push(await guildConstructor(data[i], modules.client));
             }
         }).catch(() => {
-            logger.log("Loading Guild settings went wrong. Aborting.", "fatal");
+            return logger.log("Loading Guild settings went wrong. Aborting.", "fatal");
         });
 } catch (error) {
     console.error(error);
