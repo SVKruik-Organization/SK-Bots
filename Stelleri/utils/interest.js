@@ -1,5 +1,5 @@
 function init() {
-    console.log("Interest Init");
+    console.log("Interest Init\n");
 }
 
 module.exports = {

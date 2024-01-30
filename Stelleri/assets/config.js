@@ -17,7 +17,8 @@ exports.cooldowns = {
 };
 
 exports.tier = {
-    normalMessage: 10,
-    purschase: 50,
-    slashCommand: 80
+    normalMessage: 5,
+    slashCommand: 15,
+    purschase: 25,
+    levelUpBits: 125
 };

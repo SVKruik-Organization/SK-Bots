@@ -56,13 +56,19 @@ module.exports = {
                                 name: interaction.user.username,
                                 color: parseInt(color, 16)
                             }).then(async () => {
-                                const role = targetGuild.guildObject.roles.cache.find((r) => r.name === interaction.user.username);
+                                const role = guild.roles.cache.find((role) => role.name === interaction.user.username);
                                 await targetGuild.guildObject.members.fetch(snowflake).then((user) => {
+                                    if (!user) return interaction.reply({
+                                        content: "Something went wrong while creating your role. Please try again later.",
+                                        ephemeral: true
+                                    });
+
+                                    // Finalize
                                     user.roles.add(role);
-                                });
-                                interaction.reply({
-                                    content: `\`#${color}\` -- great color! You look awesome!`,
-                                    ephemeral: true
+                                    interaction.reply({
+                                        content: `\`#${color}\` -- great color! You look awesome!`,
+                                        ephemeral: true
+                                    });
                                 });
                             }).catch(() => {
                                 return interaction.reply({

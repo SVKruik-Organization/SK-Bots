@@ -91,7 +91,7 @@ module.exports = {
 
                         const embed = embedConstructor.create("Inventory Overview", "Your XP-Boosters and other items.", interaction,
                             [
-                                { name: 'Role Colors', value: `\`${data[0].role_color}\`` },
+                                { name: 'Role Colors', value: `\`${data[0].role_color_price}\`` },
                                 { name: 'XP +15%', value: `\`${data[0].xp15}\`` },
                                 { name: 'XP +50%', value: `\`${data[0].xp50}\`` }
                             ], ["shop", "economy", "tier"]);

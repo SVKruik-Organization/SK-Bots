@@ -1,5 +1,6 @@
 const modules = require('..');
 const logger = require('../utils/logger.js');
+const config = require('../assets/config.js');
 
 /**
  * Increase the XP and Command Usage of a user.
@@ -9,15 +10,17 @@ const logger = require('../utils/logger.js');
  * @param {boolean} commandIncrease If the command usage count should also be increased.
  * @param {string} channelId Channel ID of the channel the message/slash command was sent in.
  * @param {object} client Discord Client Object
+ * @param {object} guild Discord Guild Object
+ * @param {object} user Discord User Object
  */
-function increaseXp(snowflake, username, amount, commandIncrease, channelId, client) {
+function increaseXp(snowflake, username, amount, commandIncrease, channelId, client, guild, user) {
     try {
         // XP-Booster Check
         modules.database.query(`SELECT xp_active FROM user_inventory WHERE snowflake = ?;`, [snowflake])
-            .then((data) => {
+            .then((initData) => {
                 let xpMultiplier = 1;
-                if (data.length > 0 && data[0].xp_active !== "None") {
-                    switch (data[0].xp_active) {
+                if (initData.length > 0 && initData[0].xp_active !== "None") {
+                    switch (initData[0].xp_active) {
                         case "xp15":
                             xpMultiplier = 1.15;
                             break;
@@ -34,24 +37,56 @@ function increaseXp(snowflake, username, amount, commandIncrease, channelId, cli
                 modules.database.query(`UPDATE tier SET xp = xp + ? WHERE snowflake = ?; SELECT * FROM tier WHERE snowflake = ?; ${commandIncrease ? "UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = ?;" : ""}`, paramaterArray)
                     .then((tierData) => {
                         // Validation
-                        if ((tierData[0] && tierData[0].affectedRows === 0) || (tierData[1] && tierData[1].affectedRows === 0)) return interaction.reply({
-                            content: "This command requires you to have an account. Create an account with the `/register` command.",
-                            ephemeral: true
-                        });
+                        if (tierData[0] && !tierData[0].affectedRows) return;
 
                         const responseData = tierData[1][0];
                         if (responseData.xp >= (20 * (responseData.level + 1) + 300)) {
-                            modules.database.query("UPDATE tier SET level = level + 1, xp = 0 WHERE snowflake = ?;", [snowflake])
-                                .then((data) => {
+                            modules.database.query("UPDATE tier SET level = level + 1, xp = 0 WHERE snowflake = ?; UPDATE economy SET bank = bank + ? WHERE snowflake = ?;", [snowflake, (config.tier.levelUpBits * (responseData.level + 1)), snowflake])
+                                .then(async (data) => {
                                     // Validation
-                                    if (!data.affectedRows) return interaction.reply({
-                                        content: "This command requires you to have an account. Create an account with the `/register` command.",
-                                        ephemeral: true
-                                    });
+                                    if (data[0] && !data[0].affectedRows) return;
+                                    if (responseData.level + 1 > 150) return;
 
+                                    // Level Up Message
                                     const newLevel = responseData.level + 1;
                                     const channel = client.channels.cache.get(channelId);
                                     if (channel) channel.send({ content: `Nice! <@${snowflake}> just leveled up and reached level ${newLevel}! 🎉` });
+
+                                    // Role Update
+                                    const role = guild.roles.cache.find(role => role.name === `Level ${responseData.level + 1}`);
+                                    if (role) {
+                                        user.roles.add(role);
+                                    } else {
+                                        await guild.roles.create({
+                                            position: guild.members.cache.size - 2,
+                                            name: `Level ${responseData.level + 1}`,
+                                            color: parseInt("FF9800", 16)
+                                        }).then(async () => {
+                                            try {
+                                                await guild.members.fetch(snowflake).then(async (user) => {
+                                                    const removeRole = await guild.roles.cache.find((role) => role.name === `Level ${responseData.level}`);
+                                                    const addRole = await guild.roles.cache.find((role) => role.name === `Level ${responseData.level + 1}`);
+
+                                                    // Update User Roles
+                                                    if (user) {
+                                                        if (removeRole) user.roles.remove(removeRole);
+                                                        if (addRole) user.roles.add(addRole);
+                                                    }
+
+                                                    // Delete if no other role owners of previous level.
+                                                    if (removeRole && removeRole.members.size > 0) {
+                                                        const otherOwners = removeRole.members.filter(guildMember => guildMember.user.id !== snowflake);
+                                                        if (otherOwners.size === 0) removeRole.delete().catch(console.error);
+                                                    }
+                                                });
+                                            } catch (error) {
+                                                console.error(error);
+                                            }
+                                        }).catch((error) => {
+                                            console.error(error);
+                                            return logger.log(`Something went wrong while creating new Level role.`, "warning");
+                                        });
+                                    }
                                 }).catch((error) => {
                                     console.error(error);
                                     return logger.log(`Something went wrong while trying to update the Command Usage/XP count for user '${username}@${snowflake}'.`, "warning");

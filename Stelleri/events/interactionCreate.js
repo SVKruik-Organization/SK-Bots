@@ -114,7 +114,7 @@ module.exports = {
         }
 
         // Experience
-        xpIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, config.tier.slashCommand, true, interaction.channelId, interaction.client);
+        xpIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, config.tier.slashCommand, true, interaction.channelId, interaction.client, interaction.guild, interaction.user);
 
         // Logging
         let options = [];
