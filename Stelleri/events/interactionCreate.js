@@ -4,10 +4,11 @@ const { Collection } = require('discord.js');
 const config = require('../assets/config.js');
 const logger = require('../utils/logger.js');
 const shopInteractionHandler = require('../handlers/shopInteractionHandler.js');
-const xpIncreaseHandler = require('../handlers/xpIncreaseHandler.js');
+const userIncreaseHandler = require('../handlers/userIncreaseHandler.js');
 const boosterInteractionHandler = require('../handlers/boosterInteractionHandler.js');
 const { customShopCatalog } = require('../utils/embed.js');
 const closeInteractionHandler = require('../handlers/closeInteractionHandler.js');
+const eventSignUpHandler = require('../handlers/eventSignUpHandler.js');
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -53,6 +54,10 @@ module.exports = {
                 // Cancel Account Close
             } else if (interaction.customId === "cancelAccountClose") {
                 closeInteractionHandler.cancelAccountClose(interaction);
+
+                // Event Sign Up   
+            } else if (interaction.customId.indexOf("eventSignUp_") >= 0) {
+                eventSignUpHandler.signUp(interaction);
 
             }
         }
@@ -114,7 +119,10 @@ module.exports = {
         }
 
         // Experience
-        xpIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, config.tier.slashCommand, true, interaction.channelId, interaction.client, interaction.guild, interaction.user);
+        userIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, config.tier.slashCommand, interaction.channelId, interaction.client, interaction.guild, interaction.user);
+
+        // Command Usage
+        userIncreaseHandler.increaseCommand(interaction.user.id, interaction.commandName);
 
         // Logging
         let options = [];

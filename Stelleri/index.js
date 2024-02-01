@@ -47,7 +47,8 @@ try {
                     } else if (data[i].blocked === true) blockedUsers.push(data[i].snowflake);
                 }
             }
-        }).catch(() => {
+        }).catch((error) => {
+            console.error(error);
             return logger.log("Loading Users went wrong. Aborting.", "fatal");
         });
 } catch (error) {

@@ -17,14 +17,13 @@ function getDate(datetime, preferredLocale) {
 
     const hh = formatTime(today.getHours());
     const m = formatTime(today.getMinutes());
-    const s = formatTime(today.getSeconds());
 
     const dd = String(today.getDate()).padStart(2, '0');
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const yyyy = today.getFullYear();
 
     const date = `${dd}-${mm}-${yyyy}`;
-    const time = `${hh}:${m}:${s}`;
+    const time = `${hh}:${m}`;
 
     /**
      * Time formatter.

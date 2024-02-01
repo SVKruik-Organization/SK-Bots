@@ -1,13 +1,13 @@
 const modules = require('..');
 const logger = require('./logger.js');
 const { getDate } = require('./date.js');
-
+const embedConstructor = require('./embed.js');
 /**
  * Index once on startup.
- * After that, checking will happen on memory.
+ * After that, checking will happen in-memory.
  */
 try {
-    modules.database.query("SELECT T.snowflake, T.expiry, T.description FROM (SELECT snowflake, xp_active_expiry AS expiry, xp_active AS description FROM user_inventory UNION ALL SELECT snowflake, daily_expiry, 'daily' FROM user) as T WHERE T.expiry IS NOT NULL;")
+    modules.database.query("SELECT T.snowflake, T.expiry, T.description, T.data FROM (SELECT snowflake, xp_active_expiry AS expiry, xp_active AS description, NULL as data FROM user_inventory UNION ALL SELECT snowflake, daily_expiry, 'daily', null FROM user UNION ALL SELECT snowflake, date_start, 'event', event_ticket FROM event LEFT JOIN event_attendee ON event_attendee.event_ticket = event.ticket WHERE date_start > NOW()) as T WHERE T.expiry IS NOT NULL;")
         .then((data) => {
             const dueDates = [];
             for (let i = 0; i <= data.length; i++) {
@@ -29,16 +29,13 @@ function dueDateConstructor(data) {
     return {
         "snowflake": data.snowflake,
         "expiry": getDate(data.expiry, null).today,
-        "description": data.description
+        "description": data.description,
+        "data": data.data
     }
 }
 
-function dueAdd(snowflake, type) {
+function dueAdd(snowflake, type, expiry, data) {
     try {
-        // + 24 Hours
-        const newDate = new Date();
-        newDate.setDate(newDate.getDate() + 1);
-
         // Daily Reward Collection
         if (type === "daily") {
             modules.database.query("UPDATE user SET daily_expiry = DATE_ADD(NOW(), INTERVAL 1 DAY) WHERE snowflake = ?;", [snowflake])
@@ -46,22 +43,24 @@ function dueAdd(snowflake, type) {
                     // Validation
                     if (!data.affectedRows) return logger.log(`Could not update due date, as user '${snowflake}' does not have an account yet.`, "warning");
 
-                    logger.log(`Successfully added Daily Reward cooldown for user '${snowflake}' ${type}@${newDate.toLocaleDateString()} to the database.`, "info");
+                    logger.log(`Successfully added Daily Reward cooldown for user '${snowflake}' ${type}@${expiry.toLocaleDateString()} to the database.`, "info");
                     modules.dueDates.push({
                         "snowflake": snowflake,
-                        "expiry": getDate(newDate, null).today,
-                        "description": type
+                        "expiry": getDate(expiry, null).today,
+                        "description": type,
+                        "data": data
                     });
                 }).catch(() => {
                     return logger.log("Something went wrong while updating due dates.", "warning");
                 });
 
-            // XP-Booster Activation
-        } else if (type === "xp15" || type === "xp50") {
+            // XP-Booster Activation & Event Attendee
+        } else if (type === "xp15" || type === "xp50" || type === "event") {
             modules.dueDates.push({
                 "snowflake": snowflake,
-                "expiry": getDate(newDate, null).today,
-                "description": type
+                "expiry": getDate(expiry, null).today,
+                "description": type,
+                "data": data
             });
         }
     } catch (error) {
@@ -70,11 +69,15 @@ function dueAdd(snowflake, type) {
 }
 
 function enableWatcher() {
-    // Every 5 Minutes
+    // 5 Minutes accuracy for XP & Daily, purge retroactively
     purgeExpired();
+    processEvents();
     setInterval(() => {
         purgeExpired();
+        processEvents();
     }, 300000);
+
+
 }
 
 function purgeExpired() {
@@ -106,6 +109,55 @@ function purgeExpired() {
     }
 }
 
+function processEvents() {
+    // Advanced setup for Event
+    try {
+        const events = modules.dueDates.filter(dueDate => dueDate.description === "event" && dueDate.expiry > getDate(null, null).today);
+        for (let i = 0; i < events.length; i++) {
+            const interval = 15; // Minutes
+            const timeDifference = events[i].expiry.getTime() - getDate(null, null).today.getTime();
+
+            // Event is starting within {interval} minutes
+            if (timeDifference > 0 && timeDifference <= interval * 60 * 1000) {
+                modules.database.query("SELECT snowflake FROM event_attendee WHERE event_ticket = ?; SELECT * FROM event WHERE ticket = ?;", [events[i].data, events[i].data])
+                    .then(async (data) => {
+                        const commencingEvent = data[1][0];
+                        for (let i = 0; i <= data[0].length; i++) {
+                            if (i === data[0].length) {
+                                // Delete from Due Dates
+                                modules.dueDates = modules.dueDates.filter(dueDate => dueDate.data !== commencingEvent.ticket);
+                            } else {
+                                // User Notification
+                                const user = await modules.client.users.fetch(data[0][i].snowflake);
+                                if (user) {
+                                    const date = getDate(commencingEvent.date_start, null);
+
+                                    // Standard Fields A
+                                    const embedFields = [
+                                        { name: "Title", value: commencingEvent.title, inline: true },
+                                        { name: "Date", value: `${date.date} at ${date.time}`, inline: true }];
+
+                                    // Location
+                                    if (commencingEvent.online) {
+                                        embedFields.push({ name: "Location", value: `<#${commencingEvent.location}>`, inline: true });
+                                    } else embedFields.push({ name: "Location", value: commencingEvent.location });
+
+                                    // Standard Fields B
+                                    embedFields.push({ name: "Description", value: `${commencingEvent.description}` });
+
+                                    const embed = embedConstructor.create("Event Starting Soon!", "You are receiving this message because you have registered for the following event:", user, embedFields, ["event"]);
+                                    user.send({ embeds: [embed] });
+                                }
+                            }
+                        }
+                    });
+            }
+        }
+    } catch (error) {
+        console.error(error);
+        logger.log("Parsing Event dates went wrong. Aborting.", "fatal");
+    }
+}
 
 module.exports = {
     "dueAdd": dueAdd

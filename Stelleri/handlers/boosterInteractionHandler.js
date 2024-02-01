@@ -88,7 +88,10 @@ function confirmActivate(interaction) {
                 });
 
                 logger.log(`'${interaction.user.username}@${interaction.user.id}' has activated a XP-Booster ${boosterType} in guild '${interaction.guild.name}@${interaction.guild.id}'.`, "info");
-                dueAdd(interaction.user.id, boosterType);
+                // + 24 Hours
+                const newDate = new Date();
+                newDate.setDate(newDate.getDate() + 1);
+                dueAdd(interaction.user.id, boosterType, newDate, null);
                 interaction.update({
                     content: `Success! Your XP-Booster has been activated for 24 hours, and is applied to all gained Experience.`,
                     components: [disabledButtons(interaction)],

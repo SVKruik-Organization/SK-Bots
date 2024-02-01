@@ -12,7 +12,8 @@ try {
                     module.exports.guilds = guilds;
                 } else guilds.push(await guildConstructor(data[i], modules.client));
             }
-        }).catch(() => {
+        }).catch((error) => {
+            console.error(error);
             return logger.log("Loading Guild settings went wrong. Aborting.", "fatal");
         });
 } catch (error) {

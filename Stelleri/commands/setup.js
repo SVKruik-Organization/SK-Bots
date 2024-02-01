@@ -144,7 +144,7 @@ module.exports = {
                     ephemeral: true
                 });
 
-                const embed = embedConstructor.create("Server Configuration", `${interaction.guild.name} Setup`, interaction,
+                const embed = embedConstructor.create("Server Configuration", `${interaction.guild.name} Setup`, interaction.user,
                     [
                         { name: 'Registerer', value: `${targetGuild.register_snowflake ? '<@' + targetGuild.register_snowflake + '>' : "Not Configured"}` },
                         { name: 'Event Channel', value: `${targetGuild.channel_event || "Not Configured"}` },
@@ -156,7 +156,7 @@ module.exports = {
                     ], ["server"]);
                 interaction.reply({ embeds: [embed], ephemeral: true });
             } else if (actionType === "help") {
-                const embed = embedConstructor.create("Server Configuration", "Command Usage Help", interaction,
+                const embed = embedConstructor.create("Server Configuration", "Command Usage Help", interaction.user,
                     [
                         {
                             name: 'General',

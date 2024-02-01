@@ -78,7 +78,7 @@ module.exports = {
                             content: "This command requires you to have an account. Create an account with the `/register` command.",
                             ephemeral: true
                         });
-                        const embed = embedConstructor.create("Bits Balance", "Economy Accounts", interaction,
+                        const embed = embedConstructor.create("Bits Balance", "Economy Accounts", interaction.user,
                             [
                                 { name: 'Wallet', value: `\`${data[0].wallet}\`` },
                                 { name: 'Bank', value: `\`${data[0].bank}\`` },

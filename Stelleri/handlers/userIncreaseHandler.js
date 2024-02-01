@@ -1,19 +1,18 @@
-const modules = require('..');
+const modules = require('../index.js');
 const logger = require('../utils/logger.js');
 const config = require('../assets/config.js');
 
 /**
- * Increase the XP and Command Usage of a user.
+ * Increase the XP of a user.
  * @param {string} snowflake User ID of the user.
  * @param {string} username Username of the user.
  * @param {number} amount The amount of XP to add.
- * @param {boolean} commandIncrease If the command usage count should also be increased.
  * @param {string} channelId Channel ID of the channel the message/slash command was sent in.
  * @param {object} client Discord Client Object
  * @param {object} guild Discord Guild Object
  * @param {object} user Discord User Object
  */
-function increaseXp(snowflake, username, amount, commandIncrease, channelId, client, guild, user) {
+function increaseXp(snowflake, username, amount, channelId, client, guild, user) {
     try {
         // XP-Booster Check
         modules.database.query(`SELECT xp_active FROM user_inventory WHERE snowflake = ?;`, [snowflake])
@@ -32,9 +31,7 @@ function increaseXp(snowflake, username, amount, commandIncrease, channelId, cli
                 }
 
                 // Usage / XP Increase
-                const paramaterArray = [Math.round(amount * xpMultiplier), snowflake, snowflake];
-                if (commandIncrease) paramaterArray.push(snowflake);
-                modules.database.query(`UPDATE tier SET xp = xp + ? WHERE snowflake = ?; SELECT * FROM tier WHERE snowflake = ?; ${commandIncrease ? "UPDATE user SET commands_used = commands_used + 1 WHERE snowflake = ?;" : ""}`, paramaterArray)
+                modules.database.query("UPDATE tier SET xp = xp + ? WHERE snowflake = ?; SELECT * FROM tier WHERE snowflake = ?;", [Math.round(amount * xpMultiplier), snowflake, snowflake])
                     .then((tierData) => {
                         // Validation
                         if (tierData[0] && !tierData[0].affectedRows) return;
@@ -89,22 +86,35 @@ function increaseXp(snowflake, username, amount, commandIncrease, channelId, cli
                                     }
                                 }).catch((error) => {
                                     console.error(error);
-                                    return logger.log(`Something went wrong while trying to update the Command Usage/XP count for user '${username}@${snowflake}'.`, "warning");
+                                    return logger.log(`Something went wrong while trying to update the XP count for user '${username}@${snowflake}'.`, "warning");
                                 });
                         }
                     }).catch((error) => {
                         console.error(error);
-                        return logger.log(`Something went wrong while trying to update the Command Usage/XP count for user '${username}@${snowflake}'.`, "warning");
+                        return logger.log(`Something went wrong while trying to update the XP count for user '${username}@${snowflake}'.`, "warning");
                     });
             }).catch((error) => {
                 console.error(error);
-                return logger.log(`Something went wrong while trying to update the Command Usage/XP count for user '${username}@${snowflake}'.`, "warning");
+                return logger.log(`Something went wrong while trying to update the XP count for user '${username}@${snowflake}'.`, "warning");
             });
     } catch (error) {
         console.error(error);
     }
 }
 
+/**
+ * Increase command usage count based in dedicated table.
+ * @param {string} snowflake User ID
+ * @param {string} commandName Command name, should be the same as table name.
+ */
+function increaseCommand(snowflake, commandName) {
+    const disabledCommands = ["register", "close", "shutdown"];
+    if (disabledCommands.includes(commandName)) return;
+    modules.database.query(`UPDATE user_commands SET ${commandName} = ${commandName} + 1 WHERE snowflake = ?`, [snowflake])
+        .catch(console.error);
+}
+
 module.exports = {
-    "increaseXp": increaseXp
+    "increaseXp": increaseXp,
+    "increaseCommand": increaseCommand
 }

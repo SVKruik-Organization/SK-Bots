@@ -6,16 +6,16 @@ const modules = require('..');
  * Default Discord.JS Embed constructor.
  * @param {string} title The title of the embed.
  * @param {string} subfieldTitle The sub-header of the embed.
- * @param {object} interaction Discord Interaction object.
+ * @param {object} user Discord User object.
  * @param {Array<object>} fields The fields to add. Needs to have a 'name' and 'value' key.
  * @param {Array<string>} relatedCommands Array of related commands to display for the user.
  * @returns The constructed embed.
  */
-function create(title, subfieldTitle, interaction, fields, relatedCommands) {
+function create(title, subfieldTitle, user, fields, relatedCommands) {
     const embed = new EmbedBuilder()
         .setColor(config.general.color)
         .setTitle(title)
-        .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
+        .setAuthor({ name: user.username, iconURL: user.avatarURL() })
         .setDescription(subfieldTitle)
         .addFields(fields)
         .addFields({ name: '----', value: 'Meta' })

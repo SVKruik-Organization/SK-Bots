@@ -19,8 +19,8 @@ module.exports = {
             const username = interaction.user.username;
             const pincode = interaction.options.getString('pincode');
 
-            modules.database.query("INSERT INTO user (snowflake, username, pincode, created_on) VALUES (?, ?, ?, CURRENT_TIMESTAMP); INSERT INTO tier (snowflake) VALUES (?); INSERT INTO economy (snowflake) VALUES (?); INSERT INTO user_inventory (snowflake) VALUES (?);",
-                [snowflake, username, pincode, snowflake, snowflake, snowflake])
+            modules.database.query("INSERT INTO user (snowflake, username, pincode) VALUES (?, ?, ?); INSERT INTO tier (snowflake) VALUES (?); INSERT INTO economy (snowflake) VALUES (?); INSERT INTO user_inventory (snowflake) VALUES (?); INSERT INTO user_commands (snowflake) VALUES (?);",
+                [snowflake, username, pincode, snowflake, snowflake, snowflake, snowflake])
                 .then(() => {
                     interaction.reply({
                         content: "Thank you for your registration! You can now use all commands.",

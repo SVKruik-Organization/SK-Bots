@@ -14,7 +14,7 @@ module.exports = {
         const minutes = Math.floor(interaction.client.uptime / 60000) % 60;
         const uptime = `\`${hours}\` hours and \`${minutes}\` minutes.`
 
-        const embed = embedConstructor.create("Bot Statistics", `${config.general.name} Information`, interaction,
+        const embed = embedConstructor.create("Bot Statistics", `${config.general.name} Information`, interaction.user,
             [
                 { name: 'Name', value: `**${config.general.name}**` },
                 { name: 'Servers', value: `\`${interaction.client.guilds.cache.size}\` Total` },

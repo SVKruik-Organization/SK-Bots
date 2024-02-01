@@ -17,7 +17,7 @@ module.exports = {
         const rawDate = targetGuild.guildObject.createdAt;
         const date = `${rawDate.getDate()}/${rawDate.getMonth() + 1}/${rawDate.getFullYear()}`;
 
-        const embed = embedConstructor.create("Server Statistics", interaction.guild.name, interaction,
+        const embed = embedConstructor.create("Server Statistics", interaction.guild.name, interaction.user,
             [
                 {
                     name: 'Name',

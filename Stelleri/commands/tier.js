@@ -22,7 +22,7 @@ module.exports = {
                     const currentXp = data[0].xp + config.tier.slashCommand;
                     let hoursLeft = "";
                     if (data[0].xp_active_expiry) hoursLeft = ` (${date.difference(data[0].xp_active_expiry, date.getDate(null, null).today).remainingHours} hours remaining)`;
-                    const embed = embedConstructor.create("Tier Overview", "Level System Progression", interaction,
+                    const embed = embedConstructor.create("Tier Overview", "Level System Progression", interaction.user,
                         [
                             { name: 'Level', value: `\`${data[0].level}\`` },
                             { name: 'Experience', value: `\`${currentXp}\`` },

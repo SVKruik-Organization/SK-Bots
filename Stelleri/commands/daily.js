@@ -43,7 +43,10 @@ module.exports = {
                         ephemeral: true
                     });
 
-                    dueAdd(interaction.user.id, "daily");
+                    // + 24 Hours
+                    const newDate = new Date();
+                    newDate.setDate(newDate.getDate() + 1);
+                    dueAdd(interaction.user.id, "daily", newDate, null);
                     if (jackpotBoolean) {
                         interaction.reply({ content: `💎 You hit the JACKPOT! 💎 You received a grand total of \`${dailyreward}\` Bits. Congratulations! 🎉` });
                         logger.log(`'${interaction.user.username}@${interaction.user.id}' hit the daily reward jackpot worth ${jackpotValue}. Their dailyreward was worth ${dailyreward - jackpotValue}. They received a total of ${dailyreward} Bits.\n`, "alert");
