@@ -3,6 +3,7 @@ const config = require('../assets/config.js');
 const modules = require('..');
 const embedConstructor = require('../utils/embed.js');
 const date = require('../utils/date.js');
+const guildUtils = require('../utils/guild.js');
 
 module.exports = {
     cooldown: config.cooldowns.C,
@@ -12,6 +13,9 @@ module.exports = {
     async execute(interaction) {
         try {
             const snowflake = interaction.user.id;
+            const targetGuild = guildUtils.findGuildById(interaction.guild.id);
+            let xpReward = config.tier.slashCommand;
+            if (targetGuild && targetGuild.xp_increase_slash) xpReward = targetGuild.xp_increase_slash;
 
             modules.database.query("SELECT level, xp, xp15, xp50, xp_active, xp_active_expiry FROM tier LEFT JOIN user_inventory ON user_inventory.snowflake = tier.snowflake WHERE tier.snowflake = ?;", [snowflake])
                 .then((data) => {
@@ -19,7 +23,8 @@ module.exports = {
                         content: "You do not have an account yet. Create an account with the `/register` command.",
                         ephemeral: true
                     });
-                    const currentXp = data[0].xp + config.tier.slashCommand;
+                    const currentXp = data[0].xp + xpReward;
+
                     let hoursLeft = "";
                     if (data[0].xp_active_expiry) hoursLeft = ` (${date.difference(data[0].xp_active_expiry, date.getDate(null, null).today).remainingHours} hours remaining)`;
                     const embed = embedConstructor.create("Tier Overview", "Level System Progression", interaction.user,
