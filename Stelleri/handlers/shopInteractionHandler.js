@@ -130,7 +130,14 @@ async function modalInputHandler(interaction) {
 
                             const remaining = data[0].wallet - total;
                             logger.log(`'${interaction.user.username}@${interaction.user.id}' has purschased ${amount} ${product}${amount > 1 ? "'s" : ""} for a total price of ${total} Bits in guild '${interaction.guild.name}@${interaction.guild.id}'. Bits remaining: ${remaining}.`, "info");
-                            userIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, config.tier.purschase, interaction.channelId, interaction.client, interaction.guild, interaction.user);
+                            
+                            // Experience Increase
+                            const targetGuild = guildUtils.findGuildById(interaction.guild.id);
+                            let xpReward = config.tier.purschase;
+                            if (targetGuild && targetGuild.xp_increase_purschase) xpReward = targetGuild.xp_increase_purschase;
+                            userIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, xpReward, interaction.channelId, interaction.client, interaction.user, interaction.guild.id);
+
+                            // History
                             const historyResponse = await purschaseHistory.post(total, product, amount, "Shop Command Purschase", interaction, remaining, interaction.guild.id);
                             if (historyResponse) {
                                 interaction.reply({

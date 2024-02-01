@@ -3,7 +3,7 @@ const logger = require('./logger.js');
 
 // Indexing Guilds & Settings
 try {
-    modules.database.query("SELECT guild.*, xp15, xp50, jackpot, welcome FROM guild LEFT JOIN guild_settings ON guild_settings.snowflake = guild.snowflake WHERE disabled = 0;")
+    modules.database.query("SELECT guild.*, xp_increase_normal, xp_increase_slash, xp_increase_purschase, xp15, xp50, level_up_reward_base, role_cosmetic_price, role_level_power, role_cosmetic_power, role_level_color, jackpot, welcome, role_level_enable FROM guild LEFT JOIN guild_settings ON guild_settings.snowflake = guild.snowflake WHERE disabled = 0;")
         .then(async (data) => {
             const guilds = [];
             for (let i = 0; i <= data.length; i++) {
@@ -76,6 +76,7 @@ async function guildConstructor(guild, client) {
 
         // Completed Guild Object
         return {
+            // Guild
             "guildObject": fetchedGuild,
             "name": guild.name,
             "register_snowflake": guild.register_snowflake,
@@ -83,14 +84,25 @@ async function guildConstructor(guild, client) {
             "channel_suggestion": channel_suggestion,
             "channel_snippet": channel_snippet,
             "channel_rules": channel_rules,
-            "role_power": guild.role_power,
             "role_blinded": role_blinded,
             "locale": guild.locale,
             "disabled": guild.disabled,
-            "jackpot": guild.jackpot,
+
+            // Settings
             "xp15": guild.xp15,
             "xp50": guild.xp50,
-            "welcome": guild.welcome
+            "level_up_reward_base": guild.level_up_reward_base,
+            "role_cosmetic_price": guild.role_cosmetic_price,
+            "role_cosmetic_power": guild.role_cosmetic_power,
+            "role_level_power": guild.role_level_power,
+            "role_level_max": guild.role_level_max,
+            "role_level_enable": guild.role_level_enable,
+            "role_level_color": guild.role_level_color,
+            "jackpot": guild.jackpot,
+            "welcome": guild.welcome,
+            "xp_increase_normal": guild.xp_increase_normal,
+            "xp_increase_slash": guild.xp_increase_slash,
+            "xp_increase_purschase": guild.xp_increase_purschase
         }
     } catch (error) {
         if (error.status !== 404) {

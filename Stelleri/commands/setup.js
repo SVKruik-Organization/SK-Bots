@@ -38,7 +38,7 @@ module.exports = {
                 .setDescription('Blinded Role')
                 .setRequired(false))
             .addIntegerOption(option => option
-                .setName('role_power')
+                .setName('role_cosmetic_power')
                 .setDescription('Amount of roles with admin privileges. This makes sure that cosmetic roles will not overpower these.')
                 .setMinValue(2)
                 .setMaxValue(30)
@@ -53,9 +53,7 @@ module.exports = {
         try {
             // Setup
             const actionType = interaction.options.getSubcommand('action');
-            let newGuild = true;
             const targetGuild = guildUtils.findGuildById(interaction.guild.id);
-            if (targetGuild) newGuild = false;
             const guildSnapshot = guildUtils.guilds;
 
             // Optional Options
@@ -64,11 +62,11 @@ module.exports = {
             const channel_snippet = interaction.options.getChannel('channel_snippet') || null;
             const channel_rules = interaction.options.getChannel('channel_rules') || interaction.guild.rulesChannelId ? await interaction.client.channels.fetch(interaction.guild.rulesChannelId) : null;
             const role_blinded = interaction.options.getRole('role_blinded') || null;
-            const role_power = interaction.options.getInteger('role_power') || 2;
+            const role_cosmetic_power = interaction.options.getInteger('role_cosmetic_power') || 2;
 
-            // New 
-            if (actionType === "register" && newGuild) {
-                modules.database.query("UPDATE guild SET register_snowflake = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_power = ?, role_blinded = ?, locale = ? WHERE snowflake = ?;", [interaction.user.id, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_power, role_blinded ? role_blinded.id : null, interaction.guild.preferredLocale, interaction.guild.id])
+            // Update
+            if (actionType === "register") {
+                modules.database.query("UPDATE guild SET register_snowflake = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE snowflake = ?;", [interaction.user.id, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_blinded ? role_blinded.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
                     .then((data) => {
                         // Validation
                         if (!data.affectedRows) return interaction.reply({
@@ -77,42 +75,7 @@ module.exports = {
                         });
 
                         interaction.reply({
-                            content: "Setup successful. Additional commands enabled. For other settings like welcome messages and other paramaters, please consult my website (WIP).",
-                            ephemeral: true
-                        });
-                        guildUtils.guilds.push({
-                            "guildObject": interaction.guild,
-                            "name": interaction.guild.name,
-                            "register_snowflake": interaction.user.id,
-                            "channel_event": channel_event,
-                            "channel_suggestion": channel_suggestion,
-                            "channel_snippet": channel_snippet,
-                            "channel_rules": channel_rules,
-                            "role_power": role_power,
-                            "role_blinded": role_blinded,
-                            "locale": interaction.guild.preferredLocale,
-                            "disabled": false
-                        });
-                    }).catch(() => {
-                        guildUtils.guilds = guildSnapshot;
-                        return interaction.reply({
-                            content: "Something went wrong while creating the server configuration. Please try again later.",
-                            ephemeral: true
-                        });
-                    });
-
-                // Update
-            } else if (actionType === "register" && !newGuild) {
-                modules.database.query("UPDATE guild SET channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_power = ?, role_blinded = ? WHERE snowflake = ?", [channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_power, role_blinded ? role_blinded.id : null, interaction.guild.id])
-                    .then((data) => {
-                        // Validation
-                        if (!data.affectedRows) return interaction.reply({
-                            content: "It seems like something went wrong at the initial setup when I joined this server. Please contact moderation.",
-                            ephemeral: true
-                        });
-
-                        interaction.reply({
-                            content: "Setup update successful. Additional commands reloaded or disabled. For other settings like welcome messages and other paramaters, please consult my website (WIP).",
+                            content: "Setup update successful. Additional commands reloaded. For other settings like welcome messages and other paramaters, please consult my website (WIP).",
                             ephemeral: true
                         });
                         guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);
@@ -124,7 +87,7 @@ module.exports = {
                             "channel_suggestion": channel_suggestion,
                             "channel_snippet": channel_snippet,
                             "channel_rules": channel_rules,
-                            "role_power": role_power,
+                            "role_cosmetic_power": role_cosmetic_power,
                             "role_blinded": role_blinded,
                             "locale": interaction.guild.preferredLocale,
                             "disabled": false
@@ -151,7 +114,7 @@ module.exports = {
                         { name: 'Suggestion Channel', value: `${targetGuild.channel_suggestion || "Not Configured"}` },
                         { name: 'Snippet Channel', value: `${targetGuild.channel_snippet || "Not Configured"}` },
                         { name: 'Rules Channel', value: `${targetGuild.channel_rules || "Not Configured"}` },
-                        { name: 'Power Roles', value: `\`${targetGuild.role_power || 0}\`` },
+                        { name: 'Power Roles', value: `\`${targetGuild.role_cosmetic_power || 0}\`` },
                         { name: 'Blinded Role', value: `${targetGuild.role_blinded || "Not Configured"}` }
                     ], ["server"]);
                 interaction.reply({ embeds: [embed], ephemeral: true });

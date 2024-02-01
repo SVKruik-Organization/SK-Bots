@@ -9,6 +9,7 @@ const boosterInteractionHandler = require('../handlers/boosterInteractionHandler
 const { customShopCatalog } = require('../utils/embed.js');
 const closeInteractionHandler = require('../handlers/closeInteractionHandler.js');
 const eventSignUpHandler = require('../handlers/eventSignUpHandler.js');
+const guildUtils = require('../utils/guild.js');
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -118,8 +119,11 @@ module.exports = {
             console.error(error);
         }
 
-        // Experience
-        userIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, config.tier.slashCommand, interaction.channelId, interaction.client, interaction.guild, interaction.user);
+        // Experience Increase
+        const targetGuild = guildUtils.findGuildById(interaction.guild.id);
+        let xpReward = config.tier.slashCommand;
+        if (targetGuild && targetGuild.xp_increase_slash) xpReward = targetGuild.xp_increase_slash;
+        userIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, xpReward, interaction.channelId, interaction.client, interaction.user, interaction.guild.id);
 
         // Command Usage
         userIncreaseHandler.increaseCommand(interaction.user.id, interaction.commandName);

@@ -56,7 +56,7 @@ async function customShopCatalog(interaction) {
                     { name: 'Level', value: '-----------', inline: true },
                     { name: 'Level', value: '-----------', inline: true })
                 .addFields(
-                    { name: 'Role Color', value: `\`${data[0].role_color_price}\` Bits`, inline: true },
+                    { name: 'Role Color', value: `\`${data[0].role_cosmetic_price}\` Bits`, inline: true },
                     { name: 'XP +15 24H', value: `\`${data[0].xp15}\` Bits`, inline: true },
                     { name: 'XP +50 24H', value: `\`${data[0].xp50}\` Bits`, inline: true })
                 .addFields(

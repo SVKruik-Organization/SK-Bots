@@ -16,7 +16,7 @@ module.exports = {
             .setMaxLength(6)),
     async execute(interaction) {
         const targetGuild = guildUtils.findGuildById(interaction.guild.id);
-        if (!targetGuild || !targetGuild.role_power) return interaction.reply({
+        if (!targetGuild || !targetGuild.role_cosmetic_power) return interaction.reply({
             content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
             ephemeral: true
         });
@@ -24,7 +24,7 @@ module.exports = {
         const color = interaction.options.getString('hex');
         const regex = "^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
         const role = targetGuild.guildObject.roles.cache.find(role => role.name === interaction.user.username);
-        let position = targetGuild.guildObject.roles.cache.size - targetGuild.role_power;
+        let position = targetGuild.guildObject.roles.cache.size - targetGuild.role_cosmetic_power;
         if (position < 2) position = 2;
 
         modules.database.query("SELECT role_color FROM user_inventory WHERE snowflake = ?", [interaction.user.id])

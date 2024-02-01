@@ -1,6 +1,6 @@
 const modules = require('../index.js');
 const logger = require('../utils/logger.js');
-const config = require('../assets/config.js');
+const guildUtils = require('../utils/guild.js');
 
 /**
  * Increase the XP of a user.
@@ -9,10 +9,10 @@ const config = require('../assets/config.js');
  * @param {number} amount The amount of XP to add.
  * @param {string} channelId Channel ID of the channel the message/slash command was sent in.
  * @param {object} client Discord Client Object
- * @param {object} guild Discord Guild Object
  * @param {object} user Discord User Object
+ * @param {string} guildId Discord Guild ID Snowflake
  */
-function increaseXp(snowflake, username, amount, channelId, client, guild, user) {
+function increaseXp(snowflake, username, amount, channelId, client, user, guildId) {
     try {
         // XP-Booster Check
         modules.database.query(`SELECT xp_active FROM user_inventory WHERE snowflake = ?;`, [snowflake])
@@ -31,6 +31,7 @@ function increaseXp(snowflake, username, amount, channelId, client, guild, user)
                 }
 
                 // Usage / XP Increase
+                const targetGuild = guildUtils.findGuildById(guildId);
                 modules.database.query("UPDATE tier SET xp = xp + ? WHERE snowflake = ?; SELECT * FROM tier WHERE snowflake = ?;", [Math.round(amount * xpMultiplier), snowflake, snowflake])
                     .then((tierData) => {
                         // Validation
@@ -38,7 +39,8 @@ function increaseXp(snowflake, username, amount, channelId, client, guild, user)
 
                         const responseData = tierData[1][0];
                         if (responseData.xp >= (20 * (responseData.level + 1) + 300)) {
-                            modules.database.query("UPDATE tier SET level = level + 1, xp = 0 WHERE snowflake = ?; UPDATE economy SET bank = bank + ? WHERE snowflake = ?;", [snowflake, (config.tier.levelUpBits * (responseData.level + 1)), snowflake])
+                            const bitsRewardFallback = 20;
+                            modules.database.query("UPDATE tier SET level = level + 1, xp = 0 WHERE snowflake = ?; UPDATE economy SET bank = bank + ? WHERE snowflake = ?;", [snowflake, ((targetGuild ? targetGuild.level_up_reward_base : bitsRewardFallback) * (responseData.level + 1)), snowflake])
                                 .then(async (data) => {
                                     // Validation
                                     if (data[0] && !data[0].affectedRows) return;
@@ -50,40 +52,45 @@ function increaseXp(snowflake, username, amount, channelId, client, guild, user)
                                     if (channel) channel.send({ content: `Nice! <@${snowflake}> just leveled up and reached level ${newLevel}! 🎉` });
 
                                     // Role Update
-                                    const role = guild.roles.cache.find(role => role.name === `Level ${responseData.level + 1}`);
-                                    if (role) {
-                                        user.roles.add(role);
-                                    } else {
-                                        await guild.roles.create({
-                                            position: guild.members.cache.size - 2,
-                                            name: `Level ${responseData.level + 1}`,
-                                            color: parseInt("FF9800", 16)
-                                        }).then(async () => {
-                                            try {
-                                                await guild.members.fetch(snowflake).then(async (user) => {
-                                                    const removeRole = await guild.roles.cache.find((role) => role.name === `Level ${responseData.level}`);
-                                                    const addRole = await guild.roles.cache.find((role) => role.name === `Level ${responseData.level + 1}`);
+                                    const guilds = guildUtils.guilds;
+                                    guilds.forEach(async (rawGuild) => {
+                                        if (newLevel > rawGuild.role_level_max) return;
+                                        const guild = rawGuild.guildObject;
+                                        const role = guild.roles.cache.find(role => role.name === `Level ${newLevel}`);
+                                        if (role) {
+                                            user.roles.add(role);
+                                        } else {
+                                            await guild.roles.create({
+                                                position: guild.members.cache.size - 2,
+                                                name: `Level ${newLevel}`,
+                                                color: parseInt(rawGuild.role_level_color, 16)
+                                            }).then(async () => {
+                                                try {
+                                                    await guild.members.fetch(snowflake).then(async (user) => {
+                                                        const roles = Array.from(user.roles.cache, ([snowflake, value]) => (value));
+                                                        for (let i = 0; i <= roles.length; i++) {
+                                                            const role = roles[i];
+                                                            if (roles.length === i && rawGuild.role_level_enable) {
+                                                                const addRole = await guild.roles.cache.find((role) => role.name === `Level ${newLevel}`);
+                                                                if (addRole) user.roles.add(addRole);
+                                                            } else if (role.name.includes("Level ") && role.name !== `Level ${newLevel}`) {
+                                                                user.roles.remove(role);
 
-                                                    // Update User Roles
-                                                    if (user) {
-                                                        if (removeRole) user.roles.remove(removeRole);
-                                                        if (addRole) user.roles.add(addRole);
-                                                    }
-
-                                                    // Delete if no other role owners of previous level.
-                                                    if (removeRole && removeRole.members.size > 0) {
-                                                        const otherOwners = removeRole.members.filter(guildMember => guildMember.user.id !== snowflake);
-                                                        if (otherOwners.size === 0) removeRole.delete().catch(console.error);
-                                                    }
-                                                });
-                                            } catch (error) {
+                                                                // Delete Unused Level Roles
+                                                                const otherOwners = role.members.filter(guildMember => guildMember.user.id !== snowflake);
+                                                                if (otherOwners.size === 0) await role.delete().catch(console.error);
+                                                            }
+                                                        }
+                                                    });
+                                                } catch (error) {
+                                                    console.error(error);
+                                                }
+                                            }).catch((error) => {
                                                 console.error(error);
-                                            }
-                                        }).catch((error) => {
-                                            console.error(error);
-                                            return logger.log(`Something went wrong while creating new Level role.`, "warning");
-                                        });
-                                    }
+                                                return logger.log(`Something went wrong while creating new Level role.`, "warning");
+                                            });
+                                        }
+                                    });
                                 }).catch((error) => {
                                     console.error(error);
                                     return logger.log(`Something went wrong while trying to update the XP count for user '${username}@${snowflake}'.`, "warning");
