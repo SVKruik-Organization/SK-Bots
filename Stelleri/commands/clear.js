@@ -22,7 +22,13 @@ module.exports = {
 
         // Bulk Delete
         setTimeout(() => {
-            interaction.channel.bulkDelete(amount + 1);
+            interaction.deleteReply();
+            interaction.channel.bulkDelete(amount).catch(() => {
+                interaction.reply({
+                    content: "Atleast one of the messages you are trying to delete is older than \`14\` days. Discord is not allowing me to do that, so you will have to delete them manually (or lower your clear amount to potentially exclude the erroneous message).",
+                    ephemeral: true
+                });
+            });
         }, 1000);
     }
 };

@@ -1,6 +1,7 @@
 const modules = require('../index.js');
 const logger = require('../utils/logger.js');
 const guildUtils = require('../utils/guild.js');
+const config = require('../assets/config.js');
 
 /**
  * Increase the XP of a user.
@@ -39,7 +40,7 @@ function increaseXp(snowflake, username, amount, channelId, client, user, guildI
 
                         const responseData = tierData[1][0];
                         if (responseData.xp >= (20 * (responseData.level + 1) + 300)) {
-                            const bitsRewardFallback = 20;
+                            const bitsRewardFallback = config.economy.levelUpFallback;
                             modules.database.query("UPDATE tier SET level = level + 1, xp = 0 WHERE snowflake = ?; UPDATE economy SET bank = bank + ? WHERE snowflake = ?;", [snowflake, ((targetGuild ? targetGuild.level_up_reward_base : bitsRewardFallback) * (responseData.level + 1)), snowflake])
                                 .then(async (data) => {
                                     // Validation

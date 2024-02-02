@@ -21,6 +21,7 @@ router.put('/update/settings', jwtUtils.authenticateJWT, function (req, res) {
                     "guildObject": filteredGuild.guildObject,
                     "name": filteredGuild.name,
                     "register_snowflake": filteredGuild.register_snowflake,
+                    "channel_admin": filteredGuild.channel_admin,
                     "channel_event": filteredGuild.channel_event,
                     "channel_suggestion": filteredGuild.channel_suggestion,
                     "channel_snippet": filteredGuild.channel_snippet,

@@ -60,6 +60,7 @@ async function guildConstructor(guild, client) {
         }
 
         // Channel Fetching
+        const channel_admin = await channelFetch(guild.channel_admin, "Admin");
         const channel_event = await channelFetch(guild.channel_event, "Event");
         const channel_suggestion = await channelFetch(guild.channel_suggestion, "Suggestion");
         const channel_snippet = await channelFetch(guild.channel_snippet, "Snippet");
@@ -80,6 +81,7 @@ async function guildConstructor(guild, client) {
             "guildObject": fetchedGuild,
             "name": guild.name,
             "register_snowflake": guild.register_snowflake,
+            "channel_admin": channel_admin,
             "channel_event": channel_event,
             "channel_suggestion": channel_suggestion,
             "channel_snippet": channel_snippet,

@@ -14,6 +14,11 @@ module.exports = {
             .setName("register")
             .setDescription("Create or update the current configuration.")
             .addChannelOption(option => option
+                .setName('channel_admin')
+                .setDescription('Admin Channel')
+                .addChannelTypes(ChannelType.GuildText)
+                .setRequired(false))
+            .addChannelOption(option => option
                 .setName('channel_event')
                 .setDescription('Event Channel')
                 .addChannelTypes(ChannelType.GuildText)
@@ -57,6 +62,7 @@ module.exports = {
             const guildSnapshot = guildUtils.guilds;
 
             // Optional Options
+            const channel_admin = interaction.options.getChannel('channel_admin') || null;
             const channel_event = interaction.options.getChannel('channel_event') || null;
             const channel_suggestion = interaction.options.getChannel('channel_suggestion') || null;
             const channel_snippet = interaction.options.getChannel('channel_snippet') || null;
@@ -66,19 +72,8 @@ module.exports = {
 
             // Update
             if (actionType === "register") {
-                modules.database.query("UPDATE guild SET register_snowflake = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE snowflake = ?;", [interaction.user.id, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_blinded ? role_blinded.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
-                    .then((data) => {
-                        // Validation
-                        if (!data.affectedRows) return interaction.reply({
-                            content: "It seems like something went wrong at the initial setup when I joined this server. Please contact moderation.",
-                            ephemeral: true
-                        });
-
-                        interaction.reply({
-                            content: "Setup update successful. Additional commands reloaded. For other settings like welcome messages and other paramaters, please consult my website (WIP).",
-                            ephemeral: true
-                        });
-
+                modules.database.query("UPDATE guild SET register_snowflake = ?, channel_admin = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE snowflake = ?;", [interaction.user.id, channel_admin ? channel_admin.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_blinded ? role_blinded.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
+                    .then(() => {
                         const filteredGuild = guildUtils.guilds.filter(guild => guild.guildObject.id === interaction.guild.id);
                         guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);
                         guildUtils.guilds.push({
@@ -86,6 +81,7 @@ module.exports = {
                             "guildObject": interaction.guild,
                             "name": interaction.guild.name,
                             "register_snowflake": interaction.user.id,
+                            "channel_admin": channel_admin,
                             "channel_event": channel_event,
                             "channel_suggestion": channel_suggestion,
                             "channel_snippet": channel_snippet,
@@ -110,6 +106,11 @@ module.exports = {
                             "xp_increase_slash": filteredGuild.xp_increase_slash || 15,
                             "xp_increase_purschase": filteredGuild.xp_increase_purschase || 25
                         });
+
+                        interaction.reply({
+                            content: "Setup update successful. Additional commands reloaded. For other settings like welcome messages and other paramaters, please consult my website (WIP).",
+                            ephemeral: true
+                        });
                     }).catch(() => {
                         guildUtils.guilds = guildSnapshot;
                         return interaction.reply({
@@ -128,6 +129,7 @@ module.exports = {
                 const embed = embedConstructor.create("Server Configuration", `${interaction.guild.name} Setup`, interaction.user,
                     [
                         { name: 'Registerer', value: `${targetGuild.register_snowflake ? '<@' + targetGuild.register_snowflake + '>' : "Not Configured"}` },
+                        { name: 'Admin Channel', value: `${targetGuild.channel_admin || "Not Configured"}` },
                         { name: 'Event Channel', value: `${targetGuild.channel_event || "Not Configured"}` },
                         { name: 'Suggestion Channel', value: `${targetGuild.channel_suggestion || "Not Configured"}` },
                         { name: 'Snippet Channel', value: `${targetGuild.channel_snippet || "Not Configured"}` },

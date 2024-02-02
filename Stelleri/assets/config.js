@@ -16,9 +16,13 @@ exports.cooldowns = {
     E: 86400
 };
 
+exports.economy = {
+    levelUpFallback: 20,
+    interestRate: 1.0005
+}
+
 exports.tier = {
     normalMessage: 5,
     slashCommand: 15,
-    purschase: 25,
-    levelUpBits: 125
+    purschase: 25
 };

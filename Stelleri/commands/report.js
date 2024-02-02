@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const modules = require('..');
 const config = require('../assets/config.js');
 const logger = require('../utils/logger.js');
+const guildUtils = require('../utils/guild.js');
 
 module.exports = {
     cooldown: config.cooldowns.D,
@@ -41,12 +42,16 @@ module.exports = {
             modules.database.query("INSERT INTO report (snowflake, snowflake_recv, reason, date, category, guild_snowflake) VALUES (?, ?, ?, CURRENT_TIMESTAMP(), ?, ?);",
                 [snowflake, target.id, reason, category, interaction.guild.id])
                 .then(() => {
+                    const targetGuild = guildUtils.findGuildById(interaction.guild.id);
+                    if (targetGuild && targetGuild.channel_admin) targetGuild.channel_admin.send({ content: `User <@${interaction.user.id}> has **reported** <@${target.id}> for: \`${reason}\`` });
+                    logger.log(`'${username}@${snowflake}' has reported '${target.username}@${target.id}' for ${category}.`, "warning");
+
                     interaction.reply({
                         content: "Thank you for your report. We will have a look at it ASAP.",
                         ephemeral: true
                     });
-                    logger.log(`'${username}@${snowflake}' has reported '${target.username}@${target.id}' for ${category}.`, "info");
-                }).catch(() => {
+                }).catch((error) => {
+                    console.log(error);
                     return interaction.reply({
                         content: "Something went wrong while reporting this user. Please try again later.",
                         ephemeral: true
