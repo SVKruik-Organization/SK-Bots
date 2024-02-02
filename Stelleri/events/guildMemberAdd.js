@@ -10,7 +10,7 @@ module.exports = {
     async execute(event) {
         modules.database.query("SELECT welcome FROM guild_settings WHERE snowflake = ?;", [event.guild.id])
             .then((data) => {
-                if (data.length > 0 && data[0].welcome) {
+                if (data.length > 0 && data[0].welcome === 1) {
                     const welcomeEmbed = embedConstructor.create(`Welcome to ${event.guild.name}!`, "We are glad to have you!", event.user, [
                         { "name": "About Me", "value": `I am <@${config.general.clientId}>, a General Purpose bot made by <@${config.general.creatorId}>. I am in charge of the Level and Economy system, and keeping the server tidy. I also have fun commands, like 'Rock, Paper, Scissor' and utility commands to make managment easier.` },
                         { "name": "Level & Economy", "value": `Participating is entirely up to you! By default, you are not in this program. If you would like to opt-in, use the \`/register\` command! You can collect your daily reward by using \`/daily\` command. With Bits you can purschase cosmetics (role colors) and XP-Boosters.` },

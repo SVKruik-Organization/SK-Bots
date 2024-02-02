@@ -78,8 +78,11 @@ module.exports = {
                             content: "Setup update successful. Additional commands reloaded. For other settings like welcome messages and other paramaters, please consult my website (WIP).",
                             ephemeral: true
                         });
+
+                        const filteredGuild = guildUtils.guilds.filter(guild => guild.guildObject.id === interaction.guild.id);
                         guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);
                         guildUtils.guilds.push({
+                            // Guild
                             "guildObject": interaction.guild,
                             "name": interaction.guild.name,
                             "register_snowflake": interaction.user.id,
@@ -87,10 +90,25 @@ module.exports = {
                             "channel_suggestion": channel_suggestion,
                             "channel_snippet": channel_snippet,
                             "channel_rules": channel_rules,
-                            "role_cosmetic_power": role_cosmetic_power,
                             "role_blinded": role_blinded,
                             "locale": interaction.guild.preferredLocale,
-                            "disabled": false
+                            "disabled": false,
+
+                            // Settings
+                            "xp15": filteredGuild.xp15 || 1200,
+                            "xp50": filteredGuild.xp50 || 3500,
+                            "level_up_reward_base": filteredGuild.level_up_reward_base || 20,
+                            "role_cosmetic_price": filteredGuild.role_cosmetic_price || 11000,
+                            "role_cosmetic_power": filteredGuild.role_cosmetic_power || 3,
+                            "role_level_power": filteredGuild.role_level_power || 5,
+                            "role_level_max": filteredGuild.role_level_max || 1000,
+                            "role_level_enable": filteredGuild.role_level_enable || 1,
+                            "role_level_color": filteredGuild.role_level_color || "FC6736",
+                            "jackpot": filteredGuild.jackpot || 10000,
+                            "welcome": filteredGuild.welcome || 1,
+                            "xp_increase_normal": filteredGuild.xp_increase_normal || 5,
+                            "xp_increase_slash": filteredGuild.xp_increase_slash || 15,
+                            "xp_increase_purschase": filteredGuild.xp_increase_purschase || 25
                         });
                     }).catch(() => {
                         guildUtils.guilds = guildSnapshot;

@@ -70,3 +70,4 @@ eventHandler.init(client);
 client.cooldowns = new Collection();
 require('./utils/due.js').dueDates;
 require('./utils/interest.js').init();
+require('./server.js');
