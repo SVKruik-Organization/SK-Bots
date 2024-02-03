@@ -3,7 +3,7 @@ const modules = require('..');
 const logger = require('../utils/logger.js');
 const userIncreaseHandler = require('./userIncreaseHandler.js');
 const config = require('../assets/config.js');
-const purschaseHistory = require('./purschaseHistory.js');
+const purchaseHistory = require('./purchaseHistory.js');
 
 /**
  * Handle input when user wants uses the Shop command.
@@ -13,7 +13,7 @@ async function shopOptions(interaction) {
     try {
         modules.database.query("SELECT * FROM guild_settings WHERE snowflake = ?", [interaction.guild.id])
             .then(async (data) => {
-                // Send Purschase Options
+                // Send Purchase Options
                 const select = new StringSelectMenuBuilder()
                     .setCustomId('shopBuyMenu')
                     .setPlaceholder('Make a selection.')
@@ -31,7 +31,7 @@ async function shopOptions(interaction) {
                         .setValue('xp50'));
 
                 await interaction.update({
-                    content: 'Sure! What would you like to purschase?',
+                    content: 'Sure! What would you like to purchase?',
                     components: [new ActionRowBuilder().addComponents(select)],
                     ephemeral: true
                 });
@@ -49,13 +49,13 @@ async function shopOptions(interaction) {
 /**
  * Handle input when user wants to buy something.
  * @param {object} interaction Discord Interaction Object
- * @param {string} purschaseOption The selected product.
+ * @param {string} purchaseOption The selected product.
  */
-async function purschaseOptions(interaction, purschaseOption) {
+async function purchaseOptions(interaction, purchaseOption) {
     // Buy Amount
     const button = new ButtonBuilder()
         .setCustomId('openShopBuyModal')
-        .setLabel(`Buy ${purschaseOption}`)
+        .setLabel(`Buy ${purchaseOption}`)
         .setStyle('Success');
 
     await interaction.update({
@@ -116,7 +116,7 @@ async function modalInputHandler(interaction) {
                     let additionalMessage = "";
                     if (total < data[0].total) additionalMessage = ` I did have look at your Bank account, and turns out you do have enough if you would withdraw some Bits. You have \`${data[0].wallet}\` Bits inside your Wallet, and \`${data[0].bank}\` Bits inside your bank account. If you would like to do this, use the \`/economy withdraw\` command, and transfer atleast \`${total - data[0].wallet}\` Bits.`;
                     return interaction.reply({
-                        content: `You do not have enough Bits in your Wallet account (\`${data[0].wallet}\`) to complete this purschase with a total cost of \`${total}\` Bits.${additionalMessage}`,
+                        content: `You do not have enough Bits in your Wallet account (\`${data[0].wallet}\`) to complete this purchase with a total cost of \`${total}\` Bits.${additionalMessage}`,
                         ephemeral: true
                     });
                 } else {
@@ -129,19 +129,19 @@ async function modalInputHandler(interaction) {
                             });
 
                             const remaining = data[0].wallet - total;
-                            logger.log(`'${interaction.user.username}@${interaction.user.id}' has purschased ${amount} ${product}${amount > 1 ? "'s" : ""} for a total price of ${total} Bits in guild '${interaction.guild.name}@${interaction.guild.id}'. Bits remaining: ${remaining}.`, "info");
+                            logger.log(`'${interaction.user.username}@${interaction.user.id}' has purchased ${amount} ${product}${amount > 1 ? "'s" : ""} for a total price of ${total} Bits in guild '${interaction.guild.name}@${interaction.guild.id}'. Bits remaining: ${remaining}.`, "info");
                             
                             // Experience Increase
                             const targetGuild = guildUtils.findGuildById(interaction.guild.id);
-                            let xpReward = config.tier.purschase;
-                            if (targetGuild && targetGuild.xp_increase_purschase) xpReward = targetGuild.xp_increase_purschase;
+                            let xpReward = config.tier.purchase;
+                            if (targetGuild && targetGuild.xp_increase_purchase) xpReward = targetGuild.xp_increase_purchase;
                             userIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, xpReward, interaction.channelId, interaction.client, interaction.user, interaction.guild.id);
 
                             // History
-                            const historyResponse = await purschaseHistory.post(total, product, amount, "Shop Command Purschase", interaction, remaining, interaction.guild.id);
+                            const historyResponse = await purchaseHistory.post(total, product, amount, "Shop Command Purchase", interaction, remaining, interaction.guild.id);
                             if (historyResponse) {
                                 interaction.reply({
-                                    content: `All set! Thank you so much for your purschase! Your new Wallet balance is \`${remaining}\` Bits.${product.indexOf("xp") >= 0 ? " Remember that you have to activate XP-Boosters for them to work. You can do this by using the \`/inventory activate\` command." : ""}`,
+                                    content: `All set! Thank you so much for your purchase! Your new Wallet balance is \`${remaining}\` Bits.${product.indexOf("xp") >= 0 ? " Remember that you have to activate XP-Boosters for them to work. You can do this by using the \`/inventory activate\` command." : ""}`,
                                     ephemeral: true
                                 });
                             } else interaction.reply({
@@ -169,7 +169,7 @@ async function modalInputHandler(interaction) {
 
 module.exports = {
     "shopOptions": shopOptions,
-    "purschaseOptions": purschaseOptions,
+    "purchaseOptions": purchaseOptions,
     "modalInputHandler": modalInputHandler,
     "modal": modal
 }

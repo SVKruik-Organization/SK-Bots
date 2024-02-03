@@ -3,7 +3,7 @@ const logger = require('./logger.js');
 
 // Indexing Guilds & Settings
 try {
-    modules.database.query("SELECT guild.*, xp_increase_normal, xp_increase_slash, xp_increase_purschase, xp15, xp50, level_up_reward_base, role_cosmetic_price, role_level_power, role_cosmetic_power, role_level_color, jackpot, welcome, role_level_enable FROM guild LEFT JOIN guild_settings ON guild_settings.snowflake = guild.snowflake WHERE disabled = 0;")
+    modules.database.query("SELECT guild.*, xp_increase_normal, xp_increase_slash, xp_increase_purchase, xp15, xp50, level_up_reward_base, role_cosmetic_price, role_level_power, role_cosmetic_power, role_level_color, jackpot, welcome, role_level_enable FROM guild LEFT JOIN guild_settings ON guild_settings.snowflake = guild.snowflake WHERE disabled = 0;")
         .then(async (data) => {
             const guilds = [];
             for (let i = 0; i <= data.length; i++) {
@@ -104,7 +104,7 @@ async function guildConstructor(guild, client) {
             "welcome": guild.welcome,
             "xp_increase_normal": guild.xp_increase_normal,
             "xp_increase_slash": guild.xp_increase_slash,
-            "xp_increase_purschase": guild.xp_increase_purschase
+            "xp_increase_purchase": guild.xp_increase_purchase
         }
     } catch (error) {
         if (error.status !== 404) {

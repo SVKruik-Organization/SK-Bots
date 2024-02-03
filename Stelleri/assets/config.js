@@ -24,5 +24,5 @@ exports.economy = {
 exports.tier = {
     normalMessage: 5,
     slashCommand: 15,
-    purschase: 25
+    purchase: 25
 };

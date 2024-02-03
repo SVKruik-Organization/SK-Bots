@@ -2,14 +2,14 @@ const modules = require('..');
 const logger = require('../utils/logger.js');
 
 /**
- * Log a new purschase.
- * @param {number} cost The total cost of the purschase.
+ * Log a new purchase.
+ * @param {number} cost The total cost of the purchase.
  * @param {string} product The name of the bought product.
  * @param {number} quantity The amount of products bought.
- * @param {string} type The type of purschase.
+ * @param {string} type The type of purchase.
  * @param {string} interaction Discord Interaction Object
- * @param {number} remaining The remaining Bits in their wallet after purschase.
- * @param {string} guildSnowflake The Guild ID of the purschase location.
+ * @param {number} remaining The remaining Bits in their wallet after purchase.
+ * @param {string} guildSnowflake The Guild ID of the purchase location.
  * @returns Status
  */
 async function post(cost, product, quantity, type, interaction, remaining, guildSnowflake) {
@@ -30,9 +30,9 @@ async function post(cost, product, quantity, type, interaction, remaining, guild
         }
         if (!query) return false;
 
-        const response = await modules.database.query(`INSERT INTO purschase (snowflake, cost, product, quantity, type, date, remaining_bits, method, guild_snowflake) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, "Stelleri Discord Bot", ?); ${query}`, [interaction.user.id, cost, product, quantity, type, remaining, guildSnowflake])
+        const response = await modules.database.query(`INSERT INTO purchase (snowflake, cost, product, quantity, type, date, remaining_bits, method, guild_snowflake) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, "Stelleri Discord Bot", ?); ${query}`, [interaction.user.id, cost, product, quantity, type, remaining, guildSnowflake])
         if (response && response[0] && response[0].affectedRows) {
-            logger.log(`Successfully updated purschase history for '${interaction.user.username}@${interaction.user.id}' ${product}@${quantity}.`, "info");
+            logger.log(`Successfully updated purchase history for '${interaction.user.username}@${interaction.user.id}' ${product}@${quantity}.`, "info");
             return true;
         } else return false;
     } catch (error) {

@@ -36,7 +36,7 @@ module.exports = {
                     });
                 } else if (data[0].role_color < 1) {
                     return interaction.reply({
-                        content: "You don't have any Role Color changes left. Purschase one with the `/shop` command.",
+                        content: "You don't have any Role Color changes left. Purchase one with the `/shop` command.",
                         ephemeral: true
                     });
                 }

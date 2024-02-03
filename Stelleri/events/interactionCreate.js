@@ -24,9 +24,9 @@ module.exports = {
             } else if (interaction.customId === "shopSelectMenu" && interaction.values[0] === "buy") {
                 shopInteractionHandler.shopOptions(interaction);
 
-                // View Shop Purschase Options
+                // View Shop Purchase Options
             } else if (interaction.customId === "shopBuyMenu") {
-                shopInteractionHandler.purschaseOptions(interaction, interaction.values[0]);
+                shopInteractionHandler.purchaseOptions(interaction, interaction.values[0]);
 
                 // Activate XP-Booster
             } else if (interaction.customId === "activateBoosterMenu") {
@@ -36,7 +36,7 @@ module.exports = {
 
         // Button Interactions
         if (interaction.isButton()) {
-            // Purschase Quantity Modal Open
+            // Purchase Quantity Modal Open
             if (interaction.customId === 'openShopBuyModal') {
                 await shopInteractionHandler.modal(interaction, interaction.message.components[0].components[0].data.label.split(" ")[1]);
 

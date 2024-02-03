@@ -104,7 +104,7 @@ module.exports = {
                             "welcome": filteredGuild.welcome || 1,
                             "xp_increase_normal": filteredGuild.xp_increase_normal || 5,
                             "xp_increase_slash": filteredGuild.xp_increase_slash || 15,
-                            "xp_increase_purschase": filteredGuild.xp_increase_purschase || 25
+                            "xp_increase_purchase": filteredGuild.xp_increase_purchase || 25
                         });
 
                         interaction.reply({
