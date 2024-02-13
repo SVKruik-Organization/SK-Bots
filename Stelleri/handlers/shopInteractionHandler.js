@@ -11,7 +11,7 @@ const purchaseHistory = require('./purchaseHistory.js');
  */
 async function shopOptions(interaction) {
     try {
-        modules.database.query("SELECT * FROM guild_settings WHERE snowflake = ?", [interaction.guild.id])
+        modules.database.query("SELECT * FROM guild_settings WHERE guild_snowflake = ?", [interaction.guild.id])
             .then(async (data) => {
                 // Send Purchase Options
                 const select = new StringSelectMenuBuilder()
@@ -101,9 +101,9 @@ async function modalInputHandler(interaction) {
         const product = interaction.message.components[0].components[0].label.split(" ")[1];
         if (isNaN(amount)) return interaction.update({ content: 'The amount of items you would like to buy should be a number. Please try again.', ephemeral: true });
         amount = parseInt(amount);
-        if (amount === 0) return interaction.update({ content: 'You must atleast buy one item. Please try again.', ephemeral: true });
+        if (amount < 1) return interaction.update({ content: 'You must buy atleast one item. Please try again.', ephemeral: true });
 
-        modules.database.query("SELECT xp15, xp50, role_color, wallet, bank, (wallet + bank) as total FROM guild_settings LEFT JOIN economy ON 1 = 1 WHERE guild_settings.snowflake = ? AND economy.snowflake = ?;", [interaction.guild.id, interaction.user.id])
+        modules.database.query("SELECT xp15, xp50, role_color, wallet, bank, (wallet + bank) as total FROM guild_settings LEFT JOIN economy ON 1 = 1 WHERE guild_settings.guild_snowflake = ? AND economy.snowflake = ?;", [interaction.guild.id, interaction.user.id])
             .then((data) => {
                 if (data.length === 0) return interaction.reply({
                     content: "This command requires you to have an account. Create an account with the `/register` command.",

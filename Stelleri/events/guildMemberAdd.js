@@ -8,7 +8,7 @@ const logger = require('../utils/logger.js');
 module.exports = {
     name: Events.GuildMemberAdd,
     async execute(event) {
-        modules.database.query("SELECT welcome FROM guild_settings WHERE snowflake = ?;", [event.guild.id])
+        modules.database.query("SELECT welcome FROM guild_settings WHERE guild_snowflake = ?;", [event.guild.id])
             .then((data) => {
                 if (data.length > 0 && data[0].welcome === 1) {
                     const welcomeEmbed = embedConstructor.create(`Welcome to ${event.guild.name}!`, "We are glad to have you!", event.user, [

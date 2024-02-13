@@ -72,7 +72,7 @@ module.exports = {
 
             // Update
             if (actionType === "register") {
-                modules.database.query("UPDATE guild SET register_snowflake = ?, channel_admin = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE snowflake = ?;", [interaction.user.id, channel_admin ? channel_admin.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_blinded ? role_blinded.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
+                modules.database.query("UPDATE guild SET register_snowflake = ?, channel_admin = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE guild_snowflake = ?;", [interaction.user.id, channel_admin ? channel_admin.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_blinded ? role_blinded.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
                     .then(() => {
                         const filteredGuild = guildUtils.guilds.filter(guild => guild.guildObject.id === interaction.guild.id);
                         guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);

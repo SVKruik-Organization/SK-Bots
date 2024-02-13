@@ -39,7 +39,7 @@ async function customShopCatalog(interaction) {
         ephemeral: true
     });
 
-    modules.database.query("SELECT * FROM guild_settings WHERE snowflake = ?;", [targetGuild.guildObject.id])
+    modules.database.query("SELECT * FROM guild_settings WHERE guild_snowflake = ?;", [targetGuild.guildObject.id])
         .then((data) => {
             if (data.length === 0) return interaction.reply({
                 content: "Something went wrong while retrieving the required information. Please try again later.",
