@@ -4,7 +4,8 @@
     "description": "General Purpose Bot",
     "main": "index.js",
     "scripts": {
-        "start": "node deployCommands.js && node ."
+        "update": "node deployGuildCommands.js",
+        "start": "node ."
     },
     "author": "SVKruik",
     "license": "ISC",
