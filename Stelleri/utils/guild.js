@@ -80,7 +80,8 @@ async function guildConstructor(guild, client) {
             // Guild
             "guildObject": fetchedGuild,
             "name": guild.name,
-            "operator": guild.operator,
+            "operator_id": guild.operator_id,
+            "operator_name": guild.operator_name,
             "channel_admin": channel_admin,
             "channel_event": channel_event,
             "channel_suggestion": channel_suggestion,

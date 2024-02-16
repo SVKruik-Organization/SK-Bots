@@ -72,7 +72,7 @@ module.exports = {
 
             // Update
             if (actionType === "register") {
-                modules.database.query("UPDATE guild SET operator = ?, channel_admin = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE guild_snowflake = ?;", [interaction.user.id, channel_admin ? channel_admin.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_blinded ? role_blinded.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
+                modules.database.query("UPDATE guild SET operator_id = ?, operator_name = ?, channel_admin = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE guild_snowflake = ?;", [interaction.user.id, interaction.user.username, channel_admin ? channel_admin.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_blinded ? role_blinded.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
                     .then(() => {
                         const filteredGuild = guildUtils.guilds.filter(guild => guild.guildObject.id === interaction.guild.id);
                         guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);
@@ -80,7 +80,8 @@ module.exports = {
                             // Guild
                             "guildObject": interaction.guild,
                             "name": interaction.guild.name,
-                            "operator": interaction.user.id,
+                            "operator_id": interaction.user.id,
+                            "operator_name": interaction.user.username,
                             "channel_admin": channel_admin,
                             "channel_event": channel_event,
                             "channel_suggestion": channel_suggestion,
@@ -128,7 +129,7 @@ module.exports = {
 
                 const embed = embedConstructor.create("Server Configuration", `${interaction.guild.name} Setup`, interaction.user,
                     [
-                        { name: 'Registerer', value: `${targetGuild.operator ? '<@' + targetGuild.operator + '>' : "Not Configured"}` },
+                        { name: 'Registerer', value: `${targetGuild.operator_id ? '<@' + targetGuild.operator_id + '>' : "Not Configured"}` },
                         { name: 'Admin Channel', value: `${targetGuild.channel_admin || "Not Configured"}` },
                         { name: 'Event Channel', value: `${targetGuild.channel_event || "Not Configured"}` },
                         { name: 'Suggestion Channel', value: `${targetGuild.channel_suggestion || "Not Configured"}` },

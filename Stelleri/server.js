@@ -31,15 +31,27 @@ app.get(prefix, jwtUtils.authenticateJWT, (req, res) => {
 app.post(`${prefix}/login`, (req, res) => {
     const { username, password } = req.body;
 
-    modules.database.query("SELECT * FROM operator WHERE username = ?;", [username])
+    modules.database.query("SELECT id, password, operator.username AS 'operator_username', user.username AS 'user_username', operator.date_creation, operator.snowflake FROM operator LEFT JOIN user ON operator.snowflake = user.snowflake WHERE operator.username = ?;", [username])
         .then((data) => {
-            if (data.length === 0) return res.sendStatus(404);
-            const operator = data[0];
+            if (data.length === 0) return res.status(404).send({ message: "Not Found" });
+            const rawOperator = data[0];
 
-            if (CryptoJS.SHA512(password).toString() === operator.password) {
-                const accessToken = jwt.sign({ username: operator.username, id: operator.id }, jwtSecret, { "expiresIn": process.env.SERVER_TOKEN_EXPIRY });
-                return res.json({ accessToken });
-            } else return res.sendStatus(401);
+            modules.client.users.fetch(rawOperator.snowflake).then((userData) => {
+                const operator = {
+                    "id": rawOperator.id,
+                    "operator_username": rawOperator.operator_username,
+                    "user_username": rawOperator.user_username,
+                    "snowflake": rawOperator.snowflake,
+                    "avatar": userData.avatarURL(),
+                    "date_creation": rawOperator.date_creation
+                }
+                if (CryptoJS.SHA512(password).toString() === rawOperator.password) {
+                    const access_token = jwt.sign(operator, jwtSecret, { "expiresIn": process.env.SERVER_TOKEN_EXPIRY });
+                    return res.json({ access_token });
+                } else return res.status(401).send({ message: "Unauthorized" });
+            }).catch((error) => {
+                return res.sendStatus(error.status);
+            });
         }).catch((error) => {
             console.error(error);
             return res.sendStatus(500)

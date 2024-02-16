@@ -9,11 +9,14 @@ function authenticateJWT(req, res, next) {
             if (err) return res.status(401).send(err.name);
             req.operator = {
                 "id": operator.id,
-                "username": operator.username,
+                "operator_username": operator.operator_username,
+                "user_username": operator.user_username,
+                "snowflake": operator.snowflake,
+                "avatar": operator.avatar,
+                "date_creation": operator.date_creation,
                 "jwtIAT": dateUtils.getDate(operator.iat * 1000 + 3600000, null).today,
                 "jwtEXP": dateUtils.getDate(operator.exp * 1000 + 3600000, null).today
             };
-            console.log(req.operator);
             next();
         });
     } else return res.sendStatus(401);

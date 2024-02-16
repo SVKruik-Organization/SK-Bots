@@ -20,7 +20,8 @@ router.put('/update/settings', jwtUtils.authenticateJWT, function (req, res) {
                     // Guild
                     "guildObject": filteredGuild.guildObject,
                     "name": filteredGuild.name,
-                    "operator": filteredGuild.operator,
+                    "operator_id": filteredGuild.operator_id,
+                    "operator_name": filteredGuild.operator_name,
                     "channel_admin": filteredGuild.channel_admin,
                     "channel_event": filteredGuild.channel_event,
                     "channel_suggestion": filteredGuild.channel_suggestion,
