@@ -7,7 +7,7 @@ module.exports = {
     cooldown: config.cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('block')
-        .setDescription('Block a user from using this bot.')
+        .setDescription('Block a user from using Stelleri.')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addUserOption(option => option
             .setName('target')

@@ -4,7 +4,7 @@ const { general } = require('./assets/config.js');
 const mariadb = require('mariadb');
 const fs = require('node:fs');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
 
 const commands = [];
 for (const file of commandFiles) {

@@ -1,7 +1,7 @@
 {
     "name": "stelleri",
-    "version": "2.5.0",
-    "description": "General Purpose Bot",
+    "version": "2.6.0",
+    "description": "Testing Bot",
     "main": "index.js",
     "scripts": {
         "update": "node deployGuildCommands.js",

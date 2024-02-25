@@ -1,18 +1,14 @@
 exports.general = {
     name: "Name",
     color: "#FFFFFF",
-    clientId: ["1", "2"], // Users excluded from the Level System. This can be other bots or webhooks.
-    guildId: ["1", "2"], // All servers the bot is active in.
-    eventChannel: "1", // The announcement channel. The message created from /event will be send here.
-    suggestionChannel: "1", // The suggestion channel. The message createed from /suggest will be send here.
-    snippetChannel: "1", // The snippet channel. The message createed from /snippet will be send here.
-    highPowerRoles: 3, // The amount of roles that have higher power than the /role command. If the bot's rank is lower than someone else's, banning etc. is not possible. Count the bot, admins and 'blinded' roles.
-    apiLimit: 1, // API Response Limit
-    imageURL: "https://i.imgur.com", // https://api-ninjas.com/
-    memberCountOffset: 2 // Amount of Bots
+    clientId: "1071428183003500544", // Snowflake ID of the bot itself.
+    imageURL: "https://i.imgur.com/9X7PIG0.png", // URL of the profile picture.
+    creatorId: "422704748488163332", // Snowflake ID of the author Complex/Stefan Kruik.
+    repository: "https://github.com/SVKruik/Discord-Bots-v2", // URL of the code repository.
+    timezone: "Europe/Amsterdam" // The timezone the bot should use for date calculations.
 };
 
-exports.cooldowns = {
+exports.cooldowns = { // Cooldown for commands in seconds.
     A: 0,
     B: 5,
     C: 15,
@@ -20,8 +16,13 @@ exports.cooldowns = {
     E: 86400
 };
 
+exports.economy = {
+    levelUpFallback: 20, // Level-up reward if the guild does not have this configured.
+    interestRate: 1.0005 // Hourly increment on Bank accounts.
+}
+
 exports.tier = {
-    normalMessage: 1,
-    slashCommand: 8,
-    levelUpThreshold: 30
+    normalMessage: 5, // Normal message XP-reward if the guild does not have this configured.
+    slashCommand: 15, // Slash command XP-reward if the guild does not have this configured.
+    purchase: 25 // Shop purchae XP-reward if the guild does not have this configured.
 };

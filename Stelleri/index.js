@@ -19,7 +19,7 @@ const client = new Client({
         'Reactions'
     ]
 });
-client.login(process.env.TOKEN);
+client.login(process.env.BOT_TOKEN);
 logger.log("\n\t------", "none");
 
 // Database Connection

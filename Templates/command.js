@@ -1,19 +1,20 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const config = require('./config.js')
-const fs = require('fs');
+const config = require('../assets/config.js');
 const modules = require('..');
+const logger = require('../utils/logger.js');
 
 module.exports = {
+    cooldown: config.cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('template')
         .setDescription('Template command.')
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-        .addStringOption(option => option.setName('template').setDescription('Template').setRequired(true)),
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
-        const snowflake = interaction.user.id;
-        const username = interaction.user.username;
-        const template = interaction.options.getString('template');
-
-        interaction.reply({ content: template });
+        try {
+            const targetUsername = interaction.options.getUser('target').username;
+            const targetSnowflake = interaction.options.getUser('target').id;
+        } catch (error) {
+            console.error(error);
+        }
     }
 };

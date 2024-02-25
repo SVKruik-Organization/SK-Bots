@@ -1,9 +1,11 @@
 exports.general = {
     name: "Virgo",
-    color: "#AAC261",
-    clientId: ["1150713787784110110", "1071428183003500544", "1151493813836193802"],
-    guildId: ["1022886794510999664", "1148559935743987782"],
-    imageURL: "https://i.imgur.com/6OeWaIW.jpg"
+    color: "#8C965F",
+    clientId: "1150713787784110110",
+    imageURL: "https://i.imgur.com/6OeWaIW.jpg",
+    creatorId: "422704748488163332",
+    repository: "https://github.com/SVKruik/Discord-Bots-v2",
+    timezone: "Europe/Amsterdam"
 };
 
 exports.cooldowns = {
@@ -14,8 +16,13 @@ exports.cooldowns = {
     E: 86400
 };
 
+exports.economy = {
+    levelUpFallback: 20,
+    interestRate: 1.0005
+}
+
 exports.tier = {
-    normalMessage: 1,
-    slashCommand: 8,
-    levelUpThreshold: 30
+    normalMessage: 5,
+    slashCommand: 15,
+    purchase: 25
 };

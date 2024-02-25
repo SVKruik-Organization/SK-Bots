@@ -4,22 +4,20 @@ Welcome to my second Discord bot repository. You can have a look at the old bots
 
 Below you will find a list of statistics, information and commands. I will update this regularly. Last updated on:
 
-**29/01/2024**.
+**25/02/2024**.
 
 #### Bots Overview
 
 | Name | Type | Commands | Info |
 | - | - | - | - |
-| Stelleri | General Purpose | `33` | [Steller's Eider](https://en.wikipedia.org/wiki/Steller%27s_eider) |
-| Virgo | Trading | `2` | [Demoiselle Crane](https://en.wikipedia.org/wiki/Demoiselle_crane) |
+| Stelleri | Testing | `33` | [Steller's Eider](https://en.wikipedia.org/wiki/Steller%27s_eider) |
+| Virgo | General Purpose | `21` | [Demoiselle Crane](https://en.wikipedia.org/wiki/Demoiselle_crane) |
 
-#### Bot Information
+#### Stelleri
 
-Stelleri is a general purpose bot. This means it comes with large set of features, to satisfy most servers needs. Stelleri is still a WIP, which means every new release brings at least a couple of new commands for you to try out.
+Stelleri is the testing bot. With Stelleri, I try new features before shipping them to Virgo. Stelleri's commands are only available in guilds where Stelleri is present, whereas Virgo's commands are globally scoped.
 
-Virgo is a template bot for now.
-
-#### Available Commands - Stelleri
+For now, only Stelleri contains the 'Fun' category of commands. Virgo is kept professional and to-the-point for now.
 
 | Command | Description | Parameters | Admin | Category |
 | - | - | - | - | - |
@@ -59,14 +57,35 @@ Virgo is a template bot for now.
 
 #### Available Commands - Virgo
 
-| Command | Description | Parameters | Admin |
-| - | - | - | - |
-| `ping` | Check if the bot is online and working. If so, the bot will respond with a random chosen message. | - | `false` |
-| `shutdown` | Shutdown the bot remotely. | - | `true` |
+Virgo is a general purpose bot. This means it comes with large set of features, to satisfy most servers needs. Stelleri is still a WIP, which means every new release brings at least a couple of new commands for you to try out.
+
+| Command | Description | Parameters | Admin | Category |
+| - | - | - | - | - |
+| `admin` | Add or remove someone from the super users. | `target` `action` | `true` | Moderation |
+| `blind` | Add or remove someone from the blinded users. If you have the `Blinded` role, you can only see a the selected channels. | `target` `action` | `true` | Moderation |
+| `block` | Add or remove someone from the blocked users. If you are blocked, you are unable to use the bot's commands. | `target` `action` | `true` | Moderation |
+| `clear` | Bulk delete `param1` amount of messages. | `amount` | `true` | Moderation |
+| `close` | Close your account. Pincode input for verification. | `pincode` | `false` | Account |
+| `dailyreward` | Collect your daily reward. There is a 1 in 50 chance you win the jackpot. | - | `false` | Economy |
+| `economy` | Controls for the Economy system. Withdraw, deposit or view your balance. | `action` `amount` | `false` | Economy |
+| `event` | Create a scheduled event. The bot will send a message in a dedicated channel. | `title` `description` `location` `date` `time` | `true` | Tools |
+| `inventory` | View the items that you have, or activate/disable a XP-Booster. | - | `false` | Account |
+| `modify` | Modify the amount of `param2` a user has. | `target` `section` `action` `amount` | `true` | Moderation |
+| `pincode` | Change your pincode. Note that you have to know your current pincode, as 'Forgot Pincode' is WIP. | `old-pincode` `new-pincode` | `false` | Account |
+| `ping` | Check if the bot is online and working. If so, the bot will respond with a random chosen message. | - | `false` | Tools |
+| `register` | Create a new account. You will also have to set your pincode, used for sensitive commands like `close`. | `pincode` | `false` | Account |
+| `report` | Report someone for misbehaving and/or breaking the rules of conduct. You can select the type, and then further explain the incident. | `target` `category` `reason` | `false` | Moderation |
+| `role` | Style yourself with a custom HEX role color. Prefix `#` is not needed. | `hex` | `false` | Fun |
+| `setup` | Configure the bot for server specific commands to work. | `action` `action-options` | `true` | Tools |
+| `shop` | Spend your Bits on cool perks or cosmetics. | `action` `action-options` | `false` | Tools |
+| `snippet` | Let the bot format a piece of code for you, and send it to a dedicated channel. | `language` `code` optional: `title` | `false` | Tools |
+| `suggestion` | Create a new suggestion in a dedicated channel.  | `title` `description` optional: `when` | `false` | Tools |
+| `tier` | Get information about your level progression. | - | `false` | Tier |
+| `warn` | Give someone an official warning. This is the administrator version of reporting. Unlike the `report` command, reasoning (`param2`) is optional. | `target` optional: `reason` | `true` | Moderation |
 
 #### Meta
 
 - Node.js version: `v20.10.0 LTS`
 - Discord.js version: `v14.7.1`
-- Project version: `v2.5.0`
+- Project version: `v2.6.0`
 - Database: `MariaDB`

@@ -3,7 +3,7 @@ const config = require('../assets/config.js');
 const { REST, Routes } = require('discord.js');
 const fs = require('node:fs');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
 
 const commands = [];
 for (const file of commandFiles) {

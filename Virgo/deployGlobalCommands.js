@@ -3,12 +3,12 @@ const { REST, Routes } = require('discord.js');
 const { general } = require('./assets/config.js');
 const fs = require('node:fs');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
 
 const commands = [];
 for (const file of commandFiles) {
     try {
-        const command = require(`../commands/${file}`);
+        const command = require(`./commands/${file}`);
         commands.push(command.data.toJSON());
     } catch { console.error };
 }
@@ -19,7 +19,7 @@ for (const file of commandFiles) {
         console.log("\n");
         const data = await rest.put(
             Routes.applicationCommands(general.clientId),
-            { body: commands });
+            { body: commands })
         console.log(`Successfully loaded ${data.length} global commands.`);
         console.log("\n");
         process.exit(1);
