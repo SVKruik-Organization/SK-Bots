@@ -2,6 +2,7 @@ const { Events } = require('discord.js');
 const modules = require('..');
 const config = require('../assets/config.js');
 const userIncreaseHandler = require('../handlers/userIncreaseHandler.js');
+const guildUtils = require('../utils/guild.js');
 
 module.exports = {
     name: Events.MessageCreate,
