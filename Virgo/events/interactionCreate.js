@@ -72,21 +72,23 @@ module.exports = {
 
         // Normal Slash Interactions
         if (!interaction.isChatInputCommand()) return;
-        // Blacklist
-        if (!modules.superUsers.includes(interaction.user.id) && modules.blockedUsers.includes(interaction.user.id)) {
-            logger.log(`'${interaction.user.username}@${interaction.user.id}' tried using the || ${interaction.commandName} || command, but was unable to because they are blacklisted.`, "info");
-            return interaction.reply({
-                content: 'You are not allowed to use my commands. Please contact the moderators to appeal if you think this is a mistake.',
-                ephemeral: true
-            });
-        }
 
         // Validation
         const command = interaction.client.commands.get(interaction.commandName);
         if (!command) return logger.log(`No command matching ${interaction.commandName} was found.`, "warning");
 
-        // Cooldown
-        if (!modules.superUsers.includes(interaction.user.id)) {
+        // Blocked User
+        const blockedUsers = await modules.database.query("SELECT user_snowflake FROM user_blocked WHERE user_snowflake = ? AND guild_snowflake = ?;", [interaction.user.id, interaction.guild.id]);
+        if (blockedUsers.length !== 0) return interaction.reply({
+            content: "You are on the blocked users list, and you are therefore unable to use my commands. If you think this is a mistake, please contact moderationn to appeal.",
+            ephemeral: true
+        });
+
+        // Administrator User Cooldown Exception
+        const adminUsers = await modules.database.query("SELECT user_snowflake FROM user_administrator WHERE user_snowflake = ? AND guild_snowflake = ?;", [interaction.user.id, interaction.guild.id]);
+        if (adminUsers.length === 0) {
+
+            // Cooldown Logic
             const { cooldowns } = interaction.client;
             if (!cooldowns.has(command.data.name)) cooldowns.set(command.data.name, new Collection());
 
@@ -116,7 +118,7 @@ module.exports = {
         } catch (error) {
             logger.log(`There was an error while executing || ${interaction.commandName} ||`, "error");
             interaction.reply({ content: 'There was an fatal error while executing this command!', ephemeral: true });
-            console.error(error);
+            logger.error(error);
         }
 
         // Experience Increase

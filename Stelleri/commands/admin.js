@@ -2,20 +2,39 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const config = require('../assets/config.js');
 const modules = require('..');
 const logger = require('../utils/logger.js');
+const userUtils = require('../utils/user.js');
 
 module.exports = {
     cooldown: config.cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('admin')
+        .setNameLocalizations({
+            nl: "admin"
+        })
         .setDescription('Add a super user for use of admin commands.')
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .setDescriptionLocalizations({
+            nl: "Voeg een administrator toe voor het gebruik van commando's met verhoogde rechten."
+        })
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addUserOption(option => option
             .setName('target')
+            .setNameLocalizations({
+                nl: "gebruiker"
+            })
             .setDescription('The target member.')
+            .setDescriptionLocalizations({
+                nl: "De betreffende gebruiker."
+            })
             .setRequired(true))
         .addStringOption(option => option
             .setName('action')
+            .setNameLocalizations({
+                nl: "actie"
+            })
             .setDescription('Whether you want to modify or check the user status.')
+            .setDescriptionLocalizations({
+                nl: "Of u de gebruiker status wilt wijzigen of bekijken."
+            })
             .setRequired(true)
             .addChoices(
                 { name: 'Add', value: 'add' },
@@ -24,72 +43,95 @@ module.exports = {
             )),
     async execute(interaction) {
         try {
-            const targetUsername = interaction.options.getUser('target').username;
-            const targetSnowflake = interaction.options.getUser('target').id;
+            // Permission Validation
+            if (!(await userUtils.checkAdmin(interaction.user.id, interaction.guild))) return interaction.reply({
+                content: `You do not have the required permissions to perform this elevated command. Please try again later, or contact moderation to receive elevated permissions.`,
+                ephemeral: true
+            });
+
+            // Setup
+            const targetUser = interaction.options.getUser('target');
             const actionType = interaction.options.getString('action');
 
-            // Action Filtering
-            let status = 2;
+            // Admin Role
+            let adminRole = interaction.guild.roles.cache.find(role => role.name === `${config.general.name} Administrator`);
+            if (!adminRole) {
+                const newRole = await interaction.guild.roles.create({
+                    name: `${config.general.name} Administrator`,
+                    permissions: [PermissionFlagsBits.ManageGuild],
+                }).catch(() => {
+                    return interaction.reply({
+                        content: `Something went wrong while creating the administrator role. Please try again later.`,
+                        ephemeral: true
+                    });
+                });
+                adminRole = newRole;
+            }
+
+            // Target User Fetch
+            let fetchedTargetUser;
+            if (actionType === "add" || actionType === "remove") {
+                interaction.guild.members.fetch(targetUser.id).then((user) => {
+                    if (!user) return interaction.reply({
+                        content: "Something went wrong retrieving the required information. Please try again later.",
+                        ephemeral: true
+                    });
+                    fetchedTargetUser = user;
+                });
+            }
+
+            // Handle
             if (actionType === "add") {
-                status = 1;
-            } else if (actionType === "remove") status = 0;
-
-            // Modify
-            if (status < 2) {
-                modules.database.query("UPDATE user SET super = ? WHERE snowflake = ?", [status, targetSnowflake])
-                    .then((data) => {
-                        // Validation
-                        if (!data.affectedRows) return interaction.reply({
-                            content: `User <@${targetSnowflake}> does not have an account yet.`,
-                            ephemeral: true
-                        })
-
-                        // Remove
-                        if (status === 0) {
-                            logger.log(`${targetUsername} was removed from the super users by '${interaction.user.username}@${interaction.user.id}'.`, "alert");
-                            interaction.reply({
-                                content: `<@${targetSnowflake}> has been removed from the super users. They are no longer able to use my admin commands.`,
-                                ephemeral: true
-                            });
-
-                            // Add
-                        } else if (status === 1) {
-                            logger.log(`${targetUsername} was added to the super users by '${interaction.user.username}@${interaction.user.id}'.`, "alert");
-                            interaction.reply({
-                                content: `<@${targetSnowflake}> has been added to the super users. They are now able to use my admin commands.`,
-                                ephemeral: true
-                            });
-                        }
-                    }).catch(() => {
+                modules.database.query("INSERT INTO user_administrator (user_snowflake, user_username, guild_snowflake) VALUES (?, ?, ?);", [targetUser.id, targetUser.username, interaction.guild.id])
+                    .then(() => {
+                        fetchedTargetUser.roles.add(adminRole);
+                        logger.log(`${targetUser.username} has been granted administrator privileges by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "warning");
                         return interaction.reply({
-                            content: "Something went wrong while modifying the super status of this user. Please try again later.",
+                            content: `Successfully added user <@${targetUser.id}> to the administrators of this server. They can now use commands that require elevated permissions.`,
+                            ephemeral: true
+                        });
+                    }).catch(() => {
+                        if (error.code === "ER_DUP_ENTRY") {
+                            return interaction.reply({
+                                content: `User <@${targetUser.id}> is an administrator already.`,
+                                ephemeral: true
+                            });
+                        } else return interaction.reply({
+                            content: "Something went wrong while giving this user elevated permissions. Please try again later.",
                             ephemeral: true
                         });
                     });
-
-                // Check
-            } else {
-                modules.database.query("SELECT super FROM user WHERE snowflake = ?", [targetSnowflake])
-                    .then(async (data) => {
-                        // Validation
-                        if (!data.length) return interaction.reply({
-                            content: `User <@${targetSnowflake}> does not have an account yet.`,
-                            ephemeral: true
-                        });
-
-                        interaction.reply({
-                            content: `Super status of user <@${targetSnowflake}>: \`${data[0].super === 1}\``,
+            } else if (actionType === "remove") {
+                modules.database.query("DELETE FROM user_administrator WHERE user_snowflake = ? AND guild_snowflake = ?;", [targetUser.id, interaction.guild.id])
+                    .then(() => {
+                        logger.log(`${targetUser.username}'s administrator privileges were removed by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "warning");
+                        fetchedTargetUser.roles.remove(adminRole);
+                        return interaction.reply({
+                            content: `Successfully removed user <@${targetUser.id}> from the administrators of this server. They can no longer use commands that require elevated permissions.`,
                             ephemeral: true
                         });
                     }).catch(() => {
                         return interaction.reply({
-                            content: "Something went wrong while checking the super status of this user. Please try again later.",
+                            content: "Something went wrong while removing elevated permissions of this user. Please try again later.",
+                            ephemeral: true
+                        });
+                    });
+            } else if (actionType === "check") {
+                modules.database.query("SELECT user_snowflake FROM user_administrator WHERE user_snowflake = ?;", [targetUser.id])
+                    .then((data) => {
+                        return interaction.reply({
+                            content: `Administrator status of user <@${targetUser.id}>: \`${data.length === 0 ? "false" : "true"}\``,
+                            ephemeral: true
+                        });
+                    }).catch(() => {
+                        return interaction.reply({
+                            content: "Something went wrong while checking the administrator status of this user. Please try again later.",
                             ephemeral: true
                         });
                     });
             }
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     }
 };

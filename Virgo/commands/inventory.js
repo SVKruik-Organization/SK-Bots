@@ -3,21 +3,46 @@ const config = require('../assets/config.js');
 const modules = require('..');
 const date = require('../utils/date.js');
 const embedConstructor = require('../utils/embed.js');
+const logger = require('../utils/logger.js');
 
 module.exports = {
     cooldown: config.cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('inventory')
+        .setNameLocalizations({
+            nl: "inventaris"
+        })
         .setDescription('Check your inventory & active XP-Boosters.')
+        .setDescriptionLocalizations({
+            nl: "Bekijk je inventaris & actieve XP-Boosters."
+        })
         .addSubcommand(option => option
             .setName('activate')
-            .setDescription("Activate a XP-Booster."))
+            .setNameLocalizations({
+                nl: "activeren"
+            })
+            .setDescription("Activate a XP-Booster.")
+            .setDescriptionLocalizations({
+                nl: "Activeer een XP-Booster."
+            }))
         .addSubcommand(option => option
             .setName('disable')
-            .setDescription("Disable the currently activated XP-Booster. You will not get refunded."))
+            .setNameLocalizations({
+                nl: "deactiveren"
+            })
+            .setDescription("Disable the currently activated XP-Booster. You will not get refunded.")
+            .setDescriptionLocalizations({
+                nl: "Deactiveer een actieve XP-Booster. U zult geen terugbetaling ontvangen."
+            }))
         .addSubcommand(option => option
             .setName('overview')
-            .setDescription("Check your resources.")),
+            .setNameLocalizations({
+                nl: "overzicht"
+            })
+            .setDescription("Check your resources.")
+            .setDescriptionLocalizations({
+                nl: "Bekijk uw grondstoffen."
+            })),
     async execute(interaction) {
         try {
             const actionType = interaction.options.getSubcommand();
@@ -91,7 +116,7 @@ module.exports = {
 
                         const embed = embedConstructor.create("Inventory Overview", "Your XP-Boosters and other items.", interaction.user,
                             [
-                                { name: 'Role Colors', value: `\`${data[0].role_color}\`` },
+                                { name: 'Role Colors', value: `\`${data[0].role_cosmetic}\`` },
                                 { name: 'XP +15%', value: `\`${data[0].xp15}\`` },
                                 { name: 'XP +50%', value: `\`${data[0].xp50}\`` }
                             ], ["shop", "economy", "tier"]);
@@ -104,7 +129,7 @@ module.exports = {
                     });
             }
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     }
 };

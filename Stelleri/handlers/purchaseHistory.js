@@ -1,5 +1,6 @@
 const modules = require('..');
 const logger = require('../utils/logger.js');
+const config = require('../assets/config.js');
 
 /**
  * Log a new purchase.
@@ -22,21 +23,23 @@ async function post(cost, product, quantity, type, interaction, remaining, guild
             case "xp50":
                 query = `UPDATE user_inventory SET xp50 = xp50 + ${quantity} WHERE snowflake = ${interaction.user.id}`;
                 break;
-            case "role_color":
-                query = `UPDATE user_inventory SET role_color = role_color + ${quantity} WHERE snowflake = ${interaction.user.id}`;
+            case "role_cosmetic":
+                query = `UPDATE user_inventory SET role_cosmetic = role_cosmetic + ${quantity} WHERE snowflake = ${interaction.user.id}`;
                 break;
             default:
                 break;
         }
         if (!query) return false;
 
-        const response = await modules.database.query(`INSERT INTO purchase (snowflake, cost, product, quantity, type, date, remaining_bits, method, guild_snowflake) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, "Stelleri Discord Bot", ?); ${query}`, [interaction.user.id, cost, product, quantity, type, remaining, guildSnowflake])
+        const response = await modules.database.query(`INSERT INTO purchase (snowflake, cost, product, quantity, type, date, remaining_bits, method, guild_snowflake) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, "${config.general.name} Discord Bot", ?); ${query}`, [interaction.user.id, cost, product, quantity, type, remaining, guildSnowflake])
         if (response && response[0] && response[0].affectedRows) {
             logger.log(`Successfully updated purchase history for '${interaction.user.username}@${interaction.user.id}' ${product}@${quantity}.`, "info");
             return true;
-        } else return false;
+        } else {
+            return false;
+        }
     } catch (error) {
-        console.error(error);
+        logger.error(error);
     }
 }
 

@@ -8,7 +8,7 @@ function init() {
         modules.database.query("UPDATE economy SET bank = ROUND(bank * ?, 0) WHERE 1 = 1;", [config.economy.interestRate])
             .then(logger.log(`Awarded all Bank accounts with a ${config.economy.interestRate}% interest bonus.`, "info"))
             .catch((error) => {
-                console.error(error);
+                logger.error(error);
                 logger.log("Something went wrong while processing interest.", "warning");
             });
     }, 3600000); // Every Hour

@@ -1,20 +1,40 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const modules = require('..');
 const config = require('../assets/config.js');
+const userUtils = require('../utils/user.js');
+const logger = require('../utils/logger.js');
 
 module.exports = {
     cooldown: config.cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('modify')
+        .setNameLocalizations({
+            nl: "modificeren"
+        })
         .setDescription('Modify user balances.')
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .setDescriptionLocalizations({
+            nl: "Verander saldo's van een gebruiker."
+        })
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addUserOption(option => option
             .setName('target')
+            .setNameLocalizations({
+                nl: "gebruiker"
+            })
             .setDescription('The target member.')
+            .setDescriptionLocalizations({
+                nl: "De betreffende gebruiker."
+            })
             .setRequired(true))
         .addStringOption(option => option
             .setName('section')
-            .setDescription('Choose whether you want to change their tier or economy.')
+            .setNameLocalizations({
+                nl: "afdeling"
+            })
+            .setDescription('Choose what you would like to alter.')
+            .setDescriptionLocalizations({
+                nl: "Kies wat u wilt veranderen."
+            })
             .setRequired(true)
             .addChoices(
                 { name: 'Tier - Level', value: 'rnk-lvl' },
@@ -23,7 +43,13 @@ module.exports = {
                 { name: 'Economy - Bank', value: 'eco-bnk' }))
         .addStringOption(option => option
             .setName('action')
+            .setNameLocalizations({
+                nl: "actie"
+            })
             .setDescription('Choose what type of edit you want to make.')
+            .setDescriptionLocalizations({
+                nl: "Kies de soort modificatie die u wilt maken."
+            })
             .setRequired(true)
             .addChoices(
                 { name: 'Set', value: 'set' },
@@ -33,11 +59,23 @@ module.exports = {
                 { name: 'Divide', value: 'div' }))
         .addIntegerOption(option => option
             .setName('amount')
+            .setNameLocalizations({
+                nl: "hoeveelheid"
+            })
             .setDescription("The amount for the chosen action.")
+            .setDescriptionLocalizations({
+                nl: "De hoeveelheid voor de gekozen modificatie."
+            })
             .setRequired(true)
             .setMinValue(0)),
     async execute(interaction) {
         try {
+            // Permission Validation
+            if (!(await userUtils.checkAdmin(interaction.user.id, interaction.guild))) return interaction.reply({
+                content: `You do not have the required permissions to perform this elevated command. Please try again later, or contact moderation to receive elevated permissions.`,
+                ephemeral: true
+            });
+
             const sectionType = interaction.options.getString('section');
             const actionType = interaction.options.getString('action');
             const amount = interaction.options.getInteger('amount');
@@ -93,7 +131,7 @@ module.exports = {
                     });
                 });
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     }
 };

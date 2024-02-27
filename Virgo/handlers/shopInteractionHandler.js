@@ -4,6 +4,7 @@ const logger = require('../utils/logger.js');
 const userIncreaseHandler = require('./userIncreaseHandler.js');
 const config = require('../assets/config.js');
 const purchaseHistory = require('./purchaseHistory.js');
+const guildUtils = require('../utils/guild.js');
 
 /**
  * Handle input when user wants uses the Shop command.
@@ -19,8 +20,8 @@ async function shopOptions(interaction) {
                     .setPlaceholder('Make a selection.')
                     .addOptions(new StringSelectMenuOptionBuilder()
                         .setLabel('Role Color')
-                        .setDescription(`Give your name a custom color. One change. Cost: ${data[0].role_color} Bits`)
-                        .setValue('role_color'))
+                        .setDescription(`Give your name a custom color. One change. Cost: ${data[0].role_cosmetic_price} Bits`)
+                        .setValue('role_cosmetic'))
                     .addOptions(new StringSelectMenuOptionBuilder()
                         .setLabel('XP-Boost 15% 24H')
                         .setDescription(`Temporary XP-boost on all gained Experience. Cost: ${data[0].xp15} Bits`)
@@ -42,7 +43,7 @@ async function shopOptions(interaction) {
                 });
             });
     } catch (error) {
-        console.error(error);
+        logger.error(error);
     }
 }
 
@@ -103,20 +104,22 @@ async function modalInputHandler(interaction) {
         amount = parseInt(amount);
         if (amount < 1) return interaction.update({ content: 'You must buy atleast one item. Please try again.', ephemeral: true });
 
-        modules.database.query("SELECT xp15, xp50, role_color, wallet, bank, (wallet + bank) as total FROM guild_settings LEFT JOIN economy ON 1 = 1 WHERE guild_settings.guild_snowflake = ? AND economy.snowflake = ?;", [interaction.guild.id, interaction.user.id])
-            .then((data) => {
-                if (data.length === 0) return interaction.reply({
+        modules.database.query("SELECT xp15, xp50, role_cosmetic_price, wallet, bank, (wallet + bank) as total FROM guild_settings LEFT JOIN economy ON 1 = 1 WHERE guild_settings.guild_snowflake = ? AND economy.snowflake = ?;", [interaction.guild.id, interaction.user.id])
+            .then((pricingData) => {
+                if (pricingData.length === 0) return interaction.reply({
                     content: "This command requires you to have an account. Create an account with the `/register` command.",
                     ephemeral: true
                 });
 
-                const cost = data[0][product];
+                let tempProduct = product;
+                if (tempProduct === "role_cosmetic") tempProduct += "_price";
+                const cost = pricingData[0][tempProduct];
                 const total = cost * amount;
-                if (total > data[0].wallet) {
+                if (total > pricingData[0].wallet) {
                     let additionalMessage = "";
-                    if (total < data[0].total) additionalMessage = ` I did have look at your Bank account, and turns out you do have enough if you would withdraw some Bits. You have \`${data[0].wallet}\` Bits inside your Wallet, and \`${data[0].bank}\` Bits inside your bank account. If you would like to do this, use the \`/economy withdraw\` command, and transfer atleast \`${total - data[0].wallet}\` Bits.`;
+                    if (total < pricingData[0].total) additionalMessage = ` I did have look at your Bank account, and turns out you do have enough if you would withdraw some Bits. You have \`${pricingData[0].wallet}\` Bits inside your Wallet, and \`${pricingData[0].bank}\` Bits inside your bank account. If you would like to do this, use the \`/economy withdraw\` command, and transfer atleast \`${total - pricingData[0].wallet}\` Bits.`;
                     return interaction.reply({
-                        content: `You do not have enough Bits in your Wallet account (\`${data[0].wallet}\`) to complete this purchase with a total cost of \`${total}\` Bits.${additionalMessage}`,
+                        content: `You do not have enough Bits in your Wallet account (\`${pricingData[0].wallet}\`) to complete this purchase with a total cost of \`${total}\` Bits.${additionalMessage}`,
                         ephemeral: true
                     });
                 } else {
@@ -128,7 +131,7 @@ async function modalInputHandler(interaction) {
                                 ephemeral: true
                             });
 
-                            const remaining = data[0].wallet - total;
+                            const remaining = pricingData[0].wallet - total;
                             logger.log(`'${interaction.user.username}@${interaction.user.id}' has purchased ${amount} ${product}${amount > 1 ? "'s" : ""} for a total price of ${total} Bits in guild '${interaction.guild.name}@${interaction.guild.id}'. Bits remaining: ${remaining}.`, "info");
                             
                             // Experience Increase
@@ -145,7 +148,7 @@ async function modalInputHandler(interaction) {
                                     ephemeral: true
                                 });
                             } else interaction.reply({
-                                content: "Something went wrong while updating your information. You have not been charged. Please try again later.",
+                                content: "Something went wrong while updating your shopping history. You have not been charged. Please try again later.",
                                 ephemeral: true
                             });
                         }).catch(() => {
@@ -156,14 +159,14 @@ async function modalInputHandler(interaction) {
                         });
                 }
             }).catch((error) => {
-                console.error(error);
+                logger.error(error);
                 return interaction.reply({
                     content: "Something went wrong while retrieving the required information. Please try again later.",
                     ephemeral: true
                 })
             });
     } catch (error) {
-        console.error(error);
+        logger.error(error);
     }
 }
 

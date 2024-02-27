@@ -4,12 +4,19 @@ const modules = require('..');
 const embedConstructor = require('../utils/embed.js');
 const date = require('../utils/date.js');
 const guildUtils = require('../utils/guild.js');
+const logger = require('../utils/logger.js');
 
 module.exports = {
     cooldown: config.cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('tier')
-        .setDescription('Information & statistics about your tier progression.'),
+        .setNameLocalizations({
+            nl: "tier"
+        })
+        .setDescription('Information and statistics about your Tier progression.')
+        .setDescriptionLocalizations({
+            nl: "Informatie en statistieken over uw Tier progressie."
+        }),
     async execute(interaction) {
         try {
             const snowflake = interaction.user.id;
@@ -45,7 +52,7 @@ module.exports = {
                     });
                 });
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     }
 };

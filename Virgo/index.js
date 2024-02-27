@@ -11,7 +11,7 @@ const client = new Client({
         'MessageContent',
         'GuildMembers',
         'GuildMessageReactions',
-        'DirectMessages'
+        'DirectMessages',
     ],
     partials: [
         'Channel',
@@ -32,35 +32,10 @@ const database = mariadb.createPool({
     multipleStatements: true
 });
 
-// Indexing super & blocked users
-const superUsers = [];
-const blockedUsers = [];
-try {
-    database.query("SELECT snowflake, super, blocked FROM user WHERE super = true OR blocked = true;")
-        .then((data) => {
-            for (let i = 0; i <= data.length; i++) {
-                if (data.length === i) {
-                    logger.log("Fetched all users.", "info");
-                } else {
-                    if (data[i].super === true) {
-                        superUsers.push(data[i].snowflake);
-                    } else if (data[i].blocked === true) blockedUsers.push(data[i].snowflake);
-                }
-            }
-        }).catch((error) => {
-            console.error(error);
-            return logger.log("Loading Users went wrong. Aborting.", "fatal");
-        });
-} catch (error) {
-    console.error(error);
-}
-
 // Exporting Values
 module.exports = {
     "client": client,
     "database": database,
-    "superUsers": superUsers,
-    "blockedUsers": blockedUsers,
     "dueDates": []
 };
 

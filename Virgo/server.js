@@ -57,7 +57,7 @@ app.post(`${prefix}/login`, (req, res) => {
                 return res.sendStatus(error.status);
             });
         }).catch((error) => {
-            console.error(error);
+            logger.error(error);
             return res.sendStatus(500)
         });
 });

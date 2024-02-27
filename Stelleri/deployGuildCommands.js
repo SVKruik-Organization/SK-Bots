@@ -5,13 +5,16 @@ const mariadb = require('mariadb');
 const fs = require('node:fs');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
+const logger = require('./utils/logger.js');
 
 const commands = [];
 for (const file of commandFiles) {
     try {
         const command = require(`./commands/${file}`);
         commands.push(command.data.toJSON());
-    } catch { console.error };
+    } catch(error) {
+        logger.error(error);
+    }
 }
 
 // Database Connection
@@ -39,8 +42,8 @@ try {
         console.log("\n");
         process.exit(1);
     }).catch((error) => {
-        console.error(error);
+        logger.error(error);
     });
 } catch (error) {
-    console.error(error);
+    logger.error(error);
 }

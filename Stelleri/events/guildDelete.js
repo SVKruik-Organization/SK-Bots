@@ -12,12 +12,12 @@ module.exports = {
                     .then(() => {
                         logger.log(`${config.general.name} has been removed from Guild: '${guild.name}@${guild.id}'. Successfully purged related data.`, "warning");
                     }).catch((error) => {
-                        console.error(error);
+                        logger.error(error);
                         logger.log(`Purging data for Guild '${guild.name}@${guild.id}' was not successful.`, "warning");
                     });
             }
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     }
 };

@@ -10,7 +10,13 @@ module.exports = {
     cooldown: config.cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('dailyreward')
-        .setDescription('Collect your daily Bits reward.'),
+        .setNameLocalizations({
+            nl: "dagelijksebeloning"
+        })
+        .setDescription('Collect your daily Bits reward.')
+        .setDescriptionLocalizations({
+            nl: "Haal uw dagelijkse Bits beloning op."
+        }),
     async execute(interaction) {
         try {
             // Cooldown Checking
@@ -46,7 +52,7 @@ module.exports = {
                     // + 24 Hours
                     const newDate = new Date();
                     newDate.setDate(newDate.getDate() + 1);
-                    dueAdd(interaction.user.id, "daily", newDate, null);
+                    dueAdd(interaction.user.id, "daily", newDate, null, interaction.user.username);
                     if (jackpotBoolean) {
                         interaction.reply({ content: `💎 You hit the JACKPOT! 💎 You received a grand total of \`${dailyreward}\` Bits. Congratulations! 🎉` });
                         logger.log(`'${interaction.user.username}@${interaction.user.id}' hit the daily reward jackpot worth ${jackpotValue}. Their dailyreward was worth ${dailyreward - jackpotValue}. They received a total of ${dailyreward} Bits.\n`, "alert");
@@ -61,7 +67,7 @@ module.exports = {
                     });
                 });
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     }
 };

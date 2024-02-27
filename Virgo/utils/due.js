@@ -18,11 +18,11 @@ try {
                 } else dueDates.push(dueDateConstructor(data[i]));
             }
         }).catch((error) => {
-            console.error(error);
+            logger.error(error);
             logger.log("Loading due dates went wrong. Aborting.", "fatal");
         });
 } catch (error) {
-    console.error(error);
+    logger.error(error);
 }
 
 function dueDateConstructor(data) {
@@ -34,7 +34,16 @@ function dueDateConstructor(data) {
     }
 }
 
-function dueAdd(snowflake, type, expiry, data) {
+/**
+ * Add a due date for automatic tracking.
+ * Depending on type parameter will be stored in memory or database.
+ * @param {string} snowflake Discord User ID of the user.
+ * @param {string} type The type of due date. Can be one of the following: daily, xp15, xp50 and event
+ * @param {string} expiry The expiry datetime.
+ * @param {string} data Additional payload.
+ * @param {string} username Discord User Username of the user.
+ */
+function dueAdd(snowflake, type, expiry, data, username) {
     try {
         // Daily Reward Collection
         if (type === "daily") {
@@ -42,8 +51,7 @@ function dueAdd(snowflake, type, expiry, data) {
                 .then((data) => {
                     // Validation
                     if (!data.affectedRows) return logger.log(`Could not update due date, as user '${snowflake}' does not have an account yet.`, "warning");
-
-                    logger.log(`Successfully added Daily Reward cooldown for user '${snowflake}' ${type}@${expiry.toLocaleDateString()} to the database.`, "info");
+                    logger.log(`Recorded Daily Reward cooldown for user '${username}'@'${snowflake}' ${type}@${expiry.toLocaleString()}.`, "info");
                     modules.dueDates.push({
                         "snowflake": snowflake,
                         "expiry": getDate(expiry, null).today,
@@ -64,7 +72,7 @@ function dueAdd(snowflake, type, expiry, data) {
             });
         }
     } catch (error) {
-        console.error(error);
+        logger.error(error);
     }
 }
 
@@ -105,7 +113,7 @@ function purgeExpired() {
         modules.dueDates = modules.dueDates.filter(dueDate => Date.parse(getDate(dueDate.expiry, null).today) > Date.parse(getDate(null, null).today));
         logger.log("Updated expired due dates.", "info");
     } catch (error) {
-        console.error(error);
+        logger.error(error);
     }
 }
 
@@ -154,7 +162,7 @@ function processEvents() {
             }
         }
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         logger.log("Parsing Event dates went wrong. Aborting.", "fatal");
     }
 }

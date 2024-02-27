@@ -15,21 +15,36 @@ function log(data, rawType) {
         if (type === "none") {
             logData = `${data}\n`;
         } else logData = `${dateCalculation.getDate().time} [${type.toUpperCase()}] ${data}\n`;
-        fs.appendFile(`./logs/${dateCalculation.getDate().date}.log`, logData, (err) => {
-            if (err) {
-                console.log(`${dateCalculation.getDate().time} [ERROR] Error appending to log file.`);
-                return false;
-            }
-        });
+        write(logData);
         console.log(logData);
         if (type === "fatal") return process.exit(1);
         return true;
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         return false;
     }
 }
 
+/**
+ * Log error messages to the log file.
+ * @param {Error} data The error to write to the file.
+ */
+function error(data) {
+    const logData = `${dateCalculation.getDate().time} [ERROR] ${data.stack}\n\n`;
+    write(logData);
+    console.error(logData);
+}
+
+function write(data) {
+    fs.appendFile(`./logs/${dateCalculation.getDate().date}.log`, data, (error) => {
+        if (error) {
+            console.error(`${dateCalculation.getDate().time} [ERROR] Error appending to log file.`);
+            return false;
+        }
+    });
+}
+
 module.exports = {
-    "log": log
+    "log": log,
+    "error": error
 }

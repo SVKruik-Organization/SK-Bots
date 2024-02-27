@@ -4,6 +4,7 @@ const { REST, Routes } = require('discord.js');
 const fs = require('node:fs');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
+const userUtils = require('../utils/user.js');
 const modules = require('..');
 const logger = require('../utils/logger.js');
 
@@ -42,7 +43,7 @@ module.exports = {
                 .then(async (queryData) => {
                     for (let i = 0; i < queryData.length; i++) {
                         const data = await rest.put(
-                            Routes.applicationGuildCommands(config.general.clientId, queryData[i].snowflake),
+                            Routes.applicationCommands(config.general.clientId),
                             { body: commands },
                         );
                         logger.log(`Successfully reloaded ${data.length} commands for guild ${queryData[i].name}.`);

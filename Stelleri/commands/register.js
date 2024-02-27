@@ -1,15 +1,28 @@
 const { SlashCommandBuilder } = require('discord.js');
 const modules = require('..');
 const config = require('../assets/config.js');
+const logger = require('../utils/logger.js');
 
 module.exports = {
     cooldown: config.cooldowns.D,
     data: new SlashCommandBuilder()
         .setName('register')
+        .setNameLocalizations({
+            nl: "registreren"
+        })
         .setDescription('Create a new account with us. Grants access to Tier & Economy commands.')
+        .setDescriptionLocalizations({
+            nl: "Maak een account bij ons aan. Geeft toegang tot Tier & Economy commando's."
+        })
         .addStringOption(option => option
             .setName('pincode')
+            .setNameLocalizations({
+                nl: "pincode"
+            })
             .setDescription('A 4-digit pincode for sensitive commands. Save it safe!')
+            .setDescriptionLocalizations({
+                nl: "Een 4-cijferige pincode voor gevoelige commando's. Bewaar hem goed!"
+            })
             .setRequired(true)
             .setMaxLength(4)
             .setMinLength(4)),
@@ -29,7 +42,7 @@ module.exports = {
                 }).catch((error) => {
                     if (error.code === "ER_DUP_ENTRY") {
                         return interaction.reply({
-                            content: "You already have an account. Display your statistics with `/economy`, and `/tier`.",
+                            content: "You already have an account. Display your statistics with `/economy` and `/tier`.",
                             ephemeral: true
                         });
                     } else return interaction.reply({
@@ -38,7 +51,7 @@ module.exports = {
                     });
                 });
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     }
 };

@@ -6,7 +6,7 @@ const modules = require('..');
  * Default Discord.JS Embed constructor.
  * @param {string} title The title of the embed.
  * @param {string} subfieldTitle The sub-header of the embed.
- * @param {object} user Discord User object.
+ * @param {object} user Discord User Object.
  * @param {Array<object>} fields The fields to add. Needs to have a 'name' and 'value' key.
  * @param {Array<string>} relatedCommands Array of related commands to display for the user.
  * @returns The constructed embed.

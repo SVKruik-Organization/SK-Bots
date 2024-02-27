@@ -7,16 +7,34 @@ module.exports = {
     cooldown: config.cooldowns.D,
     data: new SlashCommandBuilder()
         .setName('pincode')
+        .setNameLocalizations({
+            nl: "pincode"
+        })
         .setDescription('Change your 4-digit pincode.')
+        .setDescriptionLocalizations({
+            nl: "Verander uw 4-cijferige pincode."
+        })
         .addIntegerOption(option => option
-            .setName('old-pincode')
+            .setName('old')
+            .setNameLocalizations({
+                nl: "oud"
+            })
             .setDescription("Your current pincode.")
+            .setDescriptionLocalizations({
+                nl: "Uw actuele pincode."
+            })
             .setRequired(true)
             .setMinValue(1000)
             .setMaxValue(9999))
         .addIntegerOption(option => option
-            .setName('new-pincode')
+            .setName('new')
+            .setNameLocalizations({
+                nl: "nieuw"
+            })
             .setDescription("Your new pincode. Save it safe!")
+            .setDescriptionLocalizations({
+                nl: "Uw nieuwe pincode. Bewaar hem goed!"
+            })
             .setRequired(true)
             .setMinValue(1000)
             .setMaxValue(9999)),
@@ -25,8 +43,8 @@ module.exports = {
             const snowflake = interaction.user.id;
             const username = interaction.user.username;
 
-            const oldPincode = interaction.options.getInteger('old-pincode');
-            const newPincode = interaction.options.getInteger('new-pincode');
+            const oldPincode = interaction.options.getInteger('old');
+            const newPincode = interaction.options.getInteger('new');
 
             modules.database.query("SELECT pincode FROM user WHERE snowflake = ?;", [snowflake])
                 .then((data) => {
@@ -69,7 +87,7 @@ module.exports = {
                     });
                 });
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     }
 };

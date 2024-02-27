@@ -8,14 +8,32 @@ module.exports = {
     cooldown: config.cooldowns.D,
     data: new SlashCommandBuilder()
         .setName('report')
+        .setNameLocalizations({
+            nl: "rapporteren"
+        })
         .setDescription('Report someone for breaking the rules. We will have a look at it ASAP.')
+        .setDescriptionLocalizations({
+            nl: "Rapporteer iemand voor het overtreden van de regels. We zullen er zo snel mogelijk naar kijken."
+        })
         .addUserOption(option => option
             .setName('target')
+            .setNameLocalizations({
+                nl: "gebruiker"
+            })
             .setDescription('The target member.')
+            .setDescriptionLocalizations({
+                nl: "De betreffende gebruiker."
+            })
             .setRequired(true))
         .addStringOption(option => option
             .setName('category')
+            .setNameLocalizations({
+                nl: "categorie"
+            })
             .setDescription('Type of report.')
+            .setDescriptionLocalizations({
+                nl: "Het type overtreding."
+            })
             .setRequired(true)
             .addChoices(
                 { name: 'Swearing', value: 'Swearing' },
@@ -28,7 +46,13 @@ module.exports = {
                 { name: 'Other (Please specify)', value: 'Other' }))
         .addStringOption(option => option
             .setName('reason')
+            .setNameLocalizations({
+                nl: "rede"
+            })
             .setDescription('What did the user do wrong? What rules did they break? Max 1000 characters.')
+            .setDescriptionLocalizations({
+                nl: "Wat heeft deze gebruiker fout gedaan? Welke regels zijn er verbroken? Max 1000 karakters."
+            })
             .setRequired(true)
             .setMaxLength(1000)),
     async execute(interaction) {
@@ -50,15 +74,14 @@ module.exports = {
                         content: "Thank you for your report. We will have a look at it ASAP.",
                         ephemeral: true
                     });
-                }).catch((error) => {
-                    console.log(error);
+                }).catch(() => {
                     return interaction.reply({
                         content: "Something went wrong while reporting this user. Please try again later.",
                         ephemeral: true
                     });
                 });
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     }
 };

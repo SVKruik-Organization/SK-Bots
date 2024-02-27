@@ -1,11 +1,11 @@
 {
     "name": "virgo",
-    "version": "2.6.0",
+    "version": "2.7.0",
     "description": "General Purpose Bot",
     "main": "index.js",
     "scripts": {
         "update": "node deployGlobalCommands.js",
-        "start": "node ."
+        "start": "nodemon index.js"
     },
     "author": "SVKruik",
     "license": "ISC",

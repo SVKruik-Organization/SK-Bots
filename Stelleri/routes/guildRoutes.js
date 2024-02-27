@@ -3,6 +3,7 @@ const router = express.Router();
 const jwtUtils = require('../utils/jwt.js');
 const modules = require('..');
 const guildUtils = require('../utils/guild.js');
+const logger = require('../utils/logger.js');
 
 router.put('/update/settings', jwtUtils.authenticateJWT, function (req, res) {
     const newGuild = req.body;
@@ -20,8 +21,6 @@ router.put('/update/settings', jwtUtils.authenticateJWT, function (req, res) {
                     // Guild
                     "guildObject": filteredGuild.guildObject,
                     "name": filteredGuild.name,
-                    "operator_id": filteredGuild.operator_id,
-                    "operator_name": filteredGuild.operator_name,
                     "channel_admin": filteredGuild.channel_admin,
                     "channel_event": filteredGuild.channel_event,
                     "channel_suggestion": filteredGuild.channel_suggestion,
@@ -50,7 +49,7 @@ router.put('/update/settings', jwtUtils.authenticateJWT, function (req, res) {
                 });
                 return res.sendStatus(200);
             }).catch((error) => {
-                console.error(error);
+                logger.error(error);
                 return res.sendStatus(500);
             });
     } else return res.sendStatus(400);

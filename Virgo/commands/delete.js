@@ -2,6 +2,7 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const config = require('../assets/config.js');
 const { REST, Routes } = require('discord.js');
 const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
+const userUtils = require('../utils/user.js');
 const logger = require('../utils/logger.js');
 
 module.exports = {
@@ -58,33 +59,33 @@ module.exports = {
             const commandId = interaction.options.getString("command");
 
             if (option === "all") {
-                await rest.put(Routes.applicationGuildCommands(interaction.applicationId, interaction.guild.id), { body: [] })
+                await rest.put(Routes.applicationCommands(config.general.clientId), { body: [] })
                     .then(() => {
                         interaction.reply({
-                            content: "Deleted all Guild commands.",
+                            content: "Deleted all Global commands.",
                             ephemeral: true
                         });
                     }).catch(() => {
                         return interaction.reply({
-                            content: "Something went wrong while deleting the Guild commands. Please try again later.",
+                            content: "Something went wrong while deleting the Global commands. Please try again later.",
                             ephemeral: true
                         });
                     });
             } else if (option === "single") {
-                await rest.delete(Routes.applicationGuildCommand(interaction.applicationId, interaction.guild.id, commandId))
+                await rest.delete(Routes.applicationCommand(config.general.clientId, commandId))
                     .then(() => {
                         interaction.reply({
-                            content: "Guild command deleted successfully.",
+                            content: "Global command deleted successfully.",
                             ephemeral: true
                         });
                     }).catch((error) => {
                         if (error.status === 404) {
                             interaction.reply({
-                                content: "This Guild command does not exist. It might have been deleted already.",
+                                content: "This Global command does not exist. It might have been deleted already.",
                                 ephemeral: true
                             });
                         } else interaction.reply({
-                            content: "Something went wrong while deleting this Guild command. Please try again later.",
+                            content: "Something went wrong while deleting this Global command. Please try again later.",
                             ephemeral: true
                         });
                     });

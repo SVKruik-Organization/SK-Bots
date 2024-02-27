@@ -1,11 +1,11 @@
 {
     "name": "stelleri",
-    "version": "2.6.0",
+    "version": "2.7.0",
     "description": "Testing Bot",
     "main": "index.js",
     "scripts": {
         "update": "node deployGuildCommands.js",
-        "start": "node ."
+        "start": "nodemon index.js"
     },
     "author": "SVKruik",
     "license": "ISC",

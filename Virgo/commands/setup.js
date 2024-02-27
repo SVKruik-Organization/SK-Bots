@@ -3,59 +3,112 @@ const config = require('../assets/config.js');
 const modules = require('..');
 const embedConstructor = require('../utils/embed.js');
 const guildUtils = require('../utils/guild.js');
+const userUtils = require('../utils/user.js');
+const logger = require('../utils/logger.js');
 
 module.exports = {
     cooldown: config.cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('setup')
+        .setNameLocalizations({
+            nl: "configuratie"
+        })
         .setDescription('Setup or check the server configuration.')
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .setDescriptionLocalizations({
+            nl: "Setup of bekijk de server configuratie."
+        })
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addSubcommand(option => option
             .setName("register")
+            .setNameLocalizations({
+                nl: "registreren"
+            })
             .setDescription("Create or update the current configuration.")
+            .setDescriptionLocalizations({
+                nl: "Creëer of update the actuele configuratie."
+            })
             .addChannelOption(option => option
                 .setName('channel_admin')
-                .setDescription('Admin Channel')
+                .setDescription('Administrator Channel')
+                .setDescriptionLocalizations({
+                    nl: "Administrator Kanaal"
+                })
                 .addChannelTypes(ChannelType.GuildText)
                 .setRequired(false))
             .addChannelOption(option => option
                 .setName('channel_event')
                 .setDescription('Event Channel')
+                .setDescriptionLocalizations({
+                    nl: "Evenement Kanaal."
+                })
                 .addChannelTypes(ChannelType.GuildText)
                 .setRequired(false))
             .addChannelOption(option => option
                 .setName('channel_suggestion')
                 .setDescription('Suggestion Channel')
+                .setDescriptionLocalizations({
+                    nl: "Suggestie Kanaal."
+                })
                 .addChannelTypes(ChannelType.GuildText)
                 .setRequired(false))
             .addChannelOption(option => option
                 .setName('channel_snippet')
                 .setDescription('Snippet Channel')
+                .setDescriptionLocalizations({
+                    nl: "Snippet Kanaal."
+                })
                 .addChannelTypes(ChannelType.GuildText)
                 .setRequired(false))
             .addChannelOption(option => option
                 .setName('channel_rules')
                 .setDescription('Rules Channel')
+                .setDescriptionLocalizations({
+                    nl: "Regel Kanaal"
+                })
                 .addChannelTypes(ChannelType.GuildText)
                 .setRequired(false))
             .addRoleOption(option => option
                 .setName('role_blinded')
                 .setDescription('Blinded Role')
+                .setDescriptionLocalizations({
+                    nl: "Verblinde Rol."
+                })
                 .setRequired(false))
             .addIntegerOption(option => option
                 .setName('role_cosmetic_power')
                 .setDescription('Amount of roles with admin privileges. This makes sure that cosmetic roles will not overpower these.')
+                .setDescriptionLocalizations({
+                    nl: "Aantal rollen in deze server met beheerdersrechten. Zo overmeesteren de cosmetische rollen niet."
+                })
                 .setMinValue(2)
                 .setMaxValue(30)
                 .setRequired(false)))
         .addSubcommand(option => option
             .setName('check')
-            .setDescription('Check the current server configuration.'))
+            .setNameLocalizations({
+                nl: "bekijk"
+            })
+            .setDescription('Check the current server configuration.')
+            .setDescriptionLocalizations({
+                nl: "Bekijk de actuele server configuratie."
+            }))
         .addSubcommand(option => option
             .setName('help')
-            .setDescription('Read about how-to and why to use this command.')),
+            .setNameLocalizations({
+                nl: "hulp"
+            })
+            .setDescription('Read about how-to and why to use this command.')
+            .setDescriptionLocalizations({
+                nl: "Lees hoe en waarom dit commando te gebruiken."
+            })),
     async execute(interaction) {
         try {
+            // Permission Validation
+            if (!(await userUtils.checkAdmin(interaction.user.id, interaction.guild))) return interaction.reply({
+                content: `You do not have the required permissions to perform this elevated command. Please try again later, or contact moderation to receive elevated permissions.`,
+                ephemeral: true
+            });
+
             // Setup
             const actionType = interaction.options.getSubcommand('action');
             const targetGuild = guildUtils.findGuildById(interaction.guild.id);
@@ -72,7 +125,7 @@ module.exports = {
 
             // Update
             if (actionType === "register") {
-                modules.database.query("UPDATE guild SET operator_id = ?, operator_name = ?, channel_admin = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE guild_snowflake = ?;", [interaction.user.id, interaction.user.username, channel_admin ? channel_admin.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_blinded ? role_blinded.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
+                modules.database.query("UPDATE guild SET channel_admin = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE guild_snowflake = ?;", [channel_admin ? channel_admin.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_blinded ? role_blinded.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
                     .then(() => {
                         const filteredGuild = guildUtils.guilds.filter(guild => guild.guildObject.id === interaction.guild.id);
                         guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);
@@ -80,8 +133,6 @@ module.exports = {
                             // Guild
                             "guildObject": interaction.guild,
                             "name": interaction.guild.name,
-                            "operator_id": interaction.user.id,
-                            "operator_name": interaction.user.username,
                             "channel_admin": channel_admin,
                             "channel_event": channel_event,
                             "channel_suggestion": channel_suggestion,
@@ -109,7 +160,7 @@ module.exports = {
                         });
 
                         interaction.reply({
-                            content: "Setup update successful. Additional commands reloaded. For other settings like welcome messages and other paramaters, please consult my website (WIP).",
+                            content: "Setup update successful. Additional commands reloaded. For other settings like welcome messages and other parameters, please consult my website (WIP).",
                             ephemeral: true
                         });
                     }).catch(() => {
@@ -129,7 +180,6 @@ module.exports = {
 
                 const embed = embedConstructor.create("Server Configuration", `${interaction.guild.name} Setup`, interaction.user,
                     [
-                        { name: 'Registerer', value: `${targetGuild.operator_id ? '<@' + targetGuild.operator_id + '>' : "Not Configured"}` },
                         { name: 'Admin Channel', value: `${targetGuild.channel_admin || "Not Configured"}` },
                         { name: 'Event Channel', value: `${targetGuild.channel_event || "Not Configured"}` },
                         { name: 'Suggestion Channel', value: `${targetGuild.channel_suggestion || "Not Configured"}` },
@@ -151,14 +201,14 @@ module.exports = {
                             value: 'To update or register, please fill the other marked as optional fields. Fields that are left empty, will be stored as empty (resetting the value). Use this command carefully, as erroneous input will disable certain commands.'
                         },
                         {
-                            name: "ID's",
-                            value: "When Discord Developer mode is enabled, you can right-click > copy the Text Channel ID. Same goes for Roles and other objects. Just complete all the fields, and you are good to go. No reloading/refreshing is required, i'll handle it from there."
+                            name: 'Advanced Config',
+                            value: 'When you try to update the configuration, you might notice the lack of customization. This is because it would not be UIX friendly to show 30 different options in only one command or to have multiple commands for different settings. To fix this, another standalone desktop application has been built. This app enables you to customize the bot to your liking including custom pricing and viewing statistics. For more information, checkout this [repository](https://github.com/SVKruik/bot-config-ui).'
                         }
                     ], ["server"]);
                 interaction.reply({ embeds: [embed], ephemeral: true });
             }
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     }
 };

@@ -79,34 +79,36 @@ function increaseXp(snowflake, username, amount, channelId, client, user, guildI
 
                                                                 // Delete Unused Level Roles
                                                                 const otherOwners = role.members.filter(guildMember => guildMember.user.id !== snowflake);
-                                                                if (otherOwners.size === 0) await role.delete().catch(console.error);
+                                                                if (otherOwners.size === 0) await role.delete().catch((error) => {
+                                                                    logger.error(error);
+                                                                });
                                                             }
                                                         }
                                                     });
                                                 } catch (error) {
-                                                    console.error(error);
+                                                    logger.error(error);
                                                 }
                                             }).catch((error) => {
-                                                console.error(error);
+                                                logger.error(error);
                                                 return logger.log(`Something went wrong while creating new Level role.`, "warning");
                                             });
                                         }
                                     });
                                 }).catch((error) => {
-                                    console.error(error);
+                                    logger.error(error);
                                     return logger.log(`Something went wrong while trying to update the XP count for user '${username}@${snowflake}'.`, "warning");
                                 });
                         }
                     }).catch((error) => {
-                        console.error(error);
+                        logger.error(error);
                         return logger.log(`Something went wrong while trying to update the XP count for user '${username}@${snowflake}'.`, "warning");
                     });
             }).catch((error) => {
-                console.error(error);
+                logger.error(error);
                 return logger.log(`Something went wrong while trying to update the XP count for user '${username}@${snowflake}'.`, "warning");
             });
     } catch (error) {
-        console.error(error);
+        logger.error(error);
     }
 }
 
@@ -116,10 +118,12 @@ function increaseXp(snowflake, username, amount, channelId, client, user, guildI
  * @param {string} commandName Command name, should be the same as table name.
  */
 function increaseCommand(snowflake, commandName) {
-    const disabledCommands = ["register", "close", "shutdown"];
+    const disabledCommands = ["register", "close", "shutdown", "delete"];
     if (disabledCommands.includes(commandName)) return;
     modules.database.query(`UPDATE user_commands SET ${commandName} = ${commandName} + 1 WHERE snowflake = ?`, [snowflake])
-        .catch(console.error);
+        .catch((error) => {
+            logger.error(error);
+        });
 }
 
 module.exports = {

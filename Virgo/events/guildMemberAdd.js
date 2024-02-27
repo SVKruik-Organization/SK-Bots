@@ -12,7 +12,7 @@ module.exports = {
             .then((data) => {
                 if (data.length > 0 && data[0].welcome === 1) {
                     const welcomeEmbed = embedConstructor.create(`Welcome to ${event.guild.name}!`, "We are glad to have you!", event.user, [
-                        { "name": "About Me", "value": `I am <@${config.general.clientId}>, a General Purpose bot made by <@${config.general.creatorId}>. I am in charge of the Level and Economy system, and keeping the server tidy. I also have fun commands, like 'Rock, Paper, Scissor' and utility commands to make managment easier.` },
+                        { "name": "About Me", "value": `I am <@${config.general.clientId}>, a Bèta General Purpose bot made by <@${config.general.creatorId}>. I am in charge of the Level and Economy system, and keeping the server tidy. I also have fun commands, like 'Rock, Paper, Scissor' and utility commands to make managment easier.` },
                         { "name": "Level & Economy", "value": `Participating is entirely up to you! By default, you are not in this program. If you would like to opt-in, use the \`/register\` command! You can collect your daily reward by using \`/daily\` command. With Bits you can purchase cosmetics (role colors) and XP-Boosters.` },
                         { "name": "Concluding", "value": `Well that's all from me I guess, if you have questions or concerns, you can contact <@${config.general.creatorId}> and the moderators of **${event.guild.name}**. We hope you like your stay, and GLHF!` }
                     ], []);

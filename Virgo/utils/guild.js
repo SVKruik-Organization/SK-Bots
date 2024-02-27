@@ -13,11 +13,11 @@ try {
                 } else guilds.push(await guildConstructor(data[i], modules.client));
             }
         }).catch((error) => {
-            console.error(error);
+            logger.error(error);
             return logger.log("Loading Guild settings went wrong. Aborting.", "fatal");
         });
 } catch (error) {
-    console.error(error);
+    logger.error(error);
 }
 
 /**
@@ -80,8 +80,6 @@ async function guildConstructor(guild, client) {
             // Guild
             "guildObject": fetchedGuild,
             "name": guild.name,
-            "operator_id": guild.operator_id,
-            "operator_name": guild.operator_name,
             "channel_admin": channel_admin,
             "channel_event": channel_event,
             "channel_suggestion": channel_suggestion,
@@ -109,7 +107,7 @@ async function guildConstructor(guild, client) {
         }
     } catch (error) {
         if (error.status !== 404) {
-            console.error(error);
+            logger.error(error);
             return {};
         }
     }
