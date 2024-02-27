@@ -9,7 +9,7 @@ Below you will find a list of statistics and information. I have separated the c
 #### Bots Overview
 
 | Name | Purpose | Meaning |
-| - | - | - | - |
+| - | - | - |
 | Stelleri | Testing | [Steller's Eider](https://en.wikipedia.org/wiki/Steller%27s_eider) |
 | Virgo | General Purpose | [Demoiselle Crane](https://en.wikipedia.org/wiki/Demoiselle_crane) |
 
