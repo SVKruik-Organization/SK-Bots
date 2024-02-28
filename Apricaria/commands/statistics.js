@@ -3,6 +3,7 @@ const config = require('../assets/config.js');
 const fs = require('fs');
 const embedConstructor = require('../utils/embed.js');
 const logger = require('../utils/logger.js');
+const { version } = require('../package.json');
 
 module.exports = {
     cooldown: config.cooldowns.C,
@@ -31,7 +32,7 @@ module.exports = {
                     { name: 'Ping', value: `\`${Math.abs(interaction.client.ws.ping)}\`ms` },
                     { name: 'Commands', value: `\`${commands}\` Total` },
                     { name: 'Repository', value: config.general.repository },
-                    { name: 'Version', value: `\`v2.5.0\`` }
+                    { name: 'Version', value: `\`${version}\`` }
                 ], ["server"]);
             interaction.reply({ embeds: [embed] });
         } catch (error) {

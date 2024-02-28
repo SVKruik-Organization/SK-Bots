@@ -1,6 +1,6 @@
 exports.general = {
-    name: "Virgo",
-    color: "#8C965F",
+    name: "Apricaria",
+    color: "#898266",
     clientId: "1150713787784110110",
     imageURL: "https://i.imgur.com/6OeWaIW.jpg",
     creatorId: "422704748488163332",

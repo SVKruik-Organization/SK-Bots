@@ -1,6 +1,6 @@
 # Available Bot Commands
 
-The following commands are production ready, and are therefore supported by both Stelleri and Virgo.
+The following commands are production ready, and are therefore supported by both Stelleri and Apricaria.
 
 | Command | Description | Options | Elevated | Category | Introduction |
 | - | - | - | - | - | - |
