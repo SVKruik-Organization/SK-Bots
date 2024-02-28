@@ -46,7 +46,7 @@ module.exports = {
             const oldPincode = interaction.options.getInteger('old');
             const newPincode = interaction.options.getInteger('new');
 
-            modules.database.query("SELECT pincode FROM user WHERE snowflake = ?;", [snowflake])
+            modules.database.query("SELECT pincode FROM user_general WHERE snowflake = ?;", [snowflake])
                 .then((data) => {
                     // Validation
                     if (data.length === 0) return interaction.reply({

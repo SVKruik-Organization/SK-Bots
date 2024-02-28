@@ -28,7 +28,7 @@ function sendConfirmButtons(interaction) {
  * @param {object} interaction Discord Interaction Object
  */
 function confirmAccountClose(interaction) {
-    modules.database.query("DELETE FROM user WHERE snowflake = ?;", [interaction.user.id])
+    modules.database.query("DELETE FROM user_general WHERE snowflake = ?;", [interaction.user.id])
         .then((data) => {
             if (!data.affectedRows) return interaction.update({
                 content: "This command requires you to have an account. Create an account with the `/register` command.",

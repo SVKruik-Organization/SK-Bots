@@ -30,7 +30,7 @@ module.exports = {
             const snowflake = interaction.user.id;
             const inputPincode = interaction.options.getString('pincode');
 
-            modules.database.query("SELECT pincode AS 'pin' FROM user WHERE snowflake = ?;", [snowflake])
+            modules.database.query("SELECT pincode AS 'pin' FROM user_general WHERE snowflake = ?;", [snowflake])
                 .then((data) => {
                     const dataPincode = data[0].pin;
                     const match = inputPincode === dataPincode;
