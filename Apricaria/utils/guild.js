@@ -10,7 +10,10 @@ try {
                 if (i === data.length) {
                     logger.log("Fetched all guilds.", "info");
                     module.exports.guilds = guilds;
-                } else guilds.push(await guildConstructor(data[i], modules.client));
+                } else {
+                    const guildObject = await guildConstructor(data[i]);
+                    if (guildObject) guilds.push(guildObject);
+                }
             }
         }).catch((error) => {
             logger.error(error);
@@ -24,13 +27,12 @@ try {
  * Process raw data from the database to a refined object for further reading from.
  * Instead of raw channel snowflakes, it puts the entire Discord Channel object.
  * @param {object} guild A Guild object from the database.
- * @param {object} client Discord Client Object
  * @returns
  */
-async function guildConstructor(guild, client) {
+async function guildConstructor(guild) {
     try {
         // Guild Fetching
-        const fetchedGuild = await client.guilds.fetch(guild.snowflake);
+        const fetchedGuild = await modules.client.guilds.fetch(guild.snowflake);
         if (!fetchedGuild) {
             logger.log(`Guild '${guild.name}'@'${guild.snowflake}' not found.`, "warning");
             return;
@@ -49,7 +51,7 @@ async function guildConstructor(guild, client) {
             let target = null;
             if (!channelId) return target;
             try {
-                const fetchedChannel = await client.channels.fetch(channelId);
+                const fetchedChannel = await modules.client.channels.fetch(channelId);
                 if (fetchedChannel) {
                     target = fetchedChannel;
                 } else logger.log(`Guild '${guild.name}' ${name} Channel ${errorMessage}`, "warning");
@@ -64,7 +66,7 @@ async function guildConstructor(guild, client) {
         const channel_event = await channelFetch(guild.channel_event, "Event");
         const channel_suggestion = await channelFetch(guild.channel_suggestion, "Suggestion");
         const channel_snippet = await channelFetch(guild.channel_snippet, "Snippet");
-        const channel_rules = await channelFetch(guild.channel_rules, "Rules") || client.channels.cache.get(fetchedGuild.rulesChannelId) || null;
+        const channel_rules = await channelFetch(guild.channel_rules, "Rules") || modules.client.channels.cache.get(fetchedGuild.rulesChannelId) || null;
 
         // Role Fetching
         let role_blinded = null;

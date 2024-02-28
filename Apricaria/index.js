@@ -1,22 +1,22 @@
 require('dotenv').config();
 const mariadb = require('mariadb');
-const { Client, Collection } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js');
 const commandHandler = require('./handlers/commandHandler.js');
 const eventHandler = require('./handlers/eventHandler.js');
 const logger = require('./utils/logger.js');
 const client = new Client({
     intents: [
-        'Guilds',
-        'GuildMessages',
-        'MessageContent',
-        'GuildMembers',
-        'GuildMessageReactions',
-        'DirectMessages',
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.DirectMessages
     ],
     partials: [
-        'Channel',
-        'Message',
-        'Reactions'
+        Partials.Channel,
+        Partials.Message,
+        Partials.Reaction
     ]
 });
 client.login(process.env.BOT_TOKEN);
