@@ -5,6 +5,7 @@ const guildUtils = require('../utils/guild.js');
 const modules = require('..');
 const ticket = require('../utils/ticket.js');
 const logger = require('../utils/logger.js');
+const { time } = require('@discordjs/formatters');
 
 module.exports = {
     cooldown: config.cooldowns.D,
@@ -199,7 +200,7 @@ module.exports = {
                         .setDescription(description)
                         .addFields(
                             { name: 'Location', value: eventType === "online" ? `<#${location}>` : location, inline: true },
-                            { name: 'Date', value: `${rawDate} at ${rawTime}`, inline: true })
+                            { name: 'Date', value: time(fullDate), inline: true })
                         .addFields({ name: '----', value: 'Meta' })
                         .setTimestamp()
                         .setFooter({ text: `Embed created by ${config.general.name}` });

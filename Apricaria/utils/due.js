@@ -2,6 +2,8 @@ const modules = require('..');
 const logger = require('./logger.js');
 const { getDate } = require('./date.js');
 const embedConstructor = require('./embed.js');
+const { time } = require('@discordjs/formatters');
+
 /**
  * Index once on startup.
  * After that, checking will happen in-memory.
@@ -143,7 +145,7 @@ function processEvents() {
                                     // Standard Fields A
                                     const embedFields = [
                                         { name: "Title", value: commencingEvent.title, inline: true },
-                                        { name: "Date", value: `${date.date} at ${date.time}`, inline: true }];
+                                        { name: "Date", value: time(date.today), inline: true }];
 
                                     // Location
                                     if (commencingEvent.online) {
