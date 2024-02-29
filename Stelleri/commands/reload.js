@@ -13,7 +13,7 @@ for (const file of commandFiles) {
         if (file === "reload.js") continue;
         const command = require(`../commands/${file}`);
         commands.push(command.data.toJSON());
-    } catch(error) {
+    } catch (error) {
         logger.error(error);
     }
 }
@@ -38,22 +38,23 @@ module.exports = {
                 ephemeral: true
             });
 
-            modules.database.query("SELECT * FROM guild WHERE disabled = 0;")
+            modules.database.query("SELECT * FROM guild WHERE disabled = 0 AND production = 0;")
                 .then(async (queryData) => {
                     for (let i = 0; i < queryData.length; i++) {
                         const data = await rest.put(
                             Routes.applicationGuildCommands(config.general.clientId, queryData[i].snowflake),
                             { body: commands },
                         );
-                        logger.log(`Successfully reloaded ${data.length} commands for guild ${queryData[i].name}.`);
+                        logger.log(`Successfully reloaded ${data.length} Guild commands for Guild ${queryData[i].name}.`);
                     }
                     return interaction.reply({
-                        content: `Successfully reloaded all commands for all servers ${config.general.name} is in.`,
+                        content: `Successfully reloaded all Guild commands for all servers ${config.general.name} is in.`,
                         ephemeral: true
                     });
-                }).catch(() => {
+                }).catch((error) => {
+                    logger.error(error);
                     return interaction.reply({
-                        content: `Something went wrong while reloading the commands.`,
+                        content: `Something went wrong while reloading the Guild commands.`,
                         ephemeral: true
                     });
                 });

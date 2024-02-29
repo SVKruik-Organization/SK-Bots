@@ -29,7 +29,7 @@ const database = mariadb.createPool({
 
 // Deploy
 try {
-    database.query("SELECT * FROM guild WHERE disabled = 0;")
+    database.query("SELECT * FROM guild WHERE disabled = 0 AND production = 0;")
     .then(async (queryData) => {
         console.log("\n");
         for (let i = 0; i < queryData.length; i++) {

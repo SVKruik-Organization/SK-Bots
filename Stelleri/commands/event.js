@@ -209,7 +209,8 @@ module.exports = {
                         content: `Event created. Check your event here: <#${channel.id}>.`,
                         ephemeral: true
                     });
-                }).catch(() => {
+                }).catch((error) => {
+                    logger.error(error);
                     return interaction.reply({
                         content: "Something went wrong while creating your event. Please try again later.",
                         ephemeral: true

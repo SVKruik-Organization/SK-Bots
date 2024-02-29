@@ -42,7 +42,8 @@ module.exports = {
                             ephemeral: true
                         });
                     }
-                }).catch(() => {
+                }).catch((error) => {
+                    logger.error(error);
                     return interaction.reply({
                         content: "Something went wrong while closing your account. Please try again later.",
                         ephemeral: true

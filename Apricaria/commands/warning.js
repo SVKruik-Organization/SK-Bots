@@ -58,7 +58,8 @@ module.exports = {
                     interaction.reply({
                         content: `User <@${targetUser.id}> has been warned for: \`${reason}\``
                     });
-                }).catch(() => {
+                }).catch((error) => {
+                    logger.error(error);
                     return interaction.reply({
                         content: "Something went wrong while warning this user. Please try again later.",
                         ephemeral: true

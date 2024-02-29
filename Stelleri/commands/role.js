@@ -87,7 +87,8 @@ module.exports = {
                                             ephemeral: true
                                         });
                                     });
-                                }).catch(() => {
+                                }).catch((error) => {
+                                    logger.error(error);
                                     return interaction.reply({
                                         content: "Something went wrong while creating your role. Please try again later.",
                                         ephemeral: true
@@ -99,13 +100,15 @@ module.exports = {
                                     ephemeral: true
                                 });
                             }
-                        }).catch(() => {
+                        }).catch((error) => {
+                            logger.error(error);
                             return interaction.reply({
                                 content: "Something went wrong while updating your information. You have not been charged. Please try again later.",
                                 ephemeral: true
                             });
                         });
-                }).catch(() => {
+                }).catch((error) => {
+                    logger.error(error);
                     return interaction.reply({
                         content: "Something went wrong while retrieving the required information. Please try again later.",
                         ephemeral: true

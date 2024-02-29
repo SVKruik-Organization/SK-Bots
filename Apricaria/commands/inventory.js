@@ -81,7 +81,8 @@ module.exports = {
                             components: [new ActionRowBuilder().addComponents(select)],
                             ephemeral: true
                         });
-                    }).catch(() => {
+                    }).catch((error) => {
+                        logger.error(error);
                         return interaction.reply({
                             content: 'Something went wrong while retrieving the required information. Please try again later.',
                             ephemeral: true
@@ -100,7 +101,8 @@ module.exports = {
                             content: "Successfully removed the active XP-Booster, if there was any. To activate a XP-Booster use the \`/inventory active\` command.",
                             ephemeral: true
                         });
-                    }).catch(() => {
+                    }).catch((error) => {
+                        logger.error(error);
                         return interaction.reply({
                             content: 'Something went wrong while retrieving the required information. Please try again later.',
                             ephemeral: true
@@ -121,7 +123,8 @@ module.exports = {
                                 { name: 'XP +50%', value: `\`${data[0].xp50}\`` }
                             ], ["shop", "economy", "tier"]);
                         interaction.reply({ embeds: [embed], ephemeral: true });
-                    }).catch(() => {
+                    }).catch((error) => {
+                        logger.error(error);
                         return interaction.reply({
                             content: 'Something went wrong while retrieving the required information. Please try again later.',
                             ephemeral: true

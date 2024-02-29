@@ -65,7 +65,8 @@ module.exports = {
                             content: "Deleted all Global commands.",
                             ephemeral: true
                         });
-                    }).catch(() => {
+                    }).catch((error) => {
+                        logger.error(error);
                         return interaction.reply({
                             content: "Something went wrong while deleting the Global commands. Please try again later.",
                             ephemeral: true
@@ -84,10 +85,13 @@ module.exports = {
                                 content: "This Global command does not exist. It might have been deleted already.",
                                 ephemeral: true
                             });
-                        } else interaction.reply({
-                            content: "Something went wrong while deleting this Global command. Please try again later.",
-                            ephemeral: true
-                        });
+                        } else {
+                            logger.log(error);
+                            interaction.reply({
+                                content: "Something went wrong while deleting this Global command. Please try again later.",
+                                ephemeral: true
+                            });
+                        }
                     });
             }
         } catch (error) {

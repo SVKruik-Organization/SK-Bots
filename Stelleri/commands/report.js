@@ -74,7 +74,8 @@ module.exports = {
                         content: "Thank you for your report. We will have a look at it ASAP.",
                         ephemeral: true
                     });
-                }).catch(() => {
+                }).catch((error) => {
+                    logger.error(error);
                     return interaction.reply({
                         content: "Something went wrong while reporting this user. Please try again later.",
                         ephemeral: true

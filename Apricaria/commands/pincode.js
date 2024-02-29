@@ -74,13 +74,15 @@ module.exports = {
                                 ephemeral: true
                             });
                             logger.log(`${username} has changed their pincode.`, "info");
-                        }).catch(() => {
+                        }).catch((error) => {
+                            logger.error(error);
                             return interaction.reply({
                                 content: "Something went wrong while trying to update your information. Please try again later.",
                                 ephemeral: true
                             });
                         });
-                }).catch(() => {
+                }).catch((error) => {
+                    logger.error(error);
                     return interaction.reply({
                         content: "Something went wrong while trying to update your information. Please try again later.",
                         ephemeral: true

@@ -4,8 +4,6 @@ const { REST, Routes } = require('discord.js');
 const fs = require('node:fs');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
-const userUtils = require('../utils/user.js');
-const modules = require('..');
 const logger = require('../utils/logger.js');
 
 const commands = [];
@@ -14,7 +12,7 @@ for (const file of commandFiles) {
         if (file === "reload.js") continue;
         const command = require(`../commands/${file}`);
         commands.push(command.data.toJSON());
-    } catch(error) {
+    } catch (error) {
         logger.error(error);
     }
 }
@@ -39,27 +37,26 @@ module.exports = {
                 ephemeral: true
             });
 
-            modules.database.query("SELECT * FROM guild WHERE disabled = 0;")
-                .then(async (queryData) => {
-                    for (let i = 0; i < queryData.length; i++) {
-                        const data = await rest.put(
-                            Routes.applicationCommands(config.general.clientId),
-                            { body: commands },
-                        );
-                        logger.log(`Successfully reloaded ${data.length} commands for guild ${queryData[i].name}.`);
-                    }
-                    return interaction.reply({
-                        content: `Successfully reloaded all commands for all servers ${config.general.name} is in.`,
-                        ephemeral: true
-                    });
-                }).catch(() => {
-                    return interaction.reply({
-                        content: `Something went wrong while reloading the commands.`,
-                        ephemeral: true
-                    });
-                });
+            interaction.reply({
+                content: `Reloading commands. One moment please.`,
+                ephemeral: true
+            });
+
+            const data = await rest.put(
+                Routes.applicationCommands(config.general.clientId),
+                { body: commands },
+            );
+            logger.log(`Successfully reloaded ${data.length} Global commands.`);
+            return interaction.followUp({
+                content: `Successfully reloaded all Global commands for all servers ${config.general.name} is in.`,
+                ephemeral: true
+            });
         } catch (error) {
             logger.error(error);
+            return interaction.followUp({
+                content: `Something went wrong while reloading Global commands.`,
+                ephemeral: true
+            });
         }
     }
 };

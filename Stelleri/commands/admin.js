@@ -59,7 +59,8 @@ module.exports = {
                 const newRole = await interaction.guild.roles.create({
                     name: `${config.general.name} Administrator`,
                     permissions: [PermissionFlagsBits.ManageGuild],
-                }).catch(() => {
+                }).catch((error) => {
+                    logger.error(error);
                     return interaction.reply({
                         content: `Something went wrong while creating the administrator role. Please try again later.`,
                         ephemeral: true
@@ -90,16 +91,19 @@ module.exports = {
                             content: `Successfully added user <@${targetUser.id}> to the administrators of this server. They can now use commands that require elevated permissions.`,
                             ephemeral: true
                         });
-                    }).catch(() => {
+                    }).catch((error) => {
                         if (error.code === "ER_DUP_ENTRY") {
                             return interaction.reply({
                                 content: `User <@${targetUser.id}> is an administrator already.`,
                                 ephemeral: true
                             });
-                        } else return interaction.reply({
-                            content: "Something went wrong while giving this user elevated permissions. Please try again later.",
-                            ephemeral: true
-                        });
+                        } else {
+                            logger.error(error);
+                            return interaction.reply({
+                                content: "Something went wrong while giving this user elevated permissions. Please try again later.",
+                                ephemeral: true
+                            });
+                        }
                     });
             } else if (actionType === "remove") {
                 modules.database.query("DELETE FROM user_administrator WHERE user_snowflake = ? AND guild_snowflake = ?;", [targetUser.id, interaction.guild.id])
@@ -110,7 +114,8 @@ module.exports = {
                             content: `Successfully removed user <@${targetUser.id}> from the administrators of this server. They can no longer use commands that require elevated permissions.`,
                             ephemeral: true
                         });
-                    }).catch(() => {
+                    }).catch((error) => {
+                        logger.error(error);
                         return interaction.reply({
                             content: "Something went wrong while removing elevated permissions of this user. Please try again later.",
                             ephemeral: true
@@ -123,7 +128,8 @@ module.exports = {
                             content: `Administrator status of user <@${targetUser.id}>: \`${data.length === 0 ? "false" : "true"}\``,
                             ephemeral: true
                         });
-                    }).catch(() => {
+                    }).catch((error) => {
+                        logger.error(error);
                         return interaction.reply({
                             content: "Something went wrong while checking the administrator status of this user. Please try again later.",
                             ephemeral: true

@@ -124,7 +124,8 @@ module.exports = {
                         content: "Account data has been successfully changed.",
                         ephemeral: true
                     });
-                }).catch(() => {
+                }).catch((error) => {
+                    logger.error(error);
                     return interaction.reply({
                         content: "Something went wrong while trying to update their information. Please try again later.",
                         ephemeral: true

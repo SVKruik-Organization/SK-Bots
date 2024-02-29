@@ -19,7 +19,8 @@ module.exports = {
                     const user = findUserById(event.user.id);
                     if (user) user.send({ embeds: [welcomeEmbed] });
                 } else return logger.log(`Guild '${event.guild.name}@${event.guild.id}' settings not found, so welcome message could not be sent.`, "warning");
-            }).catch(() => {
+            }).catch((error) => {
+                logger.error(error);
                 return logger.log(`Sending welcome message for guild '${event.guild.name}@${event.guild.id}' went wrong.`, "warning");
             });
     }

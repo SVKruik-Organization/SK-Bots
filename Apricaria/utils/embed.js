@@ -2,6 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const config = require('../assets/config.js')
 const guildUtils = require('../utils/guild.js');
 const modules = require('..');
+const logger = require('./logger.js');
 /**
  * Default Discord.JS Embed constructor.
  * @param {string} title The title of the embed.
@@ -65,7 +66,8 @@ async function customShopCatalog(interaction) {
                 .setTimestamp()
                 .setFooter({ text: `Embed created by ${config.general.name}` });
             interaction.reply({ embeds: [embed] });
-        }).catch(() => {
+        }).catch((error) => {
+            logger.error(error);
             return interaction.reply({
                 content: "Something went wrong while retrieving the required information. Please try again later.",
                 ephemeral: true

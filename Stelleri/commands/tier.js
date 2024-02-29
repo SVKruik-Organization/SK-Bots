@@ -45,7 +45,8 @@ module.exports = {
                             { name: '+50% Boosters', value: `\`${data[0].xp50}\`` }
                         ], ["inventory"]);
                     interaction.reply({ embeds: [embed], ephemeral: true });
-                }).catch(() => {
+                }).catch((error) => {
+                    logger.error(error);
                     return interaction.reply({
                         content: "Something went wrong while retrieving the required information. Please try again later.",
                         ephemeral: true

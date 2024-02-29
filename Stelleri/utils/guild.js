@@ -3,7 +3,7 @@ const logger = require('./logger.js');
 
 // Indexing Guilds & Settings
 try {
-    modules.database.query("SELECT * FROM guild LEFT JOIN guild_settings ON guild_settings.guild_snowflake = guild.snowflake WHERE disabled = 0;")
+    modules.database.query("SELECT * FROM guild LEFT JOIN guild_settings ON guild_settings.guild_snowflake = guild.snowflake WHERE disabled = 0 AND production = 0;")
         .then(async (data) => {
             const guilds = [];
             for (let i = 0; i <= data.length; i++) {

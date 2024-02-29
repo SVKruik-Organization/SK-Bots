@@ -60,7 +60,8 @@ module.exports = {
                         content: `Successfully collected your daily reward: \`${dailyreward}\` Bits. Be sure to come back tomorrow!`,
                         ephemeral: true
                     });
-                }).catch(() => {
+                }).catch((error) => {
+                    logger.error(error);
                     return interaction.reply({
                         content: "Something went wrong while updating your information. Please try again later.",
                         ephemeral: true

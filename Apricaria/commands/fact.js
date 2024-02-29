@@ -24,6 +24,7 @@ module.exports = {
                 }
             }, function (error, response, body) {
                 if (response.statusCode !== 200) {
+                    logger.error(error);
                     return interaction.reply({
                         content: "Something went wrong while retrieving a fact. Please try again later.",
                         ephemeral: true

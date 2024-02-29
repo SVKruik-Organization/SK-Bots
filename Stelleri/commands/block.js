@@ -82,7 +82,8 @@ module.exports = {
                             content: `Successfully unblocked user <@${targetSnowflake}>. They can now use all of my commands again.`,
                             ephemeral: true
                         });
-                    }).catch(() => {
+                    }).catch((error) => {
+                        logger.error(error);
                         return interaction.reply({
                             content: "Something went wrong while unblocking this user. Please try again later.",
                             ephemeral: true
@@ -95,7 +96,8 @@ module.exports = {
                             content: `Blocked status of user <@${targetSnowflake}>: \`${data.length === 0 ? "false" : "true"}\``,
                             ephemeral: true
                         });
-                    }).catch(() => {
+                    }).catch((error) => {
+                        logger.error(error);
                         return interaction.reply({
                             content: "Something went wrong while checking the block status of this user. Please try again later.",
                             ephemeral: true

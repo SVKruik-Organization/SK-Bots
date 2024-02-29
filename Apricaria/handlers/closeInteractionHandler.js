@@ -1,5 +1,6 @@
 const modules = require('..');
 const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
+const logger = require('../utils/logger.js');
 
 /**
  * Send a pair of confirmation buttons.
@@ -41,7 +42,8 @@ function confirmAccountClose(interaction) {
                 components: [],
                 ephemeral: true
             });
-        }).catch(() => {
+        }).catch((error) => {
+            logger.error(error);
             return interaction.update({
                 content: "Something went wrong while closing your account. Please try again later.",
                 components: [],

@@ -97,7 +97,8 @@ function confirmActivate(interaction) {
                     components: [disabledButtons(interaction)],
                     ephemeral: true
                 });
-            }).catch(() => {
+            }).catch((error) => {
+                logger.error(error);
                 return interaction.update({
                     content: `Something went wrong while updating your information. Please try again later.`,
                     components: [],

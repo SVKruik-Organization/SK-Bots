@@ -45,10 +45,13 @@ module.exports = {
                             content: "You already have an account. Display your statistics with `/economy` and `/tier`.",
                             ephemeral: true
                         });
-                    } else return interaction.reply({
-                        content: "Something went wrong while registering your account. Please try again later.",
-                        ephemeral: true
-                    });
+                    } else {
+                        logger.error(error)
+                        return interaction.reply({
+                            content: "Something went wrong while registering your account. Please try again later.",
+                            ephemeral: true
+                        });
+                    }
                 });
         } catch (error) {
             logger.error(error);
