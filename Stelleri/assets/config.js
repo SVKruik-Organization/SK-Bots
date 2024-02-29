@@ -4,7 +4,7 @@ exports.general = {
     clientId: "1071428183003500544",
     imageURL: "https://i.imgur.com/9X7PIG0.png",
     creatorId: "422704748488163332",
-    repository: "https://github.com/SVKruik/Discord-Bots-v2",
+    repository: "https://github.com/SVKruik-Organization/Discord-Bots",
     timezone: "Europe/Amsterdam"
 };
 

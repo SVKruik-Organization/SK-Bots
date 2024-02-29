@@ -160,7 +160,7 @@ module.exports = {
                         });
 
                         interaction.reply({
-                            content: "Setup update successful. Additional commands reloaded. For other settings like welcome messages and other parameters, please the user [Bot Commander](https://github.com/SVKruik/bot-config-ui) app.",
+                            content: "Setup update successful. Additional commands reloaded. For other settings like welcome messages and other parameters, please the user [Bot Commander](https://github.com/SVKruik-Organization/Bot-Commander) app.",
                             ephemeral: true
                         });
                     }).catch(() => {
@@ -202,7 +202,7 @@ module.exports = {
                         },
                         {
                             name: 'Advanced Config',
-                            value: 'When you try to update the configuration, you might notice the lack of customization. This is because it would not be UIX friendly to show 30 different options in only one command or to have multiple commands for different settings. To fix this, another standalone desktop application has been built. This app enables you to customize the bot to your liking including custom pricing and viewing statistics. For more information, checkout this [repository](https://github.com/SVKruik/bot-config-ui).'
+                            value: 'When you try to update the configuration, you might notice the lack of customization. This is because it would not be UIX friendly to show 30 different options in only one command or to have multiple commands for different settings. To fix this, another standalone desktop application has been built. This app enables you to customize the bot to your liking including custom pricing and viewing statistics. For more information, checkout this [repository](https://github.com/SVKruik-Organization/Bot-Commander).'
                         }
                     ], ["server"]);
                 interaction.reply({ embeds: [embed], ephemeral: true });

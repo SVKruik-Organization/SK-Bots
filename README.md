@@ -13,7 +13,7 @@ Below you can find some information and links to even more information.
 
 #### Documentation Links
 
-- Available [commands](https://github.com/SVKruik/Discord-Bots-v2/blob/main/Documentation/Commands.md)
+- Available [commands](https://github.com/SVKruik-Organization/Discord-Bots/blob/main/Documentation/Commands.md)
 - . . .
 
 #### Meta

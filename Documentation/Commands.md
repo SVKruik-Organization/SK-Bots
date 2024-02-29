@@ -42,4 +42,4 @@ The following commands are production ready, and are therefore supported by both
 
 Total: `33`
 
-¹ This is for basic settings only. For advanced configuration (custom pricing, settings, and more) the [Bot Commander](https://github.com/SVKruik/bot-config-ui) app is required.
+¹ This is for basic settings only. For advanced configuration (custom pricing, settings, and more) the [Bot Commander](https://github.com/SVKruik-Organization/Bot-Commander) app is required.
