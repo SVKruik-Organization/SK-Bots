@@ -6,6 +6,7 @@ const modules = require('..');
 const ticket = require('../utils/ticket.js');
 const logger = require('../utils/logger.js');
 const { time } = require('@discordjs/formatters');
+const { datetimeParser } = require('../utils/date.js');
 
 module.exports = {
     cooldown: config.cooldowns.D,
@@ -171,20 +172,11 @@ module.exports = {
             // Date Processing & Validation
             const rawDate = interaction.options.getString('date');
             const rawTime = interaction.options.getString('time');
-            const [day, month, year] = rawDate.split("/");
-            const [hour, minute] = rawTime.split(":");
-            if (day > 31 || month > 12 || year > new Date().getFullYear() + 2 || hour > 23 || minute > 59) return interaction.reply({ content: "Your date/time input is invalid. Please try again.", ephemeral: true });
-            let fullDate;
-            try {
-                fullDate = new Date(year, month - 1, day, hour, minute);
-                if (isNaN(fullDate.getTime()) || fullDate < new Date()) return interaction.reply({ content: "Your date/time input is invalid. Please try again.", ephemeral: true });
-            } catch (error) {
-                return interaction.reply({ content: "Your date/time input is invalid. Please try again.", ephemeral: true });
-            }
+            const fullDate = datetimeParser(rawDate, rawTime, interaction);
 
             const onlineBoolean = eventType === "online";
             const location = eventType === "online" ? interaction.options.getChannel("location").id : interaction.options.getString("location");
-            modules.database.query("INSERT INTO event (ticket, guild_snowflake, creator_snowflake, title, description, location, date_start, online) VALUES (?, ?, ?, ?, ?, ?, ?, ?);", [newTicket, interaction.guild.id, interaction.user.id, title, description, location, fullDate, onlineBoolean])
+            modules.database.query("INSERT INTO event (ticket, guild_snowflake, creator_snowflake, title, description, location, date_start, online, scheduled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0);", [newTicket, interaction.guild.id, interaction.user.id, title, description, location, fullDate, onlineBoolean])
                 .then(() => {
                     // Sign Up Button
                     const signUpButton = new ButtonBuilder()

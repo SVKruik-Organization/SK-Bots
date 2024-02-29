@@ -27,6 +27,7 @@ The following commands are production ready, and are therefore supported by both
 | `report` | Report a user for violating a rule. Administrators will get notified. | `target` `category` `reason` | `false` | `tools` | `v2.0.0` |
 | `role` | Give yourself a custom color. Requires the color change item bought in the shop. | `color` | `false` | `fun` | `v2.0.0` |
 | `rps` | Play a game of Rock, Paper, Scissors. | `side` | `false` | `fun` | `v2.1.0` |
+| `scheduled` | Create an official scheduled event. Administrator version of `/event`. | `location` `title` `description` `date` `time` | `true` | `tools` | `v2.8.0` |
 | `server` | Let the bot display some server statistics. | - | `false` | `tools` | `v2.0.0` |
 | `setup` | Configure the bot to enable server specific commands like `event` & `snippet`.¹ | `action` `admin` `event` `suggestion` `snippet` `rules` `blind` `power` | `true` | `tools` | `v2.4.0` |
 | `shop` | Start a purchase dialog. You can purchase color changes & XP-Boosters. | - | `false` | `economy` | `v2.5.0` |
@@ -35,10 +36,10 @@ The following commands are production ready, and are therefore supported by both
 | `statistics` | Let the bot display some bot statistics. | - | `false` | `tools` | `v2.0.0` |
 | `suggestion` | Pitch an idea to the other members in a dedicated channel with voting. | `title` `description` | `false` | `tools` | `v2.0.0` |
 | `tier` | Displays your Tier statistics, progression and active XP-Booster. | - | `false` | `tier` | `v2.0.0` |
-| `warning` | Other administrators will get notified. | `target` `reason` | `true` | `moderation` | `v2.0.0` |
+| `warning` | Give someone an official warning. Other administrators will get notified. Administrator version of `/report`. | `target` `reason` | `true` | `moderation` | `v2.0.0` |
 
 ---
 
-Total: `32`
+Total: `33`
 
 ¹ This is for basic settings only. For advanced configuration (custom pricing, settings, and more) the [Bot Commander](https://github.com/SVKruik/bot-config-ui) app is required.

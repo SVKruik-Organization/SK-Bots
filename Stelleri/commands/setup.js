@@ -160,7 +160,7 @@ module.exports = {
                         });
 
                         interaction.reply({
-                            content: "Setup update successful. Additional commands reloaded. For other settings like welcome messages and other parameters, please consult my website (WIP).",
+                            content: "Setup update successful. Additional commands reloaded. For other settings like welcome messages and other parameters, please the user [Bot Commander](https://github.com/SVKruik/bot-config-ui) app.",
                             ephemeral: true
                         });
                     }).catch(() => {

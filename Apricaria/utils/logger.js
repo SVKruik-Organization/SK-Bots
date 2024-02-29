@@ -4,7 +4,7 @@ const fs = require('node:fs');
 /**
  * Log messages to the log file.
  * @param {string} data The data to log to the file.
- * @param {string} type The type of message. For example: warning, alert, info, fatal, none.
+ * @param {string} rawType The type of message. For example: warning, alert, info, fatal, none.
  * @returns Status.
  */
 function log(data, rawType) {

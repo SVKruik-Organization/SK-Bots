@@ -20,5 +20,5 @@ Below you can find some information and links to even more information.
 
 - Node.js version: `v20.10.0 LTS`
 - Discord.js version: `v14.7.1`
-- Project version: `v2.7.0`
+- Project version: `v2.8.0`
 - Database: `MariaDB`
