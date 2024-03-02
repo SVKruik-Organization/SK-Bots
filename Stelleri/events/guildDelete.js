@@ -8,7 +8,7 @@ module.exports = {
     execute(guild) {
         try {
             if (guild.available) {
-                modules.database.query("DELETE FROM guild WHERE snowflake = ?;", [guild.id])
+                modules.database.query("DELETE FROM guild WHERE snowflake = ?; UPDATE bot SET guild_deleted = guild_deleted + 1 WHERE name = ?;", [guild.id, config.general.name])
                     .then(() => logger.log(`${config.general.name} has been removed from Guild: '${guild.name}@${guild.id}'. Successfully purged related data.`, "warning"))
                     .catch((error) => {
                         logger.error(error);
