@@ -1,5 +1,7 @@
 # Discord Bots v2 - Home
 
+[![Release Broadcast](https://github.com/SVKruik-Organization/Discord-Bots/actions/workflows/broadcast.yml/badge.svg)](https://github.com/SVKruik-Organization/Discord-Bots/actions/workflows/broadcast.yml)
+
 Welcome to my second Discord bot repository. You can have a look at the old bots [here](https://github.com/SVKruik/Discord-Bots). Feel free to browse through the code, and if you want to contribute or have questions, hit me up!
 
 Below you can find some information and links to even more information.
