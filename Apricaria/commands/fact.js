@@ -36,9 +36,9 @@ module.exports = {
                         .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
                         .addFields(
                             { name: 'Random Fact', value: data },
-                            { name: 'Related Commands', value: "\`/rps\` \`/coin\` \`/math\` \`/dice\``" })
+                            { name: 'Related Commands', value: "\`/rps\` \`/coin\` \`/math\` \`/dice\`" })
                         .setTimestamp()
-                        .setFooter({ text: `Embed created by ${config.general.name}` })
+                        .setFooter({ text: `Embed created by ${config.general.name}` });
                     interaction.reply({ embeds: [embed] });
                 }
             });

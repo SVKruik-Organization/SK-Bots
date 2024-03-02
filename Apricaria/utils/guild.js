@@ -3,7 +3,7 @@ const logger = require('./logger.js');
 
 // Indexing Guilds & Settings
 try {
-    modules.database.query("SELECT * FROM guild LEFT JOIN guild_settings ON guild_settings.guild_snowflake = guild.snowflake WHERE disabled = 0;")
+    modules.database.query("SELECT * FROM guild LEFT JOIN guild_settings ON guild_settings.guild_snowflake = guild.snowflake WHERE disabled = 0 AND production = 0;")
         .then(async (data) => {
             const guilds = [];
             for (let i = 0; i <= data.length; i++) {
@@ -66,6 +66,7 @@ async function guildConstructor(guild) {
         const channel_event = await channelFetch(guild.channel_event, "Event");
         const channel_suggestion = await channelFetch(guild.channel_suggestion, "Suggestion");
         const channel_snippet = await channelFetch(guild.channel_snippet, "Snippet");
+        const channel_broadcast = await channelFetch(guild.channel_broadcast, "Broadcast");
         const channel_rules = await channelFetch(guild.channel_rules, "Rules") || modules.client.channels.cache.get(fetchedGuild.rulesChannelId) || null;
 
         // Role Fetching
@@ -86,6 +87,7 @@ async function guildConstructor(guild) {
             "channel_event": channel_event,
             "channel_suggestion": channel_suggestion,
             "channel_snippet": channel_snippet,
+            "channel_broadcast": channel_broadcast,
             "channel_rules": channel_rules,
             "role_blinded": role_blinded,
             "locale": guild.locale,

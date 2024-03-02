@@ -25,6 +25,7 @@ router.put('/update/settings', jwtUtils.authenticateJWT, function (req, res) {
                     "channel_event": filteredGuild.channel_event,
                     "channel_suggestion": filteredGuild.channel_suggestion,
                     "channel_snippet": filteredGuild.channel_snippet,
+                    "channel_broadcast": filteredGuild.channel_broadcast,
                     "channel_rules": filteredGuild.channel_rules,
                     "role_cosmetic_power": filteredGuild.role_cosmetic_power,
                     "role_blinded": filteredGuild.role_blinded,

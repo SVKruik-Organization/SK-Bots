@@ -54,6 +54,7 @@ module.exports = {
                 "channel_event": null,
                 "channel_suggestion": null,
                 "channel_snippet": null,
+                "channel_broadcast": null,
                 "channel_rules": null,
                 "role_blinded": null,
                 "locale": guild.locale,
