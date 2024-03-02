@@ -16,6 +16,8 @@ const jwtUtils = require('./utils/jwt.js');
 // Import Other Routes
 const guildRoutes = require('./routes/guildRoutes.js');
 app.use(`${prefix}/guilds`, guildRoutes);
+const broadcastRoutes = require('./routes/broadcastRoutes.js');
+app.use(`${prefix}/broadcasts`, broadcastRoutes);
 
 // Init
 app.listen(port, () => {
