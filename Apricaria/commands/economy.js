@@ -69,16 +69,20 @@ module.exports = {
             const snowflake = interaction.user.id;
             const amount = interaction.options.getInteger('amount');
             const actionType = interaction.options.getSubcommand();
+            const userData = await modules.database.query("SELECT wallet, bank FROM economy WHERE snowflake = ?;", [snowflake]);
+            if (userData.length === 0) return interaction.reply({
+                content: "This command requires you to have an account. Create an account with the `/register` command.",
+                ephemeral: true
+            });
 
             if (actionType === "withdraw") {
-                modules.database.query("UPDATE economy SET wallet = wallet + ?, bank = bank - ? WHERE snowflake = ?;", [amount, amount, snowflake])
-                    .then((data) => {
-                        // Validation
-                        if (!data.affectedRows) return interaction.reply({
-                            content: "This command requires you to have an account. Create an account with the `/register` command.",
-                            ephemeral: true
-                        });
-
+                if (amount > userData[0].bank) return interaction.reply({
+                    content: `You do not have enough Bits to perform this command. You have \`${userData[0].bank}\` Bits saved inside your Bank account, but you tried to withdraw \`${amount}\` Bits.`,
+                    ephemeral: true
+                });
+                modules.database.query("UPDATE economy SET wallet = wallet + ?, bank = bank - ? WHERE snowflake = ?; INSERT INTO purchase (snowflake, balance_change, product, quantity, type, remaining_bits, method, guild_snowflake) VALUES (?, ?, 'withdraw', 1, 'Economy Command Withdraw', ?, ?, ?);",
+                    [amount, amount, snowflake, snowflake, amount, userData[0].wallet + amount, `${config.general.name} Discord Bot`, interaction.guild.id])
+                    .then(() => {
                         interaction.reply({
                             content: `Successfully withdrew \`${amount}\` Bits.`,
                             ephemeral: true
@@ -91,14 +95,13 @@ module.exports = {
                         });
                     });
             } else if (actionType === "deposit") {
-                modules.database.query("UPDATE economy SET wallet = wallet - ?, bank = bank + ? WHERE snowflake = ?;", [amount, amount, snowflake])
-                    .then((data) => {
-                        // Validation
-                        if (!data.affectedRows) return interaction.reply({
-                            content: "This command requires you to have an account. Create an account with the `/register` command.",
-                            ephemeral: true
-                        });
-
+                if (amount > userData[0].wallet) return interaction.reply({
+                    content: `You do not have enough Bits to perform this command. You have \`${userData[0].wallet}\` Bits saved inside your Wallet account, but you tried to withdraw \`${amount}\` Bits.`,
+                    ephemeral: true
+                });
+                modules.database.query("UPDATE economy SET wallet = wallet - ?, bank = bank + ? WHERE snowflake = ?; INSERT INTO purchase (snowflake, balance_change, product, quantity, type, remaining_bits, method, guild_snowflake) VALUES (?, ?, 'deposit', 1, 'Economy Command Deposit', ?, ?, ?);",
+                    [amount, amount, snowflake, snowflake, -1 * amount, userData[0].wallet - amount, `${config.general.name} Discord Bot`, interaction.guild.id])
+                    .then(() => {
                         interaction.reply({
                             content: `Successfully deposited \`${amount}\` Bits.`,
                             ephemeral: true

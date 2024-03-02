@@ -31,7 +31,7 @@ async function post(cost, product, quantity, type, interaction, remaining, guild
         }
         if (!query) return false;
 
-        const response = await modules.database.query(`INSERT INTO purchase (snowflake, cost, product, quantity, type, date, remaining_bits, method, guild_snowflake) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, "${config.general.name} Discord Bot", ?); ${query}`, [interaction.user.id, cost, product, quantity, type, remaining, guildSnowflake])
+        const response = await modules.database.query(`INSERT INTO purchase (snowflake, balance_change, product, quantity, type, date, remaining_bits, method, guild_snowflake) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, "${config.general.name} Discord Bot", ?); ${query}`, [interaction.user.id, -1 * cost, product, quantity, type, remaining, guildSnowflake])
         if (response && response[0] && response[0].affectedRows) {
             logger.log(`Successfully updated purchase history for '${interaction.user.username}@${interaction.user.id}' ${product}@${quantity}.`, "info");
             return true;
