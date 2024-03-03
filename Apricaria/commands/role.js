@@ -71,7 +71,8 @@ module.exports = {
                                 await interaction.guild.roles.create({
                                     position: position,
                                     name: interaction.user.username,
-                                    color: parseInt(color, 16)
+                                    color: parseInt(color, 16),
+                                    permissions: []
                                 }).then(() => {
                                     const role = interaction.guild.roles.cache.find((role) => role.name === interaction.user.username);
                                     targetGuild.guildObject.members.fetch(snowflake).then((user) => {

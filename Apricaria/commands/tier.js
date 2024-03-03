@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const modules = require('..');
 const embedConstructor = require('../utils/embed.js');
-const date = require('../utils/date.js');
+const dateUtils = require('../utils/date.js');
 const guildUtils = require('../utils/guild.js');
 const logger = require('../utils/logger.js');
 
@@ -33,7 +33,7 @@ module.exports = {
                     const currentXp = data[0].xp + xpReward;
 
                     let hoursLeft = "";
-                    if (data[0].xp_active_expiry) hoursLeft = ` (${date.difference(data[0].xp_active_expiry, date.getDate(null, null).today).remainingHours} hours remaining)`;
+                    if (data[0].xp_active_expiry) hoursLeft = ` (${dateUtils.difference(data[0].xp_active_expiry, dateUtils.getDate(null, null).today).remainingHours} hours remaining)`;
                     const embed = embedConstructor.create("Tier Overview", "Level System Progression", interaction.user,
                         [
                             { name: 'Level', value: `\`${data[0].level}\`` },

@@ -10,6 +10,7 @@ const { customShopCatalog } = require('../utils/embed.js');
 const closeInteractionHandler = require('../handlers/closeInteractionHandler.js');
 const eventSignUpHandler = require('../handlers/eventSignUpHandler.js');
 const guildUtils = require('../utils/guild.js');
+const dateUtils = require('../utils/date.js');
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -92,7 +93,7 @@ module.exports = {
             const { cooldowns } = interaction.client;
             if (!cooldowns.has(command.data.name)) cooldowns.set(command.data.name, new Collection());
 
-            const now = Date.now();
+            const now = dateUtils.getDate(null, null).today;
             const timestamps = cooldowns.get(command.data.name);
             const defaultCooldownDuration = 3;
             const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000;

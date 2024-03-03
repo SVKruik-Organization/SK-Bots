@@ -2,6 +2,7 @@ const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const logger = require('../utils/logger.js');
 const modules = require('..');
 const { dueAdd } = require('../utils/due.js');
+const dateUtils = require('../utils/date.js');
 
 /**
  * Returns a set of disabled buttons.
@@ -89,7 +90,7 @@ function confirmActivate(interaction) {
 
                 logger.log(`'${interaction.user.username}@${interaction.user.id}' has activated a XP-Booster ${boosterType} in guild '${interaction.guild.name}@${interaction.guild.id}'.`, "info");
                 // + 24 Hours
-                const newDate = new Date();
+                const newDate = dateUtils.getDate(null, null).today;
                 newDate.setDate(newDate.getDate() + 1);
                 dueAdd(interaction.user.id, boosterType, newDate, null, interaction.user.username);
                 interaction.update({
@@ -97,7 +98,8 @@ function confirmActivate(interaction) {
                     components: [disabledButtons(interaction)],
                     ephemeral: true
                 });
-            }).catch(() => {
+            }).catch((error) => {
+                logger.error(error);
                 return interaction.update({
                     content: `Something went wrong while updating your information. Please try again later.`,
                     components: [],

@@ -4,7 +4,7 @@ const config = require('../assets/config.js');
 const logger = require('../utils/logger.js');
 const guildUtils = require('../utils/guild.js');
 const { dueAdd } = require('../utils/due.js');
-const date = require('../utils/date.js');
+const dateUtils = require('../utils/date.js');
 
 module.exports = {
     cooldown: config.cooldowns.A,
@@ -23,7 +23,7 @@ module.exports = {
             const dueDate = modules.dueDates.filter(dueDate =>
                 dueDate.description === "daily" && dueDate.snowflake === interaction.user.id);
             if (dueDate.length > 0) {
-                const dateDifference = date.difference(dueDate[0].expiry, date.getDate(null, null).today);
+                const dateDifference = dateUtils.difference(dueDate[0].expiry, dateUtils.getDate(null, null).today);
                 return interaction.reply({
                     content: `I appreciate your enthousiasm, but I am afraid you have already collected your Daily Reward for this day. Come back in approximately \`${dateDifference.remainingHours}\` hours and \`${dateDifference.remainingMinutes}\` minutes.`,
                     ephemeral: true
@@ -50,7 +50,7 @@ module.exports = {
                     });
 
                     // + 24 Hours
-                    const newDate = new Date();
+                    const newDate = dateUtils.getDate(null, null).today;
                     newDate.setDate(newDate.getDate() + 1);
                     dueAdd(interaction.user.id, "daily", newDate, null, interaction.user.username);
                     if (jackpotBoolean) {

@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, StringSelectMenuOptionBuilder, StringSelectMenuBuilder, ActionRowBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const modules = require('..');
-const date = require('../utils/date.js');
+const dateUtils = require('../utils/date.js');
 const embedConstructor = require('../utils/embed.js');
 const logger = require('../utils/logger.js');
 
@@ -56,7 +56,7 @@ module.exports = {
                                 ephemeral: true
                             });
                         } else if (data[0].xp_active !== "None") {
-                            const dateDifference = date.difference(data[0].expiry, new Date());
+                            const dateDifference = dateUtils.difference(data[0].expiry, dateUtils.getDate(null, null).today);
                             return interaction.reply({
                                 content: `You have already activated a XP-Booster (\`${data[0].xp_active}\`), and it expires in approximately \`${dateDifference.remainingHours}\` hours and \`${dateDifference.remainingMinutes}\` minutes.`,
                                 ephemeral: true

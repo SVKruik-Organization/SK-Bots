@@ -70,7 +70,7 @@ function datetimeParser(rawDate, rawTime, interaction) {
     let fullDate;
     try {
         fullDate = new Date(year, month - 1, day, hour, minute);
-        if (isNaN(fullDate.getTime()) || fullDate < new Date()) return interaction.reply({ content: "Your date/time input is invalid. Use the arrow-up key and try again.", ephemeral: true });
+        if (isNaN(fullDate.getTime()) || fullDate < getDate(null, null).today) return interaction.reply({ content: "Your date/time input is invalid. Use the arrow-up key and try again.", ephemeral: true });
     } catch (error) {
         return interaction.reply({ content: "Your date/time input is invalid. Use the arrow-up key and try again.", ephemeral: true });
     }
