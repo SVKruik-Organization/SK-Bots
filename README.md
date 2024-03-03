@@ -11,7 +11,7 @@ Below you can find some information and links to even more information.
 | Name | Purpose | Meaning | Public |
 | - | - | - | - |
 | Stelleri | Testing | [Steller's Eider](https://en.wikipedia.org/wiki/Steller%27s_eider) | No |
-| Apricaria | General Purpose | [European Golden Plover](https://en.wikipedia.org/wiki/European_golden_plover) | Almost |
+| Apricaria | General Purpose | [European Golden Plover](https://en.wikipedia.org/wiki/European_golden_plover) | From version 9 |
 
 #### Documentation Links
 
