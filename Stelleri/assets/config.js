@@ -3,9 +3,8 @@ exports.general = {
     color: "#E4B081",
     clientId: "1071428183003500544",
     imageURL: "https://i.imgur.com/9X7PIG0.png",
-    creatorId: "422704748488163332",
-    repository: "https://github.com/SVKruik-Organization/Discord-Bots",
-    timezone: "Europe/Amsterdam"
+    authorSnowflake: "422704748488163332",
+    timezone: "Europe/Amsterdam",
 };
 
 exports.cooldowns = {
@@ -15,6 +14,13 @@ exports.cooldowns = {
     D: 30,
     E: 86400
 };
+
+exports.urls = {
+    website: "https://bots.stefankruik.com",
+    botRepository: "https://github.com/SVKruik-Organization/Discord-Bots",
+    botCommanderRepository: "https://github.com/SVKruik-Organization/Bot-Commander",
+    botCommanderWebsite: "https://bots.stefankruik.com"
+}
 
 exports.economy = {
     levelUpFallback: 20,

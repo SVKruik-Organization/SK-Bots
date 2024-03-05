@@ -18,9 +18,8 @@ module.exports = {
                     name: `${config.general.name} Administrator`,
                     permissions: [PermissionFlagsBits.ManageGuild],
                     position: fetchedGuild.roles.cache.size + 1
-                })
+                });
             } else await administratorRole.setPosition(fetchedGuild.roles.cache.size + 1);
-
 
             // Bot Color Role
             let botColorRole = fetchedGuild.roles.cache.find(role => role.name === `${config.general.name} Accent`);
@@ -52,7 +51,7 @@ module.exports = {
                 name: "blinded",
                 type: ChannelType.GuildText
             });
-            
+
             // Blinded Channel Permissions
             (await guild.channels.fetch()).filter((channel) => channel.type !== ChannelType.GuildCategory).forEach(channel => {
                 if (channel.name !== "blinded") {
@@ -77,6 +76,7 @@ module.exports = {
             guildUtils.guilds.push({
                 // Guild
                 "guildObject": guild,
+                "team_tag": null,
                 "name": guild.name,
                 "channel_admin": null,
                 "channel_event": null,

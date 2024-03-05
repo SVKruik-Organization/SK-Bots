@@ -48,7 +48,7 @@ router.post('/release', async function (req, res) {
             .setURL(release.release_url)
             .addFields(
                 { name: 'Description', value: format(release.release_description) },
-                { name: 'Note', value: `While it does not happen often, there might be some downtime while we update everything. We strive for a smooth transition, but if any problems do arise, don't hesitate to reach out to <@${config.general.creatorId}>.` }
+                { name: 'Note', value: `While it does not happen often, there might be some downtime while we update everything. We strive for a smooth transition, but if any problems do arise, don't hesitate to reach out to <@${config.general.authorSnowflake}>.` }
             )
             .addFields(
                 { name: 'Version', value: `\`${release.release_version}\``, inline: true },

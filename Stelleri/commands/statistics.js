@@ -27,11 +27,11 @@ module.exports = {
                 [
                     { name: 'Name', value: `**${config.general.name}**` },
                     { name: 'Servers', value: `\`${interaction.client.guilds.cache.size}\` Total` },
-                    { name: 'Creator', value: `<@${config.general.creatorId}>` },
+                    { name: 'Creator', value: `<@${config.general.authorSnowflake}>` },
                     { name: 'Uptime', value: uptime },
                     { name: 'Ping', value: `\`${Math.abs(interaction.client.ws.ping)}\`ms` },
                     { name: 'Commands', value: `\`${commands}\` Total` },
-                    { name: 'Repository', value: config.general.repository },
+                    { name: 'Repository', value: config.urls.botRepository },
                     { name: 'Version', value: `\`${version}\`` }
                 ], ["server"]);
             interaction.reply({ embeds: [embed] });

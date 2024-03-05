@@ -112,10 +112,8 @@ module.exports = {
     async execute(interaction) {
         try {
             // Permission Validation
-            if (!(await userUtils.checkAdmin(interaction.user.id, interaction.guild))) return interaction.reply({
-                content: `You do not have the required permissions to perform this elevated command. Please try again later, or contact moderation to receive elevated permissions.`,
-                ephemeral: true
-            });
+            const operatorData = await userUtils.checkOperator(interaction.user.id, interaction.guild, interaction);
+            if (!operatorData.hasPermissions) return;
 
             // Setup
             const actionType = interaction.options.getSubcommand('action');
@@ -134,13 +132,16 @@ module.exports = {
 
             // Update
             if (actionType === "register") {
-                modules.database.query("UPDATE guild SET channel_admin = ?, channel_broadcast = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE guild_snowflake = ?;", [channel_admin ? channel_admin.id : null, channel_broadcast ? channel_broadcast.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_blinded ? role_blinded.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
-                    .then(() => {
+                modules.database.query("UPDATE guild SET team_tag = ?, channel_admin = ?, channel_broadcast = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE guild_snowflake = ?;",
+                    [operatorData.data.team_tag, channel_admin ? channel_admin.id : null, channel_broadcast ? channel_broadcast.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_blinded ? role_blinded.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
+                    .then((data) => {
+                        console.log(data);
                         const filteredGuild = guildUtils.guilds.filter(guild => guild.guildObject.id === interaction.guild.id);
                         guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);
                         guildUtils.guilds.push({
                             // Guild
                             "guildObject": interaction.guild,
+                            "team_tag": operatorData.data.team_tag,
                             "name": interaction.guild.name,
                             "channel_admin": channel_admin,
                             "channel_event": channel_event,
@@ -170,7 +171,7 @@ module.exports = {
                         });
 
                         interaction.reply({
-                            content: "Setup update successful. Additional commands reloaded. For other settings like welcome messages and other parameters, please the user [Bot Commander](https://github.com/SVKruik-Organization/Bot-Commander) app.",
+                            content: `Setup update successful. Additional commands reloaded. For other settings like welcome messages and other parameters, please use the [Bot Commander](${config.urls.botCommanderWebsite}) app.`,
                             ephemeral: true
                         });
                     }).catch(() => {
@@ -213,7 +214,7 @@ module.exports = {
                         },
                         {
                             name: 'Advanced Config',
-                            value: 'When you try to update the configuration, you might notice the lack of customization. This is because it would not be UIX friendly to show 30 different options in only one command or to have multiple commands for different settings. To fix this, another standalone desktop application has been built. This app enables you to customize the bot to your liking including custom pricing and viewing statistics. For more information, checkout this [repository](https://github.com/SVKruik-Organization/Bot-Commander).'
+                            value: `When you try to update the configuration, you might notice the lack of customization. This is because it would not be UIX friendly to show 30 different options in only one command or to have multiple commands for different settings. To fix this, another standalone desktop application has been built. This app enables you to customize the bot to your liking including custom pricing and viewing statistics. For more information, checkout this [website](${config.urls.botCommanderWebsite}).`
                         }
                     ], ["server"]);
                 interaction.reply({ embeds: [embed], ephemeral: true });

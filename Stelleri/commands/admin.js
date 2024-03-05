@@ -11,9 +11,9 @@ module.exports = {
         .setNameLocalizations({
             nl: "admin"
         })
-        .setDescription('Add a super user for use of admin commands.')
+        .setDescription('Add an Administrator for use of elevated commands.')
         .setDescriptionLocalizations({
-            nl: "Voeg een administrator toe voor het gebruik van commando's met verhoogde rechten."
+            nl: "Voeg een Administrator toe voor het gebruik van commando's met verhoogde rechten."
         })
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addUserOption(option => option

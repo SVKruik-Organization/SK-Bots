@@ -26,5 +26,5 @@ I am very open for others joining my team. I try to make everything public, so y
 
 - Node.js version: `v20.10.0 LTS`
 - Discord.js version: `v14.7.1`
-- Project version: `v2.8.0`
+- Project version: `v2.9.0`
 - Database: `MariaDB`

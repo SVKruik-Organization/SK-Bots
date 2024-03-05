@@ -19,6 +19,7 @@ The following commands are production ready, and are therefore supported by both
 | `inventory` | Checkout your inventory or (de)activate a XP-Booster. | `action` | `false` | `account` | `v2.5.0` |
 | `math` | Evaluate a math expression. | `expression` | `false` | `tools` | `v2.0.0` |
 | `modify` | Modify a user's balance of something. | `target` `action` `amount` | `true` | `account` | `v2.0.0` |
+| `operator` | Add or remove someone from the subscription specific Operators. | `action` `target` `servicetag` | `true` | `moderation` | `v2.9.0` |
 | `pincode` | Change your pincode. Requires you to know the old one. Reset system WIP. | `old` `new` | `false` | `account` | `v2.0.0` |
 | `ping` | Ping the bot to see if it is online and working. | - | `false` | `tools` | `v2.0.0` |
 | `random` | Generate a random number with a maximum. | `bound` | `false` | `tools` | `v2.0.0` |
@@ -40,6 +41,6 @@ The following commands are production ready, and are therefore supported by both
 
 ---
 
-Total: `33`
+Total: `34`
 
 ¹ This is for basic settings only. For advanced configuration (custom pricing, settings, and more) the [Bot Commander](https://github.com/SVKruik-Organization/Bot-Commander) app is required.

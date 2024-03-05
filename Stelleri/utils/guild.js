@@ -82,6 +82,7 @@ async function guildConstructor(guild) {
         return {
             // Guild
             "guildObject": fetchedGuild,
+            "team_tag": guild.team_tag,
             "name": guild.name,
             "channel_admin": channel_admin,
             "channel_event": channel_event,
