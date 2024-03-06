@@ -1,5 +1,4 @@
 const modules = require('..');
-const logger = require('../utils/logger');
 
 /**
  * Registers a user for an event.
@@ -30,13 +29,10 @@ function signUp(interaction) {
                     content: "Seems like this event does not exist anymore. It might have been deleted or canceled already.",
                     ephemeral: true
                 });
-            } else {
-                logger.error(error);
-                return interaction.reply({
-                    content: "Something went wrong while registering you for this event. Please try again later.",
-                    ephemeral: true
-                });
-            }
+            } else return interaction.reply({
+                content: "Something went wrong while registering you for this event. Please try again later.",
+                ephemeral: true
+            });
         });
 }
 

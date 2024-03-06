@@ -77,6 +77,7 @@ module.exports = {
                     code = prettier.format(code, { semi: false, parser: 'babel' });
                 } else code = prettier.format(code, { semi: false, parser: language });
             } catch (error) {
+                logger.error(error);
                 return interaction.reply({
                     content: "Something went wrong while parsing your code. Check for syntax errors, and try again.",
                     ephemeral: true

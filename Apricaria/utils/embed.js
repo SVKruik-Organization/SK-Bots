@@ -2,7 +2,8 @@ const { EmbedBuilder } = require('discord.js');
 const config = require('../assets/config.js')
 const guildUtils = require('../utils/guild.js');
 const modules = require('..');
-const logger = require('./logger.js');
+const logger = require('../utils/logger.js');
+
 /**
  * Default Discord.JS Embed constructor.
  * @param {string} title The title of the embed.

@@ -3,6 +3,16 @@ const logger = require('./logger.js');
 const config = require('../assets/config.js');
 
 /**
+ *
+ * @param {string} userId Find a specific User by snowflake (id).
+ * @returns Discord User Object
+ */
+async function findUserById(userId) {
+    const user = await modules.client.users.fetch(userId);
+    return user;
+}
+
+/**
  * Check if the user has the rights to perform this command.
  * @param {string} snowflake Discord User ID of the interaction author.
  * @param {object} guild Discord Guild Object of the guild the interaction is in.
@@ -29,7 +39,7 @@ async function checkAdmin(snowflake, guild) {
  */
 async function checkOperator(snowflake, guild, interaction) {
     try {
-        const data = await modules.database.query("SELECT guild.team_tag, invite_pending, verified FROM operator LEFT JOIN guild ON guild.team_tag = operator.team_tag WHERE operator.snowflake = ? AND guild.snowflake = ?;", [snowflake, guild.id]);
+        const data = await modules.database.query("SELECT guild.team_tag, invite_pending, verified, team_owner FROM operator_member LEFT JOIN guild ON operator_member.team_tag = guild.team_tag WHERE operator_member.snowflake = ? AND guild.snowflake = ?;", [snowflake, guild.id]);
         if (data.length === 0) {
             interaction.reply({
                 content: `You do not have the required permissions to perform this elevated command. Note that this is an Operator command, so you need additional permissions. Please try again later, or contact moderation if you think this is a mistake.`,
@@ -58,5 +68,6 @@ async function checkOperator(snowflake, guild, interaction) {
 
 module.exports = {
     "checkAdmin": checkAdmin,
-    "checkOperator": checkOperator
+    "checkOperator": checkOperator,
+    "findUserById": findUserById
 }

@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { time } = require('@discordjs/formatters');
 const express = require('express');
-const logger = require('../utils/logger');
+const logger = require('../utils/logger.js');
 const router = express.Router();
 const modules = require('..');
 const config = require('../assets/config.js');
@@ -48,13 +48,11 @@ router.post('/release', async function (req, res) {
             .setURL(release.release_url)
             .addFields(
                 { name: 'Description', value: format(release.release_description) },
-                { name: 'Note', value: `While it does not happen often, there might be some downtime while we update everything. We strive for a smooth transition, but if any problems do arise, don't hesitate to reach out to <@${config.general.creatorId}>.` }
-            )
+                { name: 'Note', value: `While it does not happen often, there might be some downtime while we update everything. We strive for a smooth transition, but if any problems do arise, don't hesitate to reach out to <@${config.general.authorSnowflake}>.` })
             .addFields(
                 { name: 'Version', value: `\`${release.release_version}\``, inline: true },
                 { name: 'Published On', value: time(release.release_date), inline: true },
-                { name: 'Branch', value: `\`${release.release_branch}\``, inline: true }
-            )
+                { name: 'Branch', value: `\`${release.release_branch}\``, inline: true })
             .setTimestamp()
             .setFooter({ text: `Embed created by ${config.general.name}` });
 

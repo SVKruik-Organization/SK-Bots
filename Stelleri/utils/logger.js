@@ -20,7 +20,7 @@ function log(data, rawType) {
         if (type === "fatal") return process.exit(1);
         return true;
     } catch (error) {
-        logger.error(error);
+        error(error);
         return false;
     }
 }

@@ -4,9 +4,9 @@ The following commands are production ready, and are therefore supported by both
 
 | Command | Description | Options | Elevated | Category | Introduction |
 | - | - | - | - | - | - |
-| `admin` | Add or remove someone from the server specific administrators. | `target` `action` | `true` | `moderation` | `v2.3.0` |
-| `blind` | Add or remove someone from the server specific blinded users. | `target` `action` | `true` | `moderation` | `v2.1.0` |
-| `block` | Add or remove someone from the server specific blocked users. | `target` `action` | `true` | `moderation` | `v2.0.0` |
+| `admin` | Controls for the Administrator system. | `action` `target` | `true` | `moderation` | `v2.3.0` |
+| `blind` | Controls for the Blind system. | `action` `target` | `true` | `moderation` | `v2.1.0` |
+| `block` | Controls for the Block system. | `action` `target` | `true` | `moderation` | `v2.0.0` |
 | `clear` | Bulk delete recent messages. | `amount` | `true` | `moderation` | `v2.1.0` |
 | `close` | Close and delete your account. You will lose access to Tier & Economy system. | `pincode` | `false` | `account` | `v2.0.0` |
 | `coin` | Flip a coin. Specify which side is in your favor. | `side` | `false` | `fun` | `v2.0.0` |
@@ -19,7 +19,7 @@ The following commands are production ready, and are therefore supported by both
 | `inventory` | Checkout your inventory or (de)activate a XP-Booster. | `action` | `false` | `account` | `v2.5.0` |
 | `math` | Evaluate a math expression. | `expression` | `false` | `tools` | `v2.0.0` |
 | `modify` | Modify a user's balance of something. | `target` `action` `amount` | `true` | `account` | `v2.0.0` |
-| `operator` | Add or remove someone from the subscription specific Operators. | `action` `target` `servicetag` | `true` | `moderation` | `v2.9.0` |
+| `operator` | Controls for the Operator system. | `action` `target` | `true` | `moderation` | `v2.9.0` |
 | `pincode` | Change your pincode. Requires you to know the old one. Reset system WIP. | `old` `new` | `false` | `account` | `v2.0.0` |
 | `ping` | Ping the bot to see if it is online and working. | - | `false` | `tools` | `v2.0.0` |
 | `random` | Generate a random number with a maximum. | `bound` | `false` | `tools` | `v2.0.0` |

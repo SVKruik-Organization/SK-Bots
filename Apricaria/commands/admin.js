@@ -11,36 +11,68 @@ module.exports = {
         .setNameLocalizations({
             nl: "admin"
         })
-        .setDescription('Add a super user for use of admin commands.')
+        .setDescription('Controls for the Administrator system.')
         .setDescriptionLocalizations({
-            nl: "Voeg een administrator toe voor het gebruik van commando's met verhoogde rechten."
+            nl: "Bediening voor het Administrator systeem."
         })
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-        .addUserOption(option => option
-            .setName('target')
+        .addSubcommand(option => option
+            .setName('add')
             .setNameLocalizations({
-                nl: "gebruiker"
+                nl: "toevoegen"
             })
-            .setDescription('The target member.')
+            .setDescription("Add a new Administrator to this server.")
             .setDescriptionLocalizations({
-                nl: "De betreffende gebruiker."
+                nl: "Voeg een Administrator toe aan deze server."
             })
-            .setRequired(true))
-        .addStringOption(option => option
-            .setName('action')
+            .addUserOption(option => option
+                .setName('target')
+                .setNameLocalizations({
+                    nl: "gebruiker"
+                })
+                .setDescription('The target member.')
+                .setDescriptionLocalizations({
+                    nl: "De betreffende gebruiker."
+                })
+                .setRequired(true)))
+        .addSubcommand(option => option
+            .setName('remove')
             .setNameLocalizations({
-                nl: "actie"
+                nl: "verwijderen"
             })
-            .setDescription('Whether you want to modify or check the user status.')
+            .setDescription("Remove an Administrator from this server.")
             .setDescriptionLocalizations({
-                nl: "Of u de gebruiker status wilt wijzigen of bekijken."
+                nl: "Verwijder een Administrator van deze server."
             })
-            .setRequired(true)
-            .addChoices(
-                { name: 'Add', value: 'add' },
-                { name: 'Remove', value: 'remove' },
-                { name: 'Check', value: 'check' }
-            )),
+            .addUserOption(option => option
+                .setName('target')
+                .setNameLocalizations({
+                    nl: "gebruiker"
+                })
+                .setDescription('The target member.')
+                .setDescriptionLocalizations({
+                    nl: "De betreffende gebruiker."
+                })
+                .setRequired(true)))
+        .addSubcommand(option => option
+            .setName('check')
+            .setNameLocalizations({
+                nl: "controleren"
+            })
+            .setDescription("Check the current Administrator status.")
+            .setDescriptionLocalizations({
+                nl: "Controleer de actuele Administrator status."
+            })
+            .addUserOption(option => option
+                .setName('target')
+                .setNameLocalizations({
+                    nl: "gebruiker"
+                })
+                .setDescription('The target member.')
+                .setDescriptionLocalizations({
+                    nl: "De betreffende gebruiker."
+                })
+                .setRequired(true))),
     async execute(interaction) {
         try {
             // Permission Validation
@@ -51,7 +83,7 @@ module.exports = {
 
             // Setup
             const targetUser = interaction.options.getUser('target');
-            const actionType = interaction.options.getString('action');
+            const actionType = interaction.options.getSubcommand();
 
             // Admin Role
             let adminRole = interaction.guild.roles.cache.find(role => role.name === `${config.general.name} Administrator`);
@@ -62,7 +94,7 @@ module.exports = {
                 }).catch((error) => {
                     logger.error(error);
                     return interaction.reply({
-                        content: `Something went wrong while creating the administrator role. Please try again later.`,
+                        content: `Something went wrong while creating the Administrator role. Please try again later.`,
                         ephemeral: true
                     });
                 });
@@ -86,15 +118,15 @@ module.exports = {
                 modules.database.query("INSERT INTO user_administrator (user_snowflake, user_username, guild_snowflake) VALUES (?, ?, ?);", [targetUser.id, targetUser.username, interaction.guild.id])
                     .then(() => {
                         fetchedTargetUser.roles.add(adminRole);
-                        logger.log(`${targetUser.username} has been granted administrator privileges by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "warning");
+                        logger.log(`${targetUser.username} has been granted Administrator privileges by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "warning");
                         return interaction.reply({
-                            content: `Successfully added user <@${targetUser.id}> to the administrators of this server. They can now use commands that require elevated permissions.`,
+                            content: `Successfully added user <@${targetUser.id}> to the Administrators of this server. They can now use commands that require elevated permissions.`,
                             ephemeral: true
                         });
                     }).catch((error) => {
                         if (error.code === "ER_DUP_ENTRY") {
                             return interaction.reply({
-                                content: `User <@${targetUser.id}> is an administrator already.`,
+                                content: `User <@${targetUser.id}> is an Administrator already.`,
                                 ephemeral: true
                             });
                         } else {
@@ -108,10 +140,10 @@ module.exports = {
             } else if (actionType === "remove") {
                 modules.database.query("DELETE FROM user_administrator WHERE user_snowflake = ? AND guild_snowflake = ?;", [targetUser.id, interaction.guild.id])
                     .then(() => {
-                        logger.log(`${targetUser.username}'s administrator privileges were removed by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "warning");
+                        logger.log(`${targetUser.username}'s Administrator privileges were removed by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "warning");
                         fetchedTargetUser.roles.remove(adminRole);
                         return interaction.reply({
-                            content: `Successfully removed user <@${targetUser.id}> from the administrators of this server. They can no longer use commands that require elevated permissions.`,
+                            content: `Successfully removed user <@${targetUser.id}> from the Administrators of this server. They can no longer use commands that require elevated permissions.`,
                             ephemeral: true
                         });
                     }).catch((error) => {
@@ -131,7 +163,7 @@ module.exports = {
                     }).catch((error) => {
                         logger.error(error);
                         return interaction.reply({
-                            content: "Something went wrong while checking the administrator status of this user. Please try again later.",
+                            content: "Something went wrong while checking the Administrator status of this user. Please try again later.",
                             ephemeral: true
                         });
                     });

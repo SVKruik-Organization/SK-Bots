@@ -20,6 +20,7 @@ router.put('/update/settings', jwtUtils.authenticateJWT, function (req, res) {
                 guildUtils.guilds.push({
                     // Guild
                     "guildObject": filteredGuild.guildObject,
+                    "team_tag": filteredGuild.team_tag,
                     "name": filteredGuild.name,
                     "channel_admin": filteredGuild.channel_admin,
                     "channel_event": filteredGuild.channel_event,
@@ -65,11 +66,11 @@ router.get('/picture', jwtUtils.authenticateJWT, async function (req, res) {
             if (guild) pictures.push(guild.iconURL());
         } catch (error) {
             if (error.status === 404) {
-                pictures.push(error.status);
+                pictures.push(`${error.status}`);
             } else return res.status(error.status).send({ message: error.message });
         }
     }
-    
+
     res.status(200).send({ picture_urls: pictures });
 });
 

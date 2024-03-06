@@ -56,7 +56,7 @@ module.exports = {
 
                     // User Validation
                     if (data[0].pincode !== oldPincode) return interaction.reply({
-                        content: "Your old pincode does not match the current one. Please try again. The 'forgot pincode' system is still WIP.",
+                        content: `Your old pincode does not match the current one. Please try again. If you want to reset your pincode (in case you forgot your pincode), please follow this [link](${config.urls.website}).`,
                         ephemeral: true
                     });
 

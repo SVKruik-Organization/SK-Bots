@@ -10,13 +10,10 @@ function authenticateJWT(req, res, next) {
             req.operator = {
                 "id": operator.id,
                 "snowflake": operator.snowflake,
-                "edition": operator.edition,
                 "operator_username": operator.operator_username,
                 "user_username": operator.user_username,
                 "email": operator.email,
-                "team_tag": operator.team_tag,
                 "service_tag": operator.service_tag,
-                "team_owner": operator.team_owner,
                 "avatar": operator.avatar,
                 "date_creation": operator.date_creation,
                 "jwtIAT": dateUtils.getDate(operator.iat * 1000 + 3600000, null).today,

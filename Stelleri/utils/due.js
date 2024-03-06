@@ -60,7 +60,8 @@ function dueAdd(snowflake, type, expiry, data, username) {
                         "description": type,
                         "data": data
                     });
-                }).catch(() => {
+                }).catch((error) => {
+                    logger.error(error);
                     return logger.log("Something went wrong while updating due dates.", "warning");
                 });
 
@@ -100,12 +101,14 @@ function purgeExpired() {
         for (let i = 0; i < expiredDueDates.length; i++) {
             if (expiredDueDates[i].description === "daily") {
                 modules.database.query("UPDATE user SET daily_expiry = NULL WHERE snowflake = ?", [expiredDueDates[i].snowflake])
-                    .catch(() => {
+                    .catch((error) => {
+                        logger.error(error);
                         return logger.log("Updating expired due dates went wrong for type 'daily'.", "warning");
                     });
             } else if (expiredDueDates[i].description === "xp15" || expiredDueDates[i].description === "xp50") {
                 modules.database.query("UPDATE user_inventory SET xp_active = 'None', xp_active_expiry = NULL WHERE snowflake = ?", [expiredDueDates[i].snowflake])
-                    .catch(() => {
+                    .catch((error) => {
+                        logger.error(error);
                         return logger.log(`Updating expired due dates went wrong for type '${expiredDueDates[i].description}'.`, "warning");
                     });
             }

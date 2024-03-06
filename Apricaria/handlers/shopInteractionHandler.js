@@ -36,7 +36,8 @@ async function shopOptions(interaction) {
                     components: [new ActionRowBuilder().addComponents(select)],
                     ephemeral: true
                 });
-            }).catch(() => {
+            }).catch((error) => {
+                logger.error(error);
                 return interaction.update({
                     content: "Something went wrong while retrieving the required information. Please try again later.",
                     ephemeral: true
@@ -133,7 +134,7 @@ async function modalInputHandler(interaction) {
 
                             const remaining = pricingData[0].wallet - total;
                             logger.log(`'${interaction.user.username}@${interaction.user.id}' has purchased ${amount} ${product}${amount > 1 ? "'s" : ""} for a total price of ${total} Bits in guild '${interaction.guild.name}@${interaction.guild.id}'. Bits remaining: ${remaining}.`, "info");
-                            
+
                             // Experience Increase
                             const targetGuild = guildUtils.findGuildById(interaction.guild.id);
                             let xpReward = config.tier.purchase;
@@ -151,7 +152,8 @@ async function modalInputHandler(interaction) {
                                 content: "Something went wrong while updating your shopping history. You have not been charged. Please try again later.",
                                 ephemeral: true
                             });
-                        }).catch(() => {
+                        }).catch((error) => {
+                            logger.error(error);
                             return interaction.reply({
                                 content: "Something went wrong while updating your information. You have not been charged. Please try again later.",
                                 ephemeral: true

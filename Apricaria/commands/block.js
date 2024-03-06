@@ -11,36 +11,68 @@ module.exports = {
         .setNameLocalizations({
             nl: "blokkeren"
         })
-        .setDescription(`Block a user from using ${config.general.name}.`)
+        .setDescription('Controls for the blocking system')
         .setDescriptionLocalizations({
-            nl: `Blokkeer een gebruiker voor het gebruik van ${config.general.name}.`
+            nl: "Bediening voor het blokkeer systeem."
         })
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-        .addUserOption(option => option
-            .setName('target')
+        .addSubcommand(option => option
+            .setName('add')
             .setNameLocalizations({
-                nl: "gebruiker"
+                nl: "toevoegen"
             })
-            .setDescription('The target member.')
+            .setDescription(`Block someone from using ${config.general.name}.`)
             .setDescriptionLocalizations({
-                nl: "De betreffende gebruiker."
+                nl: `Blokkeer iemand voor het gebruik van ${config.general.name}.`
             })
-            .setRequired(true))
-        .addStringOption(option => option
-            .setName('action')
+            .addUserOption(option => option
+                .setName('target')
+                .setNameLocalizations({
+                    nl: "gebruiker"
+                })
+                .setDescription('The target member.')
+                .setDescriptionLocalizations({
+                    nl: "De betreffende gebruiker."
+                })
+                .setRequired(true)))
+        .addSubcommand(option => option
+            .setName('remove')
             .setNameLocalizations({
-                nl: "actie"
+                nl: "verwijderen"
             })
-            .setDescription('Whether you want to modify or check the user status.')
+            .setDescription(`Unblock someone from using ${config.general.name}.`)
             .setDescriptionLocalizations({
-                nl: "Of u de gebruiker status wilt wijzigen of bekijken."
+                nl: `Deblokkeer iemand voor het gebruik van ${config.general.name}.`
             })
-            .setRequired(true)
-            .addChoices(
-                { name: 'Add', value: 'add' },
-                { name: 'Remove', value: 'remove' },
-                { name: 'Check', value: 'check' }
-            )),
+            .addUserOption(option => option
+                .setName('target')
+                .setNameLocalizations({
+                    nl: "gebruiker"
+                })
+                .setDescription('The target member.')
+                .setDescriptionLocalizations({
+                    nl: "De betreffende gebruiker."
+                })
+                .setRequired(true)))
+        .addSubcommand(option => option
+            .setName('check')
+            .setNameLocalizations({
+                nl: "controleren"
+            })
+            .setDescription("Check the current block status.")
+            .setDescriptionLocalizations({
+                nl: "Controleer de actuele blokkeer status."
+            })
+            .addUserOption(option => option
+                .setName('target')
+                .setNameLocalizations({
+                    nl: "gebruiker"
+                })
+                .setDescription('The target member.')
+                .setDescriptionLocalizations({
+                    nl: "De betreffende gebruiker."
+                })
+                .setRequired(true))),
     async execute(interaction) {
         try {
             // Permission Validation
@@ -52,7 +84,7 @@ module.exports = {
             // Setup
             const targetUsername = interaction.options.getUser('target').username;
             const targetSnowflake = interaction.options.getUser('target').id;
-            const actionType = interaction.options.getString('action');
+            const actionType = interaction.options.getSubcommand();
 
             // Handle
             if (actionType === "add") {

@@ -11,6 +11,7 @@ const closeInteractionHandler = require('../handlers/closeInteractionHandler.js'
 const eventSignUpHandler = require('../handlers/eventSignUpHandler.js');
 const guildUtils = require('../utils/guild.js');
 const dateUtils = require('../utils/date.js');
+const operatorInviteHandler = require('../handlers/operatorInviteHandler.js');
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -58,8 +59,12 @@ module.exports = {
                 closeInteractionHandler.cancelAccountClose(interaction);
 
                 // Event Sign Up   
-            } else if (interaction.customId.indexOf("eventSignUp_") >= 0) {
+            } else if (interaction.customId.includes("eventSignUp")) {
                 eventSignUpHandler.signUp(interaction);
+
+                // Operator Invite Decline
+            } else if (interaction.customId.includes("declineOperatorInvite")) {
+                operatorInviteHandler.handleDeclineInteraction(interaction);
 
             }
         }
@@ -76,7 +81,10 @@ module.exports = {
 
         // Validation
         const command = interaction.client.commands.get(interaction.commandName);
-        if (!command) return logger.log(`No command matching ${interaction.commandName} was found.`, "warning");
+        if (!command) return interaction.reply({
+            content: "This command is not supported (for now). Please try again later.",
+            ephemeral: true
+        });
 
         // Blocked User
         const blockedUsers = await modules.database.query("SELECT user_snowflake FROM user_blocked WHERE user_snowflake = ? AND guild_snowflake = ?;", [interaction.user.id, interaction.guild.id]);

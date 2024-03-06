@@ -127,20 +127,10 @@ function findGuildById(guildId) {
     return module.exports.guilds.find(guild => guild.guildObject.id === guildId);
 }
 
-/**
- *
- * @param {string} userId Find a specific User by snowflake (id).
- * @returns Discord User Object
- */
-function findUserById(userId) {
-    const user = modules.client.users.cache.get(userId);
-    if (user) return user;
-    return false;
-}
+
 
 module.exports = {
     "guildConstructor": guildConstructor,
     "findGuildById": findGuildById,
-    "findUserById": findUserById,
     "guilds": [],
 }

@@ -11,35 +11,49 @@ module.exports = {
         .setNameLocalizations({
             nl: "verblinden"
         })
-        .setDescription('Blinded role controls. Blind or unblind someone.')
+        .setDescription('Controls for the blinding system.')
         .setDescriptionLocalizations({
             nl: "Bediening voor het verblinden van een gebruiker."
         })
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-        .addUserOption(option => option
-            .setName('target')
+        .addSubcommand(option => option
+            .setName('add')
             .setNameLocalizations({
-                nl: "gebruiker"
+                nl: "toevoegen"
             })
-            .setDescription('The target member.')
+            .setDescription("Add the Blind role.")
             .setDescriptionLocalizations({
-                nl: "De betreffende gebruiker."
+                nl: "Voeg de Verblind rol toe."
             })
-            .setRequired(true))
-        .addStringOption(option => option
-            .setName('action')
+            .addUserOption(option => option
+                .setName('target')
+                .setNameLocalizations({
+                    nl: "gebruiker"
+                })
+                .setDescription('The target member.')
+                .setDescriptionLocalizations({
+                    nl: "De betreffende gebruiker."
+                })
+                .setRequired(true)))
+        .addSubcommand(option => option
+            .setName('remove')
             .setNameLocalizations({
-                nl: "actie"
+                nl: "verwijderen"
             })
-            .setDescription('Whether you want to modify or check the user status.')
+            .setDescription("Remove the Blind role.")
             .setDescriptionLocalizations({
-                nl: "Of u de gebruiker status wilt wijzigen of bekijken."
+                nl: "Verwijder de Verblind rol."
             })
-            .setRequired(true)
-            .addChoices(
-                { name: 'Blind', value: 'blind' },
-                { name: 'Unblind', value: 'unblind' }
-            )),
+            .addUserOption(option => option
+                .setName('target')
+                .setNameLocalizations({
+                    nl: "gebruiker"
+                })
+                .setDescription('The target member.')
+                .setDescriptionLocalizations({
+                    nl: "De betreffende gebruiker."
+                })
+                .setRequired(true))),
     async execute(interaction) {
         try {
             // Permission Validation
@@ -59,10 +73,10 @@ module.exports = {
             const targetSnowflake = user.id;
             const role = targetGuild.role_blinded;
             const guild = interaction.client.guilds.cache.get(interaction.guildId);
-            const action = interaction.options.getString('action');
+            const action = interaction.options.getSubcommand();
 
             // Update Status
-            if (action === "blind") {
+            if (action === "add") {
                 await guild.members.fetch(targetSnowflake).then((user) => {
                     user.roles.add(role);
                     interaction.reply({
@@ -70,7 +84,7 @@ module.exports = {
                         ephemeral: true
                     });
                 });
-            } else if (action === "unblind") {
+            } else if (action === "remove") {
                 await guild.members.fetch(targetSnowflake).then((user) => {
                     user.roles.remove(role);
                     interaction.reply({ content: `<@${targetSnowflake}> has been unblinded. Welcome back!` });

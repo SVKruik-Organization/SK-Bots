@@ -76,7 +76,7 @@ module.exports = {
             guildUtils.guilds.push({
                 // Guild
                 "guildObject": guild,
-                "team_tag": null,
+                "team_tag": "AAAAAAAA",
                 "name": guild.name,
                 "channel_admin": null,
                 "channel_event": null,
