@@ -19,9 +19,9 @@ module.exports = {
         } else {
 
             // DM Message - Commands
-            switch(message.content) {
+            switch (message.content) {
                 case "decline":
-                    operatorInviteHandler.handleDeclineCommand(message);
+                    operatorInviteHandler.handleDeclineInit(message);
                     break;
                 default:
                     message.reply(`Hello there, <@${message.author.id}>! This message is not a valid DM command, or you sent it to the wrong person. Have a nice day 👋✌!`);

@@ -33,6 +33,11 @@ module.exports = {
                 // Activate XP-Booster
             } else if (interaction.customId === "activateBoosterMenu") {
                 boosterInteractionHandler.confirmActivateDialog(interaction, interaction.values[0]);
+
+                // Operator Invite Decline Selection Menu
+            } else if (interaction.customId === "operatorInviteDeclineSelectMenu") {
+                operatorInviteHandler.handleDeclineSelect(interaction);
+
             }
         }
 
@@ -64,7 +69,7 @@ module.exports = {
 
                 // Operator Invite Decline
             } else if (interaction.customId.includes("declineOperatorInvite")) {
-                operatorInviteHandler.handleDeclineInteraction(interaction);
+                operatorInviteHandler.handleDeclineFinal(interaction);
 
             }
         }
