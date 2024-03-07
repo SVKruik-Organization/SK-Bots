@@ -5,7 +5,8 @@
     "main": "index.js",
     "scripts": {
         "update": "node deployGuildCommands.js",
-        "start": "nodemon index.js"
+        "start": "nodemon index.js",
+        "smee": "smee --target http://localhost:9080/v1/github/webhook"
     },
     "author": "SVKruik",
     "license": "ISC",

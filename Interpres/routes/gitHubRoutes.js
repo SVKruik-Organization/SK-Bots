@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 router.post('/webhook', async function (req, res) {
-    const payload = req;
-    console.log(payload);
+    const headers = req.headers;
+    const payload = req.body;
+    console.log(headers, payload);
     res.sendStatus(200);
 });
 
