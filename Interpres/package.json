@@ -1,0 +1,20 @@
+{
+    "name": "interpres",
+    "version": "2.9.0",
+    "description": "GitHub REST API Bot",
+    "main": "index.js",
+    "scripts": {
+        "update": "node deployGuildCommands.js",
+        "start": "nodemon index.js"
+    },
+    "author": "SVKruik",
+    "license": "ISC",
+    "dependencies": {
+        "@discordjs/formatters": "^0.3.3",
+        "@vscode/vscode-languagedetection": "^1.0.22",
+        "discord.js": "^14.7.1",
+        "dotenv": "^16.0.3",
+        "express": "^4.18.2",
+        "mariadb": "^3.2.1"
+    }
+}

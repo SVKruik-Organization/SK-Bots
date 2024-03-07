@@ -1,5 +1,9 @@
 # Available Bot Commands
 
+Below you can find a list of all the commands that are supported by the different bots. I also included some metadata and descriptions for each command.
+
+#### Apricaria & Stelleri
+
 The following commands are production ready, and are therefore supported by both Stelleri and Apricaria.
 
 | Command | Description | Options | Elevated | Category | Introduction |
@@ -39,8 +43,19 @@ The following commands are production ready, and are therefore supported by both
 | `tier` | Displays your Tier statistics, progression and active XP-Booster. | - | `false` | `tier` | `v2.0.0` |
 | `warning` | Give someone an official warning. Other administrators will get notified. Administrator version of `/report`. | `target` `reason` | `true` | `moderation` | `v2.0.0` |
 
----
-
 Total: `34`
 
-¹ This is for basic settings only. For advanced configuration (custom pricing, settings, and more) the [Bot Commander](https://github.com/SVKruik-Organization/Bot-Commander) app is required.
+#### Interpres
+
+The following commands are also production ready, but because of the purpose of Interpres not publicly accessible.
+
+| Command | Description | Options | Elevated | Category | Introduction |
+| - | - | - | - | - | - |
+| `ping` | Ping the bot to see if it is online and working. | - | `false` | `tools` | `v2.9.0` |
+| `shutdown` | Shutdown the bot remotely. | - | `dev only` | `tools` | `v2.9.0` |
+
+Total: `2`
+
+---
+
+¹ This is for basic settings only. For advanced configuration (custom pricing, settings, and more) the [Bot Commander](https://github.com/SVKruik-Organization/Bot-Commander) application is required.

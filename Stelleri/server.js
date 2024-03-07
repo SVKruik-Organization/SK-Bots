@@ -12,6 +12,7 @@ const jwtSecret = process.env.SERVER_SECRET;
 const CryptoJS = require("crypto-js");
 const jwt = require('jsonwebtoken');
 const jwtUtils = require('./utils/jwt.js');
+const config = require('./assets/config.js');
 
 // Import Other Routes
 const guildRoutes = require('./routes/guildRoutes.js');
@@ -26,7 +27,7 @@ app.listen(port, () => {
 
 // Default
 app.get(prefix, jwtUtils.authenticateJWT, (req, res) => {
-    res.json({ message: "Default Endpoint" });
+    res.json({ message: `Default ${config.general.name} Endpoint` });
 });
 
 // JWT Login

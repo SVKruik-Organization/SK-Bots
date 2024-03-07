@@ -94,7 +94,7 @@ module.exports = {
         // Blocked User
         const blockedUsers = await modules.database.query("SELECT user_snowflake FROM user_blocked WHERE user_snowflake = ? AND guild_snowflake = ?;", [interaction.user.id, interaction.guild.id]);
         if (blockedUsers.length !== 0) return interaction.reply({
-            content: "You are on the blocked users list, and you are therefore unable to use my commands. If you think this is a mistake, please contact moderationn to appeal.",
+            content: "You are on the blocked users list, and you are therefore unable to use my commands. If you think this is a mistake, please contact moderation to appeal.",
             ephemeral: true
         });
 
