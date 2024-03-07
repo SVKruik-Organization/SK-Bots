@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/webhook', async function (req, res) {
-    const payload = req.body;
+router.post('/webhook', async function (req, res) {
+    const payload = req;
     console.log(payload);
     res.sendStatus(200);
 });
