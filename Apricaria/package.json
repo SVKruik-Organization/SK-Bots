@@ -19,7 +19,10 @@
         "jsonwebtoken": "^9.0.2",
         "mariadb": "^3.2.1",
         "mathjs": "^11.12.0",
-        "prettier": "^2.8.8",
         "request": "^2.88.2"
+    },
+    "devDependencies": {
+        "prettier": "^3.2.5",
+        "prettier-plugin-sql": "^0.18.0"
     }
 }

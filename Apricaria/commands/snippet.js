@@ -27,11 +27,12 @@ module.exports = {
             .setRequired(true)
             .addChoices(
                 { name: 'HTML', value: 'html' },
-                { name: 'CSS', value: 'css' },
+                { name: 'CSS', value: 'scss' },
                 { name: 'JavaScript', value: 'javascript' },
                 { name: 'TypeScript', value: 'typescript' },
                 { name: 'JSON', value: 'json' },
                 { name: 'Vue', value: 'vue' },
+                { name: 'SQL', value: 'sql' },
                 { name: 'Markdown', value: 'markdown' }))
         .addStringOption(option => option
             .setName('code')
@@ -42,6 +43,7 @@ module.exports = {
             .setDescriptionLocalizations({
                 nl: "De broncode die geformatteerd moet worden. U kunt uw broncode zonder modificatie plakken."
             })
+            .setMaxLength(2000)
             .setRequired(true))
         .addStringOption(option => option
             .setName('title')
@@ -74,17 +76,18 @@ module.exports = {
 
             try {
                 if (language === "javascript") {
-                    code = prettier.format(code, { semi: false, parser: 'babel' });
-                } else code = prettier.format(code, { semi: false, parser: language });
+                    code = await prettier.format(code, { semi: false, parser: 'babel' });
+                } else if (language === "sql") {
+                    code = await prettier.format(code, { parser: "sql", plugins: ["prettier-plugin-sql"] })
+                } else code = await prettier.format(code, { semi: false, parser: language });
             } catch (error) {
-                logger.error(error);
                 return interaction.reply({
                     content: "Something went wrong while parsing your code. Check for syntax errors, and try again.",
                     ephemeral: true
                 });
             }
 
-            channel.send({ content: `<@${snowflake}> ${title}\n\n\`\`\`${language}\n${code}\n\`\`\`` });
+            channel.send({ content: `<@${snowflake}> ${title} \`${language}\`\n\n\`\`\`${language}\n${code}\n\`\`\`` });
             interaction.reply({
                 content: `Message created. Check your code-snippet here: <#${channel.id}>.`,
                 ephemeral: true
