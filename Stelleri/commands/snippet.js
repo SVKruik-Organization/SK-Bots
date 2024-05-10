@@ -87,7 +87,12 @@ module.exports = {
                 });
             }
 
-            channel.send({ content: `<@${snowflake}> ${title} \`${language}\`\n\n\`\`\`${language}\n${code}\n\`\`\`` });
+            let highlight = language;
+            if (language === "scss") {
+                highlight = "css";
+            } else if (language === "vue") highlight === "html";
+
+            channel.send({ content: `<@${snowflake}> ${title} \`${highlight}\`\n\n\`\`\`${language}\n${code}\n\`\`\`` });
             interaction.reply({
                 content: `Message created. Check your code-snippet here: <#${channel.id}>.`,
                 ephemeral: true
