@@ -23,4 +23,5 @@ module.exports = {
             logger.error(error);
         }
     },
+    guildSpecific: false
 };

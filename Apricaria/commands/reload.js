@@ -58,5 +58,6 @@ module.exports = {
                 ephemeral: true
             });
         }
-    }
+    },
+    guildSpecific: false
 };

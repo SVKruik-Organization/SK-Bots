@@ -211,5 +211,6 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    }
+    },
+    guildSpecific: true
 };

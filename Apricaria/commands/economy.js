@@ -81,7 +81,7 @@ module.exports = {
                     ephemeral: true
                 });
                 modules.database.query("UPDATE economy SET wallet = wallet + ?, bank = bank - ? WHERE snowflake = ?; INSERT INTO purchase (snowflake, balance_change, product, quantity, type, remaining_bits, method, guild_snowflake) VALUES (?, ?, 'withdraw', 1, 'Economy Command Withdraw', ?, ?, ?);",
-                    [amount, amount, snowflake, snowflake, amount, userData[0].wallet + amount, `${config.general.name} Discord Bot`, interaction.guild.id])
+                    [amount, amount, snowflake, snowflake, amount, userData[0].wallet + amount, `${config.general.name} Discord Bot`, interaction.guild ? interaction.guild.id : "DM_COMMAND"])
                     .then(() => {
                         interaction.reply({
                             content: `Successfully withdrew \`${amount}\` Bits.`,
@@ -100,7 +100,7 @@ module.exports = {
                     ephemeral: true
                 });
                 modules.database.query("UPDATE economy SET wallet = wallet - ?, bank = bank + ? WHERE snowflake = ?; INSERT INTO purchase (snowflake, balance_change, product, quantity, type, remaining_bits, method, guild_snowflake) VALUES (?, ?, 'deposit', 1, 'Economy Command Deposit', ?, ?, ?);",
-                    [amount, amount, snowflake, snowflake, -1 * amount, userData[0].wallet - amount, `${config.general.name} Discord Bot`, interaction.guild.id])
+                    [amount, amount, snowflake, snowflake, -1 * amount, userData[0].wallet - amount, `${config.general.name} Discord Bot`, interaction.guild ? interaction.guild.id : "DM_COMMAND"])
                     .then(() => {
                         interaction.reply({
                             content: `Successfully deposited \`${amount}\` Bits.`,
@@ -139,5 +139,6 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    }
+    },
+    guildSpecific: false
 };

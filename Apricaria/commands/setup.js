@@ -126,7 +126,7 @@ module.exports = {
             const channel_suggestion = interaction.options.getChannel('channel_suggestion') || null;
             const channel_snippet = interaction.options.getChannel('channel_snippet') || null;
             const channel_broadcast = interaction.options.getChannel('channel_broadcast') || null;
-            const channel_rules = interaction.options.getChannel('channel_rules') || interaction.guild.rulesChannelId ? await interaction.client.channels.fetch(interaction.guild.rulesChannelId) : null;
+            const channel_rules = interaction.options.getChannel('channel_rules') || (interaction.guild.rulesChannelId ? await interaction.client.channels.fetch(interaction.guild.rulesChannelId) : null);
             const role_blinded = interaction.options.getRole('role_blinded') || null;
             const role_cosmetic_power = interaction.options.getInteger('role_cosmetic_power') || 2;
 
@@ -222,5 +222,6 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    }
+    },
+    guildSpecific: true
 };

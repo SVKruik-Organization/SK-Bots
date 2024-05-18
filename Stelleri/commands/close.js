@@ -52,5 +52,6 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    }
+    },
+    guildSpecific: false
 };

@@ -40,5 +40,6 @@ module.exports = {
         } catch (error) {
             interaction.reply({ content: `Invalid expression.`, ephemeral: true });
         }
-    }
+    },
+    guildSpecific: false
 };

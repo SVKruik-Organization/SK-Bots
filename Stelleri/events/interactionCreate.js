@@ -91,58 +91,48 @@ module.exports = {
             ephemeral: true
         });
 
-        // Blocked User
-        const blockedUsers = await modules.database.query("SELECT user_snowflake FROM user_blocked WHERE user_snowflake = ? AND guild_snowflake = ?;", [interaction.user.id, interaction.guild.id]);
-        if (blockedUsers.length !== 0) return interaction.reply({
-            content: "You are on the blocked users list, and you are therefore unable to use my commands. If you think this is a mistake, please contact moderation to appeal.",
-            ephemeral: true
-        });
+        if (interaction.guild) {
+            // Blocked User
+            const blockedUsers = await modules.database.query("SELECT user_snowflake FROM user_blocked WHERE user_snowflake = ? AND guild_snowflake = ?;", [interaction.user.id, interaction.guild.id]);
+            if (blockedUsers.length !== 0) return interaction.reply({
+                content: "You are on the blocked users list, and you are therefore unable to use my commands. If you think this is a mistake, please contact moderation to appeal.",
+                ephemeral: true
+            });
 
-        // Administrator User Cooldown Exception
-        const adminUsers = await modules.database.query("SELECT user_snowflake FROM user_administrator WHERE user_snowflake = ? AND guild_snowflake = ?;", [interaction.user.id, interaction.guild.id]);
-        if (adminUsers.length === 0) {
+            // Administrator User Cooldown Exception
+            const adminUsers = await modules.database.query("SELECT user_snowflake FROM user_administrator WHERE user_snowflake = ? AND guild_snowflake = ?;", [interaction.user.id, interaction.guild.id]);
+            if (adminUsers.length === 0) {
 
-            // Cooldown Logic
-            const { cooldowns } = interaction.client;
-            if (!cooldowns.has(command.data.name)) cooldowns.set(command.data.name, new Collection());
+                // Cooldown Logic
+                const { cooldowns } = interaction.client;
+                if (!cooldowns.has(command.data.name)) cooldowns.set(command.data.name, new Collection());
 
-            const now = dateUtils.getDate(null, null).today;
-            const timestamps = cooldowns.get(command.data.name);
-            const defaultCooldownDuration = 3;
-            const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000;
+                const now = dateUtils.getDate(null, null).today;
+                const timestamps = cooldowns.get(command.data.name);
+                const defaultCooldownDuration = 3;
+                const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000;
 
-            if (timestamps.has(interaction.user.id)) {
-                const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
-                if (now < expirationTime) {
-                    const expiredTimestamp = Math.round(expirationTime / 1000);
-                    return interaction.reply({
-                        content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again <t:${expiredTimestamp}:R>.`,
-                        ephemeral: true
-                    });
+                if (timestamps.has(interaction.user.id)) {
+                    const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
+                    if (now < expirationTime) {
+                        const expiredTimestamp = Math.round(expirationTime / 1000);
+                        return interaction.reply({
+                            content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again <t:${expiredTimestamp}:R>.`,
+                            ephemeral: true
+                        });
+                    }
                 }
+
+                timestamps.set(interaction.user.id, now);
+                setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
             }
 
-            timestamps.set(interaction.user.id, now);
-            setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
+            // Experience Increase
+            const targetGuild = guildUtils.findGuildById(interaction.guild.id);
+            let xpReward = config.tier.slashCommand;
+            if (targetGuild && targetGuild.xp_increase_slash) xpReward = targetGuild.xp_increase_slash;
+            userIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, xpReward, interaction.channelId, interaction.client, interaction.user, interaction.guild.id);
         }
-
-        // Executing
-        try {
-            command.execute(interaction);
-        } catch (error) {
-            logger.log(`There was an error while executing || ${interaction.commandName} ||`, "error");
-            interaction.reply({ content: 'There was an fatal error while executing this command!', ephemeral: true });
-            logger.error(error);
-        }
-
-        // Experience Increase
-        const targetGuild = guildUtils.findGuildById(interaction.guild.id);
-        let xpReward = config.tier.slashCommand;
-        if (targetGuild && targetGuild.xp_increase_slash) xpReward = targetGuild.xp_increase_slash;
-        userIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, xpReward, interaction.channelId, interaction.client, interaction.user, interaction.guild.id);
-
-        // Command Usage
-        userIncreaseHandler.increaseCommand(interaction.user.id, interaction.commandName);
 
         // Logging
         let options = [];
@@ -150,6 +140,22 @@ module.exports = {
             options.push(`${element.name}: ${element.value}`);
         });
         const processedOptions = ` with the following options: ${JSON.stringify(options)}`;
-        logger.log(`'${interaction.user.username}@${interaction.user.id}' used || ${interaction.commandName} || command${options.length > 0 ? processedOptions : ""} in guild '${interaction.guild.name}@${interaction.guild.id}'`, "info");
+        logger.log(`'${interaction.user.username}@${interaction.user.id}' used || ${interaction.commandName} || command${options.length > 0 ? processedOptions : ""} in guild '${interaction.guild ? interaction.guild.name : "DM_COMMAND"}@${interaction.guild ? interaction.guild.id : "DM_COMMAND"}'`, "info");
+
+        // Executing
+        try {
+            if (!interaction.guild && command.guildSpecific) return interaction.reply({
+                content: `This command is not supported in DM's. Use this command in a server instead.`,
+                ephemeral: true
+            });
+            command.execute(interaction);
+        } catch (error) {
+            logger.log(`There was an error while executing || ${interaction.commandName} ||`, "error");
+            interaction.reply({ content: 'There was an fatal error while executing this command!', ephemeral: true });
+            logger.error(error);
+        }
+
+        // Command Usage
+        userIncreaseHandler.increaseCommand(interaction.user.id, interaction.commandName);
     }
 };

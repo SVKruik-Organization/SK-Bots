@@ -88,7 +88,7 @@ function confirmActivate(interaction) {
                     ephemeral: true
                 });
 
-                logger.log(`'${interaction.user.username}@${interaction.user.id}' has activated a XP-Booster ${boosterType} in guild '${interaction.guild.name}@${interaction.guild.id}'.`, "info");
+                logger.log(`'${interaction.user.username}@${interaction.user.id}' has activated a XP-Booster ${boosterType} in guild '${interaction.guild ? interaction.guild.name : "DM_COMMAND"}@${interaction.guild ? interaction.guild.id : "DM_COMMAND"}'.`, "info");
                 // + 24 Hours
                 const newDate = dateUtils.getDate(null, null).today;
                 newDate.setDate(newDate.getDate() + 1);

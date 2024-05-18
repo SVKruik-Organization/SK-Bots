@@ -42,7 +42,7 @@ async function checkOperator(snowflake, guild, interaction) {
         const data = await modules.database.query("SELECT guild.team_tag, invite_pending, verified, team_owner FROM operator_member LEFT JOIN guild ON operator_member.team_tag = guild.team_tag WHERE operator_member.snowflake = ? AND guild.snowflake = ?;", [snowflake, guild.id]);
         if (data.length === 0) {
             interaction.reply({
-                content: `You do not have the required permissions to perform this elevated command. Note that this is an Operator command, so you need additional permissions. Please try again later, or contact moderation if you think this is a mistake.`,
+                content: `You do not have the required permissions to perform this elevated command. Note that this is an Operator command, so you need additional permissions and an **special account**. This is not the \`/register\` account. Please try again later, or contact moderation if you think this is a mistake.`,
                 ephemeral: true
             });
             return { hasPermissions: false, data: [] };
