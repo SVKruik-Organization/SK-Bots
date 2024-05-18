@@ -1,25 +1,24 @@
 const logger = require("./logger.js");
-const request = require('request');
 
 /**
  * Chewck if a string has profanity words in it.
  * @param {string} input The input string to check.
  * @returns On error or the parsed response body.
  */
-function checkProfanity(input) {
+async function checkProfanity(input) {
     try {
+        // Fetch
         if (input.length > 1000) return "Limit";
-        request.get({
-            url: `https://api.api-ninjas.com/v1/profanityfilter?text=${input}`,
+        const response = await fetch(`https://api.api-ninjas.com/v1/profanityfilter?text=${input}`, {
+            method: "GET",
             headers: {
                 'X-Api-Key': process.env.API_TOKEN
             }
-        }, function (error, response, body) {
-            if (response.statusCode !== 200) {
-                logger.error(error);
-                return "Error";
-            } else return JSON.parse(body);
         });
+
+        // Response
+        if (response.ok) return response.json();
+        return "Error";
     } catch (error) {
         logger.error(error);
     }
