@@ -11,6 +11,7 @@ router.post('/release', async function (req, res) {
         if (!req.headers.authorization) return res.sendStatus(401)
         if (req.headers.authorization.split(" ")[1] !== process.env.BROADCAST_PASSWORD) return res.sendStatus(401);
         if (req.body.draft) return res.sendStatus(400);
+        if (!req.body.author) return res.sendStatus(400);
 
         const release = {
             // Author Information

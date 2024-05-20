@@ -2,8 +2,16 @@
 const express = require("express");
 const port = process.env.SERVER_PORT;
 const app = express();
+const cors = require("cors");
 app.use(express.json());
 const prefix = process.env.SERVER_PREFIX;
+
+// CORS Config
+const corsOptions = {
+    origin: ["https://bots.stefankruik.com"],
+    optionsSuccessStatus: 200
+}
+app.use(cors(corsOptions));
 
 // Dependencies
 const logger = require('./utils/logger.js');
