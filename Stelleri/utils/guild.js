@@ -127,8 +127,6 @@ function findGuildById(guildId) {
     return module.exports.guilds.find(guild => guild.guildObject.id === guildId);
 }
 
-
-
 module.exports = {
     "guildConstructor": guildConstructor,
     "findGuildById": findGuildById,

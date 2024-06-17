@@ -48,7 +48,7 @@ module.exports = {
             const actionType = interaction.options.getSubcommand();
 
             if (actionType === "activate") {
-                modules.database.query('SELECT xp15, xp50, xp_active, xp_active_expiry as expiry FROM user_inventory WHERE snowflake = ?', [interaction.user.id])
+                modules.database.query("SELECT xp15, xp50, xp_active, xp_active_expiry as expiry FROM user_inventory WHERE snowflake = ?", [interaction.user.id])
                     .then(async (data) => {
                         if (data.length === 0) {
                             return interaction.reply({
@@ -89,7 +89,7 @@ module.exports = {
                         });
                     });
             } else if (actionType === "disable") {
-                modules.database.query('UPDATE user_inventory SET xp_active = "None", xp_active_expiry = NULL WHERE snowflake = ?', [interaction.user.id])
+                modules.database.query("UPDATE user_inventory SET xp_active = 'None', xp_active_expiry = NULL WHERE snowflake = ?", [interaction.user.id])
                     .then((data) => {
                         // Validation
                         if (!data.affectedRows) return interaction.reply({

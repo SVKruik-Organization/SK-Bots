@@ -14,15 +14,14 @@ async function findUserById(userId) {
 
 /**
  * Check if the user has the rights to perform this command.
- * @param {string} snowflake Discord User ID of the interaction author.
- * @param {object} guild Discord Guild Object of the guild the interaction is in.
+ * @param {object} interaction Discord Interaction Object
  * @returns {boolean} If the user is an Administrator.
  */
-async function checkAdmin(snowflake, guild) {
+async function checkAdmin(interaction) {
     try {
-        const data = await modules.database.query("SELECT user_snowflake FROM user_administrator WHERE user_snowflake = ? AND guild_snowflake = ?;", [snowflake, guild.id]);
+        const data = await modules.database.query("SELECT user_snowflake FROM user_administrator WHERE user_snowflake = ? AND guild_snowflake = ?;", [interaction.user.id, interaction.guild.id]);
         if (data.length === 0) return false;
-        const member = await guild.members.cache.get(snowflake);
+        const member = await interaction.guild.members.cache.get(interaction.user.id);
         const hasRole = await member.roles.cache.some(role => role.name === `${config.general.name} Administrator`);
         return hasRole;
     } catch (error) {
@@ -33,13 +32,12 @@ async function checkAdmin(snowflake, guild) {
 
 /**
  * Check if someone is an Operator for elevated commands
- * @param {string} snowflake Discord User ID of the interaction author.
- * @param {object} guild Discord Guild Object of the guild the interaction is in.
+ * @param {object} interaction Discord Interaction Object
  * @returns {}
  */
-async function checkOperator(snowflake, guild, interaction) {
+async function checkOperator(interaction) {
     try {
-        const data = await modules.database.query("SELECT guild.team_tag, invite_pending, verified, team_owner FROM operator_member LEFT JOIN guild ON operator_member.team_tag = guild.team_tag WHERE operator_member.snowflake = ? AND guild.snowflake = ?;", [snowflake, guild.id]);
+        const data = await modules.database.query("SELECT guild.team_tag, invite_pending, verified, team_owner FROM operator_member LEFT JOIN guild ON operator_member.team_tag = guild.team_tag WHERE operator_member.snowflake = ? AND guild.snowflake = ?;", [interaction.user.id, interaction.guild.id]);
         if (data.length === 0) {
             interaction.reply({
                 content: `You do not have the required permissions to perform this elevated command. Note that this is an Operator command, so you need additional permissionsand an **special account**. This is not the \`/register\` account. Please try again later, or contact moderation if you think this is a mistake.`,

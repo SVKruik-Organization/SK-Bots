@@ -92,7 +92,7 @@ function confirmActivate(interaction) {
                 // + 24 Hours
                 const newDate = dateUtils.getDate(null, null).today;
                 newDate.setDate(newDate.getDate() + 1);
-                dueAdd(interaction.user.id, boosterType, newDate, null, interaction.user.username);
+                dueAdd(interaction, boosterType, newDate, null);
                 interaction.update({
                     content: `Success! Your XP-Booster has been activated for 24 hours, and is applied to all gained Experience.`,
                     components: [disabledButtons(interaction)],

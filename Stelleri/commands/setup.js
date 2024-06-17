@@ -112,7 +112,7 @@ module.exports = {
     async execute(interaction) {
         try {
             // Permission Validation
-            const operatorData = await userUtils.checkOperator(interaction.user.id, interaction.guild, interaction);
+            const operatorData = await userUtils.checkOperator(interaction);
             if (!operatorData.hasPermissions) return;
 
             // Setup
@@ -170,7 +170,7 @@ module.exports = {
                         });
 
                         interaction.reply({
-                            content: `Setup update successful. Additional commands reloaded. For other settings like welcome messages and other parameters, please use the [Bot Commander](${config.urls.botCommanderWebsite}) app.`,
+                            content: `Setup update successful. Additional commands reloaded. For other settings like welcome messages and other parameters, please use the [Bot Commander](${config.urls.botCommanderWebsite}) application or the [website](${config.urls.website}).`,
                             ephemeral: true
                         });
                     }).catch((error) => {

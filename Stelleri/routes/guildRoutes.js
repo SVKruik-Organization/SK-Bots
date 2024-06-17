@@ -5,7 +5,7 @@ const modules = require('..');
 const guildUtils = require('../utils/guild.js');
 const logger = require('../utils/logger.js');
 
-router.put('/update/settings', jwtUtils.authenticateJWT, function (req, res) {
+router.put('/update/settings', jwtUtils.authenticateJWT, logger.apiMiddleware, function (req, res) {
     const newGuild = req.body;
 
     if (newGuild && "snowflake" in newGuild && "xp15" in newGuild && "xp50" in newGuild && "level_up_reward_base" in newGuild && "role_cosmetic_price" in newGuild && "role_cosmetic_power" in newGuild
@@ -57,7 +57,7 @@ router.put('/update/settings', jwtUtils.authenticateJWT, function (req, res) {
     } else return res.sendStatus(400);
 });
 
-router.get('/picture', jwtUtils.authenticateJWT, async function (req, res) {
+router.get('/picture', jwtUtils.authenticateJWT, logger.apiMiddleware, async function (req, res) {
     const guilds = req.body;
     const pictures = [];
     for (let i = 0; i < guilds.length; i++) {

@@ -41,7 +41,7 @@ module.exports = {
     async execute(interaction) {
         try {
             // Permission Validation
-            if (!(await userUtils.checkAdmin(interaction.user.id, interaction.guild))) return interaction.reply({
+            if (!(await userUtils.checkAdmin(interaction))) return interaction.reply({
                 content: `You do not have the required permissions to perform this elevated command. Please try again later, or contact moderation to receive elevated permissions.`,
                 ephemeral: true
             });

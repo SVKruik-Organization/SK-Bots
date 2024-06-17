@@ -19,7 +19,7 @@ exports.urls = {
     website: "https://bots.stefankruik.com",
     botRepository: "https://github.com/SVKruik-Organization/Discord-Bots",
     botCommanderRepository: "https://github.com/SVKruik-Organization/Bot-Commander",
-    botCommanderWebsite: "https://bots.stefankruik.com"
+    botCommanderWebsite: "https://bots.stefankruik.com" // .com/products/commander
 }
 
 exports.economy = {

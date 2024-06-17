@@ -11,7 +11,7 @@ const closeInteractionHandler = require('../handlers/closeInteractionHandler.js'
 const eventSignUpHandler = require('../handlers/eventSignUpHandler.js');
 const guildUtils = require('../utils/guild.js');
 const dateUtils = require('../utils/date.js');
-const operatorInviteHandler = require('../handlers/operatorInviteHandler.js');
+const operatorHandler = require('../handlers/operatorHandler.js');
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -36,7 +36,15 @@ module.exports = {
 
                 // Operator Invite Decline Selection Menu
             } else if (interaction.customId === "operatorInviteDeclineSelectMenu") {
-                operatorInviteHandler.handleDeclineSelect(interaction);
+                operatorHandler.handleDeclineSelect(interaction);
+
+                // Operator Selection Menu
+            } else if (interaction.customId === "operatorSelectMenu") {
+                operatorHandler.handleSelectionMenu(interaction);
+
+                // Operator Modify Menu
+            } else if (interaction.customId === "operatorModifyMenu") {
+                operatorHandler.handleModifyMenu(interaction);
 
             }
         }
@@ -69,7 +77,7 @@ module.exports = {
 
                 // Operator Invite Decline
             } else if (interaction.customId.includes("declineOperatorInvite")) {
-                operatorInviteHandler.handleDeclineFinal(interaction);
+                operatorHandler.handleDeclineFinal(interaction);
 
             }
         }
@@ -131,7 +139,7 @@ module.exports = {
             const targetGuild = guildUtils.findGuildById(interaction.guild.id);
             let xpReward = config.tier.slashCommand;
             if (targetGuild && targetGuild.xp_increase_slash) xpReward = targetGuild.xp_increase_slash;
-            userIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, xpReward, interaction.channelId, interaction.client, interaction.user, interaction.guild.id);
+            userIncreaseHandler.increaseXp(interaction, xpReward);
         }
 
         // Logging

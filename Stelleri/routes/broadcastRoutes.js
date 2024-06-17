@@ -6,7 +6,7 @@ const router = express.Router();
 const modules = require('..');
 const config = require('../assets/config.js');
 
-router.post('/release', async function (req, res) {
+router.post('/release', logger.apiMiddleware, async function (req, res) {
     try {
         if (!req.headers.authorization) return res.sendStatus(401)
         if (req.headers.authorization.split(" ")[1] !== process.env.BROADCAST_PASSWORD) return res.sendStatus(401);

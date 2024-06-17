@@ -10,10 +10,9 @@ const config = require('../assets/config.js');
  * @param {string} type The type of purchase.
  * @param {string} interaction Discord Interaction Object
  * @param {number} remaining The remaining Bits in their wallet after purchase.
- * @param {string} guildSnowflake The Guild ID of the purchase location.
  * @returns Status
  */
-async function post(cost, product, quantity, type, interaction, remaining, guildSnowflake) {
+async function post(cost, product, quantity, type, interaction, remaining) {
     try {
         let query;
         switch (product) {
@@ -31,7 +30,7 @@ async function post(cost, product, quantity, type, interaction, remaining, guild
         }
         if (!query) return false;
 
-        const response = await modules.database.query(`INSERT INTO purchase (snowflake, balance_change, product, quantity, type, date, remaining_bits, method, guild_snowflake) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, "${config.general.name} Discord Bot", ?); ${query}`, [interaction.user.id, -1 * cost, product, quantity, type, remaining, guildSnowflake])
+        const response = await modules.database.query(`INSERT INTO purchase (snowflake, balance_change, product, quantity, type, date, remaining_bits, method, guild_snowflake) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, "${config.general.name} Discord Bot", ?); ${query}`, [interaction.user.id, -1 * cost, product, quantity, type, remaining, interaction.guild.id])
         if (response && response[0] && response[0].affectedRows) {
             logger.log(`Successfully updated purchase history for '${interaction.user.username}@${interaction.user.id}' ${product}@${quantity}.`, "info");
             return true;

@@ -39,23 +39,22 @@ function dueDateConstructor(data) {
 /**
  * Add a due date for automatic tracking.
  * Depending on type parameter will be stored in memory or database.
- * @param {string} snowflake Discord User ID of the user.
+ * @param {object} interaction Discord Interaction Object
  * @param {string} type The type of due date. Can be one of the following: daily, xp15, xp50 and event
  * @param {string} expiry The expiry datetime.
  * @param {string} data Additional payload.
- * @param {string} username Discord User Username of the user.
  */
-function dueAdd(snowflake, type, expiry, data, username) {
+function dueAdd(interaction, type, expiry, data) {
     try {
         // Daily Reward Collection
         if (type === "daily") {
-            modules.database.query("UPDATE user SET daily_expiry = DATE_ADD(NOW(), INTERVAL 1 DAY) WHERE snowflake = ?;", [snowflake])
+            modules.database.query("UPDATE user SET daily_expiry = DATE_ADD(NOW(), INTERVAL 1 DAY) WHERE snowflake = ?;", [interaction.user.id])
                 .then((data) => {
                     // Validation
-                    if (!data.affectedRows) return logger.log(`Could not update due date, as user '${snowflake}' does not have an account yet.`, "warning");
-                    logger.log(`Recorded Daily Reward cooldown for user '${username}'@'${snowflake}' ${type}@${expiry.toLocaleString()}.`, "info");
+                    if (!data.affectedRows) return logger.log(`Could not update due date, as user '${interaction.user.id}' does not have an account yet.`, "warning");
+                    logger.log(`Recorded Daily Reward cooldown for user '${interaction.user.username}'@'${interaction.user.id}' ${type}@${expiry.toLocaleString()}.`, "info");
                     modules.dueDates.push({
-                        "snowflake": snowflake,
+                        "snowflake": interaction.user.id,
                         "expiry": getDate(expiry, null).today,
                         "description": type,
                         "data": data
@@ -68,7 +67,7 @@ function dueAdd(snowflake, type, expiry, data, username) {
             // XP-Booster Activation & Event Attendee
         } else if (type === "xp15" || type === "xp50" || type === "event") {
             modules.dueDates.push({
-                "snowflake": snowflake,
+                "snowflake": interaction.user.id,
                 "expiry": getDate(expiry, null).today,
                 "description": type,
                 "data": data

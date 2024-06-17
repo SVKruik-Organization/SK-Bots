@@ -139,10 +139,10 @@ async function modalInputHandler(interaction) {
                             const targetGuild = guildUtils.findGuildById(interaction.guild.id);
                             let xpReward = config.tier.purchase;
                             if (targetGuild && targetGuild.xp_increase_purchase) xpReward = targetGuild.xp_increase_purchase;
-                            userIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, xpReward, interaction.channelId, interaction.client, interaction.user, interaction.guild.id);
+                            userIncreaseHandler.increaseXp(interaction, xpReward);
 
                             // History
-                            const historyResponse = await purchaseHistory.post(total, product, amount, "Shop Command Purchase", interaction, remaining, interaction.guild.id);
+                            const historyResponse = await purchaseHistory.post(total, product, amount, "Shop Command Purchase", interaction, remaining, interaction);
                             if (historyResponse) {
                                 interaction.reply({
                                     content: `All set! Thank you so much for your purchase! Your new Wallet balance is \`${remaining}\` Bits.${product.indexOf("xp") >= 0 ? " Remember that you have to activate XP-Boosters for them to work. You can do this by using the \`/inventory activate\` command." : ""}`,
