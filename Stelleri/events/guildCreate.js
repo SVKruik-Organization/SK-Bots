@@ -84,6 +84,7 @@ module.exports = {
                 "channel_snippet": null,
                 "channel_broadcast": null,
                 "channel_rules": null,
+                "channel_ticket": null,
                 "role_blinded": blindedRole,
                 "locale": guild.locale,
                 "disabled": false,

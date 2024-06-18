@@ -75,6 +75,14 @@ module.exports = {
                 })
                 .addChannelTypes(ChannelType.GuildText)
                 .setRequired(false))
+            .addChannelOption(option => option
+                .setName('channel_ticket')
+                .setDescription('Ticket Category')
+                .setDescriptionLocalizations({
+                    nl: "Ticket Categorie"
+                })
+                .addChannelTypes(ChannelType.GuildCategory)
+                .setRequired(false))
             .addRoleOption(option => option
                 .setName('role_blinded')
                 .setDescription('Blinded Role')
@@ -127,13 +135,14 @@ module.exports = {
             const channel_snippet = interaction.options.getChannel('channel_snippet') || null;
             const channel_broadcast = interaction.options.getChannel('channel_broadcast') || null;
             const channel_rules = interaction.options.getChannel('channel_rules') || (interaction.guild.rulesChannelId ? await interaction.client.channels.fetch(interaction.guild.rulesChannelId) : null);
+            const channel_ticket = interaction.options.getChannel('channel_ticket') || null;
             const role_blinded = interaction.options.getRole('role_blinded') || null;
             const role_cosmetic_power = interaction.options.getInteger('role_cosmetic_power') || 2;
 
             // Update
             if (actionType === "register") {
                 modules.database.query("UPDATE guild SET channel_admin = ?, channel_broadcast = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE guild_snowflake = ?;",
-                    [channel_admin ? channel_admin.id : null, channel_broadcast ? channel_broadcast.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, role_blinded ? role_blinded.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
+                    [channel_admin ? channel_admin.id : null, channel_broadcast ? channel_broadcast.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, channel_ticket ? channel_ticket.id : null, role_blinded ? role_blinded.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
                     .then(() => {
                         const filteredGuild = guildUtils.guilds.filter(guild => guild.guildObject.id === interaction.guild.id);
                         guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);
@@ -148,6 +157,7 @@ module.exports = {
                             "channel_snippet": channel_snippet,
                             "channel_broadcast": channel_broadcast,
                             "channel_rules": channel_rules,
+                            "channel_ticket": channel_ticket,
                             "role_blinded": role_blinded,
                             "locale": interaction.guild.preferredLocale,
                             "disabled": false,
@@ -197,6 +207,7 @@ module.exports = {
                         { name: 'Snippet Channel', value: `${targetGuild.channel_snippet || "Not Configured"}` },
                         { name: 'Broadcast Channel', value: `${targetGuild.channel_broadcast || "Not Configured"}` },
                         { name: 'Rules Channel', value: `${targetGuild.channel_rules || "Not Configured"}` },
+                        { name: 'Ticket Category', value: `${targetGuild.channel_ticket || "Not Configured"}` },
                         { name: 'Power Roles', value: `\`${targetGuild.role_cosmetic_power || 0}\`` },
                         { name: 'Blinded Role', value: `${targetGuild.role_blinded || "Not Configured"}` }
                     ], ["server"]);

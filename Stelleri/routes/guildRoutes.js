@@ -28,6 +28,7 @@ router.put('/update/settings', jwtUtils.authenticateJWT, logger.apiMiddleware, f
                     "channel_snippet": filteredGuild.channel_snippet,
                     "channel_broadcast": filteredGuild.channel_broadcast,
                     "channel_rules": filteredGuild.channel_rules,
+                    "channel_ticket": filteredGuild.channel_ticket,
                     "role_cosmetic_power": filteredGuild.role_cosmetic_power,
                     "role_blinded": filteredGuild.role_blinded,
                     "locale": filteredGuild.guildObject.preferredLocale,

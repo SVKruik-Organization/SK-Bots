@@ -68,6 +68,7 @@ async function guildConstructor(guild) {
         const channel_snippet = await channelFetch(guild.channel_snippet, "Snippet");
         const channel_broadcast = await channelFetch(guild.channel_broadcast, "Broadcast");
         const channel_rules = await channelFetch(guild.channel_rules, "Rules") || modules.client.channels.cache.get(fetchedGuild.rulesChannelId) || null;
+        const channel_ticket = await channelFetch(guild.channel_ticket, "Ticket");
 
         // Role Fetching
         let role_blinded = null;
@@ -90,6 +91,7 @@ async function guildConstructor(guild) {
             "channel_snippet": channel_snippet,
             "channel_broadcast": channel_broadcast,
             "channel_rules": channel_rules,
+            "channel_ticket": channel_ticket,
             "role_blinded": role_blinded,
             "locale": guild.locale,
             "disabled": guild.disabled,
