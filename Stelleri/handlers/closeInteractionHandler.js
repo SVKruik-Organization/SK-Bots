@@ -1,5 +1,5 @@
 const modules = require('..');
-const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const logger = require('../utils/logger.js');
 
 /**
@@ -7,19 +7,19 @@ const logger = require('../utils/logger.js');
  * @param {object} interaction Discord Interaction Object
  */
 function sendConfirmButtons(interaction) {
-    const confirm = new ButtonBuilder()
-        .setCustomId('confirmAccountClose')
-        .setLabel("Close Account")
-        .setStyle('Danger');
-
     const cancel = new ButtonBuilder()
         .setCustomId('cancelAccountClose')
         .setLabel("Cancel")
-        .setStyle('Primary');
+        .setStyle(ButtonStyle.Secondary);
+
+    const confirm = new ButtonBuilder()
+        .setCustomId('confirmAccountClose')
+        .setLabel("Close Account")
+        .setStyle(ButtonStyle.Danger);
 
     interaction.reply({
         content: 'Everything ready. Are you sure you want to close your account? You will lose all your data (purchase history, Bits, Level, etcetera).',
-        components: [new ActionRowBuilder().addComponents(confirm, cancel)],
+        components: [new ActionRowBuilder().addComponents(cancel, confirm)],
         ephemeral: true
     });
 }

@@ -124,7 +124,7 @@ module.exports = {
                             [
                                 { name: 'Wallet', value: `\`${data[0].wallet}\`` },
                                 { name: 'Bank', value: `\`${data[0].bank}\`` },
-                                { name: '-----', value: `Summary` },
+                                { name: "-----", value: `Summary` },
                                 { name: 'Combined', value: `\`${data[0].total}\`` }
                             ], ["shop"]);
                         interaction.reply({ embeds: [embed], ephemeral: true });

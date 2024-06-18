@@ -58,7 +58,7 @@ module.exports = {
                 .setTitle(`New Suggestion: ${title}`)
                 .setAuthor({ name: username, iconURL: pfp })
                 .setDescription(`${description}`)
-                .addFields({ name: '----', value: 'Meta' })
+                .addFields({ name: "-----", value: 'Meta' })
                 .setTimestamp()
                 .setFooter({ text: `Embed created by ${config.general.name}` });
             const embedMessage = await channel.send({ embeds: [embed] });

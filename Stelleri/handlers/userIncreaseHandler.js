@@ -110,7 +110,7 @@ function increaseXp(interaction, amount) {
 /**
  * Increase command usage count based in dedicated table.
  * @param {string} snowflake User ID
- * @param {string} commandName Command name, should be the same as table name.
+ * @param {string} commandName Command name, should be the same AS table name.
  */
 function increaseCommand(snowflake, commandName) {
     const disabledCommands = ["register", "close", "shutdown", "delete"];

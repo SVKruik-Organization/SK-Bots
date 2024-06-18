@@ -7,6 +7,7 @@ exports.general = {
     timezone: "Europe/Amsterdam",
 };
 
+// Command Cooldowns (admins exempt)
 exports.cooldowns = {
     A: 0,
     B: 5,
@@ -15,6 +16,7 @@ exports.cooldowns = {
     E: 86400
 };
 
+// Website Links
 exports.urls = {
     website: "https://bots.stefankruik.com",
     botRepository: "https://github.com/SVKruik-Organization/Discord-Bots",
@@ -22,13 +24,25 @@ exports.urls = {
     botCommanderWebsite: "https://bots.stefankruik.com" // .com/products/commander
 }
 
+// Economy Settings
 exports.economy = {
     levelUpFallback: 20,
     interestRate: 1.0005
 }
 
+// Interaction Experience Rewards
 exports.tier = {
     normalMessage: 5,
     slashCommand: 15,
     purchase: 25
 };
+
+// Operator Plans
+exports.edition = {
+    basicSeats: 1,
+    basicServers: 3,
+    professionalSeats: 3,
+    professionalServers: 5,
+    enterpriseSeats: 10,
+    enterpriseServers: 25
+}

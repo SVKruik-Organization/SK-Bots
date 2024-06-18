@@ -31,28 +31,22 @@ async function checkAdmin(interaction) {
 }
 
 /**
- * Check if someone is an Operator for elevated commands
+ * Check if someone is an Operator for elevated commands in the current server.
  * @param {object} interaction Discord Interaction Object
  * @returns {}
  */
 async function checkOperator(interaction) {
     try {
-        const data = await modules.database.query("SELECT guild.team_tag, invite_pending, verified, team_owner FROM operator_member LEFT JOIN guild ON operator_member.team_tag = guild.team_tag WHERE operator_member.snowflake = ? AND guild.snowflake = ?;", [interaction.user.id, interaction.guild.id]);
+        const data = await modules.database.query("SELECT guild.team_tag, account_status, team_owner FROM operator_member LEFT JOIN guild ON operator_member.team_tag = guild.team_tag WHERE operator_member.snowflake = ? AND guild.snowflake = ?;", [interaction.user.id, interaction.guild.id]);
         if (data.length === 0) {
             interaction.reply({
-                content: `You do not have the required permissions to perform this elevated command. Note that this is an Operator command, so you need additional permissionsand an **special account**. This is not the \`/register\` account. Please try again later, or contact moderation if you think this is a mistake.`,
+                content: `You do not have the required permissions to perform this elevated command. Note that this is an Operator command, so you need additional permissionsand a **special account**. This is not the \`/register\` account. Please try again later, or contact <@${config.general.authorSnowflake}> if you think this is a mistake.`,
                 ephemeral: true
             });
             return { hasPermissions: false, data: [] };
-        } else if (data[0].invite_pending) {
+        } else if (data[0].account_status < 2) {
             interaction.reply({
-                content: "You did not accept the invite yet. You should have received a message with instructions (send by me or your buddy). Please refer to the instructions and try again later.",
-                ephemeral: true
-            });
-            return { hasPermissions: false, data: data[0] };
-        } else if (!data[0].verified) {
-            interaction.reply({
-                content: "I see you already have an account, but it is not verified yet. Verification is required for use of Operator commands. Please verify your account and try again later.",
+                content: "I see you already have an account, but it is not verified for this server yet (the Operator team that manages this server). Verification is required for use of Operator commands. Please verify your account and try again later.",
                 ephemeral: true
             });
             return { hasPermissions: false, data: data[0] };
@@ -63,6 +57,7 @@ async function checkOperator(interaction) {
         return { hasPermissions: false, data: [] };
     }
 }
+
 
 module.exports = {
     "checkAdmin": checkAdmin,

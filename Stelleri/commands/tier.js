@@ -38,7 +38,7 @@ module.exports = {
                         [
                             { name: 'Level', value: `\`${data[0].level}\`` },
                             { name: 'Experience', value: `\`${currentXp}\`` },
-                            { name: '-----', value: `Summary` },
+                            { name: "-----", value: `Summary` },
                             { name: 'XP Needed', value: `\`${20 * (data[0].level + 1) + 300 - currentXp}\`` },
                             { name: 'Active Booster', value: `\`${data[0].xp_active}\`${hoursLeft}` },
                             { name: '+15% Boosters', value: `\`${data[0].xp15}\`` },

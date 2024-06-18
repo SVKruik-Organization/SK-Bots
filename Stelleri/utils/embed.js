@@ -20,7 +20,7 @@ function create(title, subfieldTitle, user, fields, relatedCommands) {
         .setAuthor({ name: user.username, iconURL: user.avatarURL() })
         .setDescription(subfieldTitle)
         .addFields(fields)
-        .addFields({ name: '----', value: 'Meta' })
+        .addFields({ name: "-----", value: 'Meta' })
         .setTimestamp()
         .setFooter({ text: `Embed created by ${config.general.name}` });
 
@@ -62,7 +62,7 @@ async function customShopCatalog(interaction) {
                     { name: 'XP +15 24H', value: `\`${data[0].xp15}\` Bits`, inline: true },
                     { name: 'XP +50 24H', value: `\`${data[0].xp50}\` Bits`, inline: true })
                 .addFields(
-                    { name: '----', value: 'Meta' },
+                    { name: "-----", value: 'Meta' },
                     { name: 'Related Commands', value: "\`/inventory\` \`/economy\`" })
                 .setTimestamp()
                 .setFooter({ text: `Embed created by ${config.general.name}` });

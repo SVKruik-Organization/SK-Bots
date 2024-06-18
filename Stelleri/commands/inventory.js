@@ -48,7 +48,7 @@ module.exports = {
             const actionType = interaction.options.getSubcommand();
 
             if (actionType === "activate") {
-                modules.database.query("SELECT xp15, xp50, xp_active, xp_active_expiry as expiry FROM user_inventory WHERE snowflake = ?", [interaction.user.id])
+                modules.database.query("SELECT xp15, xp50, xp_active, xp_active_expiry AS expiry FROM user_inventory WHERE snowflake = ?", [interaction.user.id])
                     .then(async (data) => {
                         if (data.length === 0) {
                             return interaction.reply({

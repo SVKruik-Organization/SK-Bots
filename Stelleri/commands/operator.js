@@ -80,7 +80,7 @@ module.exports = {
                     const replyContent = (actionType === "overview" ? "Select which team you want to view the overview of." : `Select for which team you want to manage <@${targetMember.id}>.`);
                     await interaction.deferReply({ ephemeral: true });
                     await interaction.editReply({
-                        content: replyContent,
+                        content: `${replyContent} Note that you have to be the owner of the team in order to perform this action.`,
                         components: [new ActionRowBuilder().addComponents(select)],
                         ephemeral: true
                     });

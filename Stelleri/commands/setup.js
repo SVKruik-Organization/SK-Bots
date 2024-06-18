@@ -210,7 +210,7 @@ module.exports = {
                         },
                         {
                             name: 'How-To',
-                            value: 'To update or register, please fill the other marked as optional fields. Fields that are left empty, will be stored as empty (resetting the value). Use this command carefully, as erroneous input will disable certain commands.'
+                            value: 'To update or register, please fill the other marked AS optional fields. Fields that are left empty, will be stored AS empty (resetting the value). Use this command carefully, AS erroneous input will disable certain commands.'
                         },
                         {
                             name: 'Advanced Config',

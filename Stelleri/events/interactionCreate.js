@@ -46,6 +46,10 @@ module.exports = {
             } else if (interaction.customId === "operatorModifyMenu") {
                 operatorHandler.handleModifyMenu(interaction);
 
+                // Operator Modify Remove Menu
+            } else if (interaction.customId === "operatorModifyRemoveMenu") {
+                operatorHandler.handleModifyRemoveMenu(interaction);
+
             }
         }
 
@@ -78,6 +82,10 @@ module.exports = {
                 // Operator Invite Decline
             } else if (interaction.customId.includes("declineOperatorInvite")) {
                 operatorHandler.handleDeclineFinal(interaction);
+
+                // Operator Invite Cancel Decline
+            } else if (interaction.customId.includes("cancelOperatorInvite")) {
+                operatorHandler.handleDeclineCancel(interaction);
 
             }
         }
