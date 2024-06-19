@@ -8,8 +8,7 @@ const config = require('../assets/config.js');
  * @returns Discord User Object
  */
 async function findUserById(userId) {
-    const user = await modules.client.users.fetch(userId);
-    return user;
+    return await modules.client.users.fetch(userId);
 }
 
 /**
