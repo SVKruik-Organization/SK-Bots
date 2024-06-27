@@ -31,6 +31,7 @@ router.put('/update/settings', jwtUtils.authenticateJWT, logger.apiMiddleware, f
                     "channel_ticket": filteredGuild.channel_ticket,
                     "role_cosmetic_power": filteredGuild.role_cosmetic_power,
                     "role_blinded": filteredGuild.role_blinded,
+                    "role_support": filteredGuild.role_support,
                     "locale": filteredGuild.guildObject.preferredLocale,
                     "disabled": filteredGuild.disabled,
 

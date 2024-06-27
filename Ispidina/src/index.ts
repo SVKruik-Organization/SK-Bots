@@ -1,10 +1,11 @@
 require('dotenv').config();
 import mariadb, { Pool } from 'mariadb';
-import { Client, GatewayIntentBits, Partials } from 'discord.js';
+import { Client, Collection, GatewayIntentBits, Partials } from 'discord.js';
 import { initEventHandler } from './handlers/eventHandler';
 import { initCommandHandler } from './handlers/commandHandler';
+import { Command } from './assets/types';
 
-const client: Client = new Client({
+const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
@@ -20,7 +21,8 @@ const client: Client = new Client({
         Partials.Reaction
     ]
 });
-client.login(process.env.BOT_TOKEN);
+client.commands = new Collection<string, Command>();
+client.cooldowns = new Collection<string, Collection<string, Date>>();
 
 // Database Connection
 if (!process.env.PORT) process.exit(1);
@@ -37,5 +39,6 @@ const database: Pool = mariadb.createPool({
 initEventHandler(client);
 initCommandHandler(client);
 
-// Exporting Values
-export { client, database } 
+// Exporting Values & Boot
+export { client, database }
+client.login(process.env.BOT_TOKEN);

@@ -90,6 +90,13 @@ module.exports = {
                     nl: "Verblinde Rol."
                 })
                 .setRequired(false))
+            .addRoleOption(option => option
+                .setName('role_support')
+                .setDescription('Support Role')
+                .setDescriptionLocalizations({
+                    nl: "Ondersteuning Rol."
+                })
+                .setRequired(false))
             .addIntegerOption(option => option
                 .setName('role_cosmetic_power')
                 .setDescription('Amount of roles with admin privileges. This makes sure that cosmetic roles will not overpower these.')
@@ -137,12 +144,13 @@ module.exports = {
             const channel_rules = interaction.options.getChannel('channel_rules') || (interaction.guild.rulesChannelId ? await interaction.client.channels.fetch(interaction.guild.rulesChannelId) : null);
             const channel_ticket = interaction.options.getChannel('channel_ticket') || null;
             const role_blinded = interaction.options.getRole('role_blinded') || null;
+            const role_support = interaction.options.getRole('role_support') || null;
             const role_cosmetic_power = interaction.options.getInteger('role_cosmetic_power') || 2;
 
             // Update
             if (actionType === "register") {
-                modules.database.query("UPDATE guild SET channel_admin = ?, channel_broadcast = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE guild_snowflake = ?;",
-                    [channel_admin ? channel_admin.id : null, channel_broadcast ? channel_broadcast.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, channel_ticket ? channel_ticket.id : null, role_blinded ? role_blinded.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
+                modules.database.query("UPDATE guild SET channel_admin = ?, channel_broadcast = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ?, role_support = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE guild_snowflake = ?;",
+                    [channel_admin ? channel_admin.id : null, channel_broadcast ? channel_broadcast.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, channel_ticket ? channel_ticket.id : null, role_blinded ? role_blinded.id : null, role_support ? role_support.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
                     .then(() => {
                         const filteredGuild = guildUtils.guilds.filter(guild => guild.guildObject.id === interaction.guild.id);
                         guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);
@@ -159,6 +167,7 @@ module.exports = {
                             "channel_rules": channel_rules,
                             "channel_ticket": channel_ticket,
                             "role_blinded": role_blinded,
+                            "role_support": role_support,
                             "locale": interaction.guild.preferredLocale,
                             "disabled": false,
 
@@ -180,7 +189,7 @@ module.exports = {
                         });
 
                         interaction.reply({
-                            content: `Setup update successful. Additional commands reloaded. For other settings like welcome messages and other parameters, please use the [Bot Commander](${config.urls.botCommanderWebsite}) application or the [website](${config.urls.website}).`,
+                            content: `Setup update successful. Additional commands reloaded and ready for action. For other settings like welcome messages and other parameters, please use the [Bot Commander](${config.urls.botCommanderWebsite}) application or the [website](${config.urls.website}).`,
                             ephemeral: true
                         });
                     }).catch((error) => {
@@ -209,7 +218,8 @@ module.exports = {
                         { name: 'Rules Channel', value: `${targetGuild.channel_rules || "Not Configured"}` },
                         { name: 'Ticket Category', value: `${targetGuild.channel_ticket || "Not Configured"}` },
                         { name: 'Power Roles', value: `\`${targetGuild.role_cosmetic_power || 0}\`` },
-                        { name: 'Blinded Role', value: `${targetGuild.role_blinded || "Not Configured"}` }
+                        { name: 'Blinded Role', value: `${targetGuild.role_blinded || "Not Configured"}` },
+                        { name: 'Support Role', value: `${targetGuild.role_support || "Not Configured"}` }
                     ], ["server"]);
                 interaction.reply({ embeds: [embed], ephemeral: true });
             } else if (actionType === "help") {

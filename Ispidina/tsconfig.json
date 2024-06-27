@@ -1,31 +1,19 @@
 {
     "compilerOptions": {
-        "target": "ESNext",
-        "module": "commonjs",
-        "rootDir": "./",
-        "outDir": "./dist/",
-        "strict": true,
-        "moduleResolution": "node",
-        "importHelpers": true,
-        "experimentalDecorators": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "allowSyntheticDefaultImports": true,
+        "target": "es2016",
+        "module": "CommonJS",
+        "rootDir": "./src",
         "resolveJsonModule": true,
+        "outDir": "./build",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
-        "removeComments": true,
-        "typeRoots": [
-            "node_modules/@types",
-            "@types"
-        ],
-        "sourceMap": false,
-        "baseUrl": "./"
+        "strict": true,
+        "useUnknownInCatchVariables": false,
+        "skipLibCheck": true
     },
     "include": [
-        "./**/*.ts"
-    ],
-    "exclude": [
-        "node_modules",
-        "dist"
-    ],
+        "./src/**/*",
+        "./src/assets/@types/discord.d.ts"
+    ]
 }

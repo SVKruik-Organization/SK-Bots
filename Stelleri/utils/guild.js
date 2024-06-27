@@ -70,13 +70,22 @@ async function guildConstructor(guild) {
         const channel_rules = await channelFetch(guild.channel_rules, "Rules") || modules.client.channels.cache.get(fetchedGuild.rulesChannelId) || null;
         const channel_ticket = await channelFetch(guild.channel_ticket, "Ticket");
 
-        // Role Fetching
+        // Role Fetching - Blinded
         let role_blinded = null;
         if (guild.role_blinded && guild.role_blinded.length === 19) {
             const fetchedRole = fetchedGuild.roles.cache.find(role => role.id === guild.role_blinded);
             if (fetchedRole) {
                 role_blinded = fetchedRole;
             } else logger.log(`Guild '${guild.name}' Blinded Role ${errorMessage}`, "warning");
+        }
+
+        // Role Fetching - Support
+        let role_support = null;
+        if (guild.role_support && guild.role_support.length === 19) {
+            const fetchedRole = fetchedGuild.roles.cache.find(role => role.id === guild.role_support);
+            if (fetchedRole) {
+                role_support = fetchedRole;
+            } else logger.log(`Guild '${guild.name}' Support Role ${errorMessage}`, "warning");
         }
 
         // Completed Guild Object
@@ -93,6 +102,7 @@ async function guildConstructor(guild) {
             "channel_rules": channel_rules,
             "channel_ticket": channel_ticket,
             "role_blinded": role_blinded,
+            "role_support": role_support,
             "locale": guild.locale,
             "disabled": guild.disabled,
 

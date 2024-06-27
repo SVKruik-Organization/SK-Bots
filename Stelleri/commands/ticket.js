@@ -18,7 +18,7 @@ module.exports = {
     async execute(interaction) {
         try {
             const targetGuild = guildUtils.findGuildById(interaction.guild.id);
-            if (!targetGuild || !targetGuild.channel_ticket) return interaction.reply({
+            if (!targetGuild || !targetGuild.channel_ticket || !targetGuild.role_support) return interaction.reply({
                 content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
                 ephemeral: true
             });
@@ -36,9 +36,13 @@ module.exports = {
                         id: interaction.user.id,
                         allow: [PermissionFlagsBits.ViewChannel],
                     },
+                    {
+                        id: targetGuild.role_support,
+                        allow: [PermissionFlagsBits.ViewChannel],
+                    }
                 ]
             }).then((data) => {
-                data.send({ content: "Welcome to this private channel. Support will be right with you @everyone." });
+                data.send({ content: "Welcome to this private channel. Support will be right with you @everyone.\n\nPlease type \`/close\` to close this channel." });
                 return interaction.reply({
                     content: `Successfully created your support channel. Check it out here <#${data.id}>. A support agent should be right with you.`,
                     ephemeral: true

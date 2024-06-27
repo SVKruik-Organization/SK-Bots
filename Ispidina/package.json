@@ -6,7 +6,7 @@
     "scripts": {
         "update": "ts-node deployGuildCommands.ts",
         "build": "tsc",
-        "start": "nodemon index.ts"
+        "start": "nodemon src/index.ts"
     },
     "author": "SVKruik",
     "license": "ISC",

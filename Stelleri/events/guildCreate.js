@@ -90,7 +90,7 @@ module.exports = {
             } else await supportRole.setPosition(fetchedGuild.roles.cache.size + 1);
 
             // New Data
-            modules.database.query("INSERT INTO guild (snowflake, name, role_blinded, channel_ticket) VALUES (?, ?, ?, ?); INSERT INTO guild_settings (guild_snowflake) VALUES (?); UPDATE bot SET guild_created = guild_created + 1 WHERE name = ?;", [guild.id, guild.name, blindedRole.id, channel_ticket.id, guild.id, config.general.name])
+            modules.database.query("INSERT INTO guild (snowflake, name, role_blinded, role_support, channel_ticket) VALUES (?, ?, ?, ?); INSERT INTO guild_settings (guild_snowflake) VALUES (?); UPDATE bot SET guild_created = guild_created + 1 WHERE name = ?;", [guild.id, guild.name, blindedRole.id, supportRole.id, channel_ticket.id, guild.id, config.general.name])
                 .then(() => logger.log(`${config.general.name} just joined a new Guild: '${guild.name}@${guild.id}'. Successfully generated data.`, "info"))
                 .catch((error) => {
                     if (error.code === "ER_DUP_ENTRY") {
@@ -115,6 +115,7 @@ module.exports = {
                 "channel_rules": null,
                 "channel_ticket": channel_ticket,
                 "role_blinded": blindedRole,
+                "role_support": supportRole,
                 "locale": guild.locale,
                 "disabled": false,
 
