@@ -17,6 +17,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Creëer een geplanned evenement. Alleen voor community servers."
         })
+        .setDMPermission(false)
         .addSubcommand(option => option
             .setName('voice')
             .setDescription('An event that will take place inside a voice channel.')
@@ -307,6 +308,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

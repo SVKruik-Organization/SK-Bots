@@ -8,13 +8,13 @@ const editionUtils = require('../utils/edition.js');
 
 /**
  * Handle Operator invite rejection.
- * @param {object} message Discord Message Object
+ * @param {object} interaction Discord Interaction Object
  */
-function handleDeclineInit(message) {
-    modules.database.query("SELECT operator_invite.snowflake as inviter, edition, operator.username, operator_team.team_tag FROM operator_invite LEFT JOIN operator_team ON operator_invite.team_tag = operator_team.team_tag LEFT JOIN operator ON operator.snowflake = operator_invite.snowflake WHERE snowflake_recv = ?;", [message.author.id])
+function handleDeclineInit(interaction) {
+    modules.database.query("SELECT operator_invite.snowflake as inviter, edition, operator.username, operator_team.team_tag FROM operator_invite LEFT JOIN operator_team ON operator_invite.team_tag = operator_team.team_tag LEFT JOIN operator ON operator.snowflake = operator_invite.snowflake WHERE snowflake_recv = ?;", [interaction.user.id])
         .then((data) => {
-            if (data.length === 0) return message.reply({
-                content: `Hello there, <@${message.author.id}>! You do not have any pending Operator invites at the moment and/or you don't have an Operator account yet.`
+            if (data.length === 0) return interaction.reply({
+                content: `Hello there, <@${interaction.user.id}>! You do not have any pending Operator invites at the moment and/or you don't have an Operator account yet.`
             });
 
             const stringOptions = [];
@@ -30,13 +30,13 @@ function handleDeclineInit(message) {
                 .setPlaceholder('Make a selection.')
                 .addOptions(stringOptions);
 
-            return message.reply({
-                content: `Hello there, <@${message.author.id}>! What invite would you like to decline?`,
+            return interaction.reply({
+                content: `Hello there, <@${interaction.user.id}>! What invite would you like to decline?`,
                 components: [new ActionRowBuilder().addComponents(select)]
             });
         }).catch((error) => {
             logger.error(error);
-            return message.reply({
+            return interaction.reply({
                 content: `Something went wrong while loading your pending invites. Please try again later.`
             });
         });
@@ -44,7 +44,7 @@ function handleDeclineInit(message) {
 
 /**
  * Handle the selected team.
- * @param {object} message Discord Message Object
+ * @param {object} interaction Discord Interaction Object
  */
 async function handleDeclineSelect(interaction) {
     const selectedTeamTag = interaction.values[0].split("-")[1];
@@ -68,14 +68,14 @@ async function handleDeclineSelect(interaction) {
 
 /**
  * Handle the final rejection.
- * @param {object} message Discord Message Object
+ * @param {object} interaction Discord Interaction Object
  */
 function handleDeclineFinal(interaction) {
     const teamTag = interaction.customId.split("-")[1];
     modules.database.query("SELECT * FROM operator_member WHERE team_tag = ? AND team_owner = 1; DELETE FROM operator_invite WHERE snowflake_recv = ? AND team_tag = ?;", [teamTag, interaction.user.id, teamTag])
         .then(async (data) => {
-            interaction.message.edit({
-                content: `Alright, I declined the pending invite and sent a message to ${data[0][0] ? `<@${data[0][0].snowflake}>` : "the inviter"}.`,
+            interaction.interaction.edit({
+                content: `Alright, I declined the pending invite and sent a interaction to ${data[0][0] ? `<@${data[0][0].snowflake}>` : "the inviter"}.`,
                 components: []
             });
 
@@ -85,11 +85,11 @@ function handleDeclineFinal(interaction) {
             logger.log(`User '${interaction.user.username}'@'${interaction.user.id}' has declined '${teamOwnerUser.username}'@'${teamOwnerUser.id}' to join their Operator team '${teamTag}'.`, "info");
             teamOwnerUser.send({ content: `<@${interaction.user.id}> has declined the Operator invite to join your team (\`${teamTag}\`).` })
                 .catch(() => {
-                    logger.log(`Sending Operator invite decline message to team owner '${teamOwnerUser.username}'@'${teamOwnerUser.id}' was not succesful.`, "warning");
+                    logger.log(`Sending Operator invite decline interaction to team owner '${teamOwnerUser.username}'@'${teamOwnerUser.id}' was not succesful.`, "warning");
                 });
         }).catch((error) => {
             logger.error(error);
-            return interaction.message.reply({
+            return interaction.interaction.reply({
                 content: "Something went wrong while removing your invite. Please try again later.",
                 components: []
             });
@@ -98,10 +98,10 @@ function handleDeclineFinal(interaction) {
 
 /**
  * Cancel the final rejection.
- * @param {object} message Discord Message Object
+ * @param {object} interaction Discord Interaction Object
  */
 function handleDeclineCancel(interaction) {
-    return interaction.message.edit({
+    return interaction.interaction.edit({
         content: "Alright, I did not decline your Operator invitation. It will stay as pending untill you accept or decline it.",
         components: []
     });
@@ -109,7 +109,7 @@ function handleDeclineCancel(interaction) {
 
 /**
  * Handle the selection to modify/overview a team.
- * @param {object} message Discord Message Object
+ * @param {object} interaction Discord Interaction Object
  */
 async function handleSelectionMenu(interaction) {
     const teamTag = interaction.values[0].split("-")[1];
@@ -188,7 +188,7 @@ async function handleSelectionMenu(interaction) {
                     .setColor(config.general.color)
                     .setTitle("Operator Overview")
                     .setDescription(`Here is an overview of your plan statistics and team members for your selected teamtag.`)
-                    .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
+                    .setuser({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
                     .addFields(seats)
                     .addFields(
                         { name: "Information", value: "-----" },
@@ -198,7 +198,7 @@ async function handleSelectionMenu(interaction) {
                         { name: 'Edition', value: `\`${data[0].edition}\``, inline: true },
                         { name: 'Creation Date', value: time(data[0].date_creation), inline: true },
                         { name: 'Update Date', value: time(data[0].date_update), inline: true },
-                        { name: 'Note', value: `Changing your subscription details and advanced settings can be done with the [Bot Commander](${config.urls.botCommanderWebsite}) application or the [website](${config.urls.website}). If you have any questions or concerns, don't hesitate to reach out to <@${config.general.authorSnowflake}>.` })
+                        { name: 'Note', value: `Changing your subscription details and advanced settings can be done with the [Bot Commander](${config.urls.botCommanderWebsite}) application or the [website](${config.urls.website}). If you have any questions or concerns, don't hesitate to reach out to <@${config.general.userSnowflake}>.` })
                     .setTimestamp()
                     .setFooter({ text: `Embed created by ${config.general.name}` });
                 return interaction.update({
@@ -219,7 +219,7 @@ async function handleSelectionMenu(interaction) {
 
 /**
  * Handle the selection to modify a team.
- * @param {object} message Discord Message Object
+ * @param {object} interaction Discord Interaction Object
  */
 async function handleModifyMenu(interaction) {
     const actionType = interaction.values[0].split("-")[1];
@@ -263,12 +263,12 @@ async function handleModifyMenu(interaction) {
                             .setColor(config.general.color)
                             .setTitle("New Operator Invite")
                             .setDescription(`Hello <@${targetMember.id}>! <@${interaction.user.id}> has invited **you** to join his Operator team.`)
-                            .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
+                            .setuser({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
                             .addFields(
                                 { name: "Instructions", value: "-----" },
                                 { name: 'Accept', value: `If you decide to join them, you can click on this [link](${registerLink}). It will direct you to my website, where you can create an Operator account if you don't have one yet, and finalize registration..` },
                                 { name: 'Decline', value: `If you do not want to join their team, please send me \`/operatorDecline\`, and I will remove your record & notify <@${interaction.user.id}>.` },
-                                { name: 'Safety', value: `If I have spammed you with invites and/or you do not know about any of this, please contact <@${config.general.authorSnowflake}> to get this fixed!` },
+                                { name: 'Safety', value: `If I have spammed you with invites and/or you do not know about any of this, please contact <@${config.general.userSnowflake}> to get this fixed!` },
                                 { name: 'Information', value: `If you want to know more about this whole 'Operator' thing, you can read more about it [here](${config.urls.website}).` },
                                 { name: 'Meta', value: "-----" })
                             .addFields(
@@ -294,7 +294,7 @@ async function handleModifyMenu(interaction) {
                                 });
                             });
                     }).catch((error) => {
-                        if (error.message.includes("operator_invite_unique")) {
+                        if (error.interaction.includes("operator_invite_unique")) {
                             return interaction.update({
                                 content: `You have already invited <@${targetMember.id}>, and your request is now pending. Please be patient while they consider your request, or DM them to hurry up.`,
                                 components: [],
@@ -341,7 +341,7 @@ async function handleModifyMenu(interaction) {
 
 /**
  * Handle the selection to remove a user from an invite or team.
- * @param {object} message Discord Message Object
+ * @param {object} interaction Discord Interaction Object
  */
 async function handleModifyRemoveMenu(interaction) {
     const actionType = interaction.values[0].split("-")[1];

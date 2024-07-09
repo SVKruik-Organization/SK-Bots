@@ -14,6 +14,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Maak een account bij ons aan. Geeft toegang tot Tier & Economy commando's."
         })
+        .setDMPermission(true)
         .addStringOption(option => option
             .setName('pincode')
             .setNameLocalizations({
@@ -56,6 +57,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: false
+    }
 };

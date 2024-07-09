@@ -13,7 +13,8 @@ module.exports = {
         .setDescription('Get a random fact.')
         .setDescriptionLocalizations({
             nl: "Krijg een willekeurig feit."
-        }),
+        })
+        .setDMPermission(true),
     async execute(interaction) {
         try {
             // Fetch
@@ -46,6 +47,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: false
+    }
 };

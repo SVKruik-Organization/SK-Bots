@@ -14,7 +14,8 @@ module.exports = {
         .setDescription('Open up a private channel for 1 on 1 support.')
         .setDescriptionLocalizations({
             nl: "Open een privé kanaal voor 1 op 1 hulp."
-        }),
+        })
+        .setDMPermission(false),
     async execute(interaction) {
         try {
             const targetGuild = guildUtils.findGuildById(interaction.guild.id);
@@ -74,6 +75,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

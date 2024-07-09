@@ -14,6 +14,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Berichten in bulk verwijderen binnen het huidige kanaal."
         })
+        .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addIntegerOption(option => option
             .setName('amount')
@@ -54,6 +55,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

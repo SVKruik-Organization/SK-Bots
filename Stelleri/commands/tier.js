@@ -16,7 +16,8 @@ module.exports = {
         .setDescription('Information and statistics about your Tier progression.')
         .setDescriptionLocalizations({
             nl: "Informatie en statistieken over uw Tier progressie."
-        }),
+        })
+        .setDMPermission(true),
     async execute(interaction) {
         try {
             const snowflake = interaction.user.id;
@@ -55,6 +56,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

@@ -15,6 +15,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Geef uzelf een eigen rol met een zelfgekozen kleur."
         })
+        .setDMPermission(false)
         .addStringOption(option => option
             .setName('color')
             .setNameLocalizations({
@@ -125,6 +126,5 @@ module.exports = {
         const activeInput = interaction.options.getFocused();
         const filtered = roleOptions.filter(choice => choice.includes(activeInput));
         await interaction.respond(filtered.map(choice => ({ name: choice, value: choice })));
-    },
-    guildSpecific: true
+    }
 };

@@ -15,6 +15,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Bediening voor het Operator systeem."
         })
+        .setDMPermission(false)
         .addSubcommand(option => option
             .setName('modify')
             .setNameLocalizations({
@@ -94,6 +95,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

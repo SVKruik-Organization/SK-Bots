@@ -13,6 +13,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Speel een spel van Steen, Papier, Schaar!"
         })
+        .setDMPermission(true)
         .addStringOption(option => option
             .setName('type')
             .setNameLocalizations({
@@ -66,6 +67,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: false
+    }
 };

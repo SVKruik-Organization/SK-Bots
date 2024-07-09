@@ -15,6 +15,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Bediening voor het economy systeem. Bekijk saldo, opnemen en inleggen."
         })
+        .setDMPermission(true)
         .addSubcommand(option => option
             .setName('withdraw')
             .setNameLocalizations({
@@ -139,6 +140,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: false
+    }
 };

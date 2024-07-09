@@ -13,6 +13,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Genereer een willekeurig nummer."
         })
+        .setDMPermission(true)
         .addIntegerOption(option => option
             .setName('maximum')
             .setNameLocalizations({
@@ -33,6 +34,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: false
+    }
 };

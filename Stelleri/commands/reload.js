@@ -31,6 +31,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Herlaadt all commando's."
         })
+        .setDMPermission(true)
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
     async execute(interaction) {
         try {
@@ -63,6 +64,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: false
+    }
 };

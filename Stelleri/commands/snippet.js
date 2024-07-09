@@ -15,6 +15,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Formatteer een stuk broncode."
         })
+        .setDMPermission(false)
         .addStringOption(option => option
             .setName('language')
             .setNameLocalizations({
@@ -100,6 +101,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

@@ -16,7 +16,8 @@ module.exports = {
         .setDescription('Collect your daily Bits reward.')
         .setDescriptionLocalizations({
             nl: "Haal uw dagelijkse Bits beloning op."
-        }),
+        })
+        .setDMPermission(false),
     async execute(interaction) {
         try {
             // Cooldown Checking
@@ -70,6 +71,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

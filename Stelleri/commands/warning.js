@@ -16,6 +16,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Geef iemand een waarschuwing voor regelovertreding. Administrator versie van report."
         })
+        .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addUserOption(option => option
             .setName('target')
@@ -68,6 +69,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

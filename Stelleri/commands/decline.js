@@ -1,25 +1,23 @@
 const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const logger = require('../utils/logger.js');
+const operatorHandler = require('../handlers/operatorHandler.js');
 
 module.exports = {
-    cooldown: config.cooldowns.B,
+    cooldown: config.cooldowns.A,
     data: new SlashCommandBuilder()
-        .setName('dice')
+        .setName('decline')
         .setNameLocalizations({
-            nl: "dobbelsteen"
+            nl: "afwijzen"
         })
-        .setDescription('Roll the dice!')
+        .setDescription("Decline an Operator invitation.")
         .setDescriptionLocalizations({
-            nl: "Gooi de dobbelsteen!"
+            nl: "Wijs een Operator-uitnodiging af."
         })
         .setDMPermission(true),
     async execute(interaction) {
         try {
-            const list = ["1!", "2!", "3!", "4!", "5!", "6!"];
-            const random = list[Math.floor(Math.random() * list.length)];
-
-            interaction.reply({ content: `🎲 ${random}` });
+            operatorHandler.handleDeclineInit(interaction);
         } catch (error) {
             logger.error(error);
         }

@@ -19,6 +19,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Creëer een evenement waar anderen aan mee kunnen doen."
         })
+        .setDMPermission(false)
         .addSubcommand(option => option
             .setName('physical')
             .setNameLocalizations({
@@ -211,6 +212,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

@@ -14,6 +14,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Verander uw 4-cijferige pincode."
         })
+        .setDMPermission(true)
         .addIntegerOption(option => option
             .setName('old')
             .setNameLocalizations({
@@ -91,6 +92,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: false
+    }
 };

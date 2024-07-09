@@ -17,6 +17,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Setup of bekijk de server configuratie."
         })
+        .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addSubcommand(option => option
             .setName("register")
@@ -243,6 +244,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

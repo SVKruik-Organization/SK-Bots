@@ -15,6 +15,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Rapporteer iemand voor het overtreden van de regels. We zullen er zo snel mogelijk naar kijken."
         })
+        .setDMPermission(false)
         .addUserOption(option => option
             .setName('target')
             .setNameLocalizations({
@@ -84,6 +85,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

@@ -13,6 +13,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Los een wiskundige som op."
         })
+        .setDMPermission(true)
         .addStringOption(option => option
             .setName('expression')
             .setNameLocalizations({
@@ -40,6 +41,5 @@ module.exports = {
         } catch (error) {
             interaction.reply({ content: `Invalid expression.`, ephemeral: true });
         }
-    },
-    guildSpecific: false
+    }
 };

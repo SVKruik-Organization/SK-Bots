@@ -172,10 +172,6 @@ module.exports = {
 
         // Executing
         try {
-            if (!interaction.guild && command.guildSpecific) return interaction.reply({
-                content: `This command is not supported in DM's. Use this command in a server instead.`,
-                ephemeral: true
-            });
             command.execute(interaction);
         } catch (error) {
             logger.log(`There was an error while executing || ${interaction.commandName} ||`, "error");

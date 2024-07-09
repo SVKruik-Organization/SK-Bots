@@ -12,7 +12,8 @@ module.exports = {
         .setDescription('Spend your Bits on cool perks and cosmetics.')
         .setDescriptionLocalizations({
             nl: "Geef uw Bits uit aan gafe extra's en cosmetica."
-        }),
+        })
+        .setDMPermission(false),
     async execute(interaction) {
         try {
             const select = new StringSelectMenuBuilder()
@@ -37,6 +38,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

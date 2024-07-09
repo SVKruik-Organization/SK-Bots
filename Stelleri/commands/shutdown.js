@@ -14,6 +14,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: `Zet ${config.general.name} uit. Deze actie is onomkeerbaar vanuit Discord, een handmatige herstart is vereist.`
         })
+        .setDMPermission(true)
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
         try {
@@ -34,6 +35,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: false
+    }
 };

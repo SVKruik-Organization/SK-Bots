@@ -16,6 +16,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Bekijk je inventaris & actieve XP-Boosters."
         })
+        .setDMPermission(true)
         .addSubcommand(option => option
             .setName('activate')
             .setNameLocalizations({
@@ -134,6 +135,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: false
+    }
 };

@@ -15,6 +15,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Pitch een nieuw idee voor de server!"
         })
+        .setDMPermission(false)
         .addStringOption(option => option
             .setName('title')
             .setNameLocalizations({
@@ -71,6 +72,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

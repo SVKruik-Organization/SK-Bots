@@ -13,6 +13,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Kop of munt!"
         })
+        .setDMPermission(true)
         .addStringOption(option => option
             .setName('side')
             .setNameLocalizations({
@@ -57,6 +58,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: false
+    }
 };
