@@ -26,7 +26,8 @@ module.exports = {
             })
             .setRequired(true)
             .setMinLength(6)
-            .setMaxLength(6)),
+            .setMaxLength(6)
+            .setAutocomplete(true)),
     async execute(interaction) {
         try {
             // Init
@@ -118,6 +119,12 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
+    },
+    async autocomplete(interaction) {
+        const roleOptions = ["1abc9c", "0f806a", "2fcc71", "208b4c", "3498db", "206694", "9b59b6", "71368a", "e91e63", "ad1357", "f1c40f", "c27c0d", "e67e23", "e67e23", "e74b3c", "992d22"];
+        const activeInput = interaction.options.getFocused();
+        const filtered = roleOptions.filter(choice => choice.includes(activeInput));
+        await interaction.respond(filtered.map(choice => ({ name: choice, value: choice })));
     },
     guildSpecific: true
 };

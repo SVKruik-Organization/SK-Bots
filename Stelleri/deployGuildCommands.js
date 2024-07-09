@@ -12,7 +12,7 @@ for (const file of commandFiles) {
     try {
         const command = require(`./commands/${file}`);
         commands.push(command.data.toJSON());
-    } catch(error) {
+    } catch (error) {
         logger.error(error);
     }
 }
@@ -30,20 +30,20 @@ const database = mariadb.createPool({
 // Deploy
 try {
     database.query("SELECT * FROM guild WHERE disabled = 0 AND production = 0;")
-    .then(async (queryData) => {
-        console.log("\n");
-        for (let i = 0; i < queryData.length; i++) {
-            const data = await rest.put(
-                Routes.applicationGuildCommands(general.clientId, queryData[i].snowflake),
-                { body: commands },
-            );
-            console.log(`Successfully loaded ${data.length} commands for guild ${queryData[i].name}.`);
-        }
-        console.log("\n");
-        process.exit(1);
-    }).catch((error) => {
-        logger.error(error);
-    });
+        .then(async (queryData) => {
+            console.log("\n");
+            for (let i = 0; i < queryData.length; i++) {
+                const data = await rest.put(
+                    Routes.applicationGuildCommands(general.clientId, queryData[i].snowflake),
+                    { body: commands },
+                );
+                console.log(`Successfully loaded ${data.length} commands for guild ${queryData[i].name}.`);
+            }
+            console.log("\n");
+            process.exit(1);
+        }).catch((error) => {
+            logger.error(error);
+        });
 } catch (error) {
     logger.error(error);
 }

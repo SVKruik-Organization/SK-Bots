@@ -12,7 +12,9 @@ for (const file of commandFiles) {
     try {
         if (file === "reload.js") continue;
         const command = require(`../commands/${file}`);
-        commands.push(command.data.toJSON());
+        if (command && ('data' in command)) {
+            commands.push(command.data.toJSON());
+        } else logger.log(`Reload error at ${file}`, "error");
     } catch (error) {
         logger.error(error);
     }

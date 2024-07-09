@@ -102,6 +102,13 @@ module.exports = {
             }
         }
 
+        // Autocomplete
+        if (interaction.isAutocomplete()) {
+            const command = interaction.client.commands.get(interaction.commandName);
+            if (!command) return logger.log(`No command for ${interaction.commandName} was found.`, "warning");
+            await command.autocomplete(interaction);
+        }
+
         // Normal Slash Interactions
         if (!interaction.isChatInputCommand()) return;
 

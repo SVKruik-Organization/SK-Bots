@@ -23,8 +23,10 @@ module.exports = {
                 ephemeral: true
             });
 
+            // Database Connection
             await modules.database.end();
             logger.log("Terminated database connection. Shutting down.", "alert");
+
             interaction.reply({ content: `${config.general.name} is logging off. Bye!` });
             setTimeout(() => {
                 process.exit(0);
