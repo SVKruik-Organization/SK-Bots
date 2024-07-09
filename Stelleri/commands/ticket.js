@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, ChannelType, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const config = require('../assets/config.js');
 const logger = require('../utils/logger.js');
 const ticket = require('../utils/ticket.js');
@@ -23,6 +23,11 @@ module.exports = {
                 ephemeral: true
             });
 
+            interaction.reply({
+                content: `Hey there, thanks for contacting support. I am on it, give me one second.`,
+                ephemeral: true
+            });
+
             interaction.guild.channels.create({
                 name: `${ticket.createTicket()} - ${interaction.user.username}`,
                 type: ChannelType.GuildText,
@@ -42,14 +47,26 @@ module.exports = {
                     }
                 ]
             }).then((data) => {
-                data.send({ content: "Welcome to this private channel. Support will be right with you @everyone.\n\nPlease type \`/close\` to close this channel." });
-                return interaction.reply({
+                const close = new ButtonBuilder()
+                    .setCustomId('closeTicketChannel')
+                    .setLabel("Close")
+                    .setStyle(ButtonStyle.Danger);
+
+                // New Channel
+                data.send({
+                    content: "Welcome to this private channel. Support will be right with you @everyone.\n\nWhen your question/issue is resolved, you can use the following button to close the ticket:",
+                    components: [new ActionRowBuilder().addComponents(close)],
+                    ephemeral: true
+                });
+
+                // Initial Channel
+                return interaction.editReply({
                     content: `Successfully created your support channel. Check it out here <#${data.id}>. A support agent should be right with you.`,
                     ephemeral: true
                 });
             }).catch((error) => {
                 logger.error(error);
-                return interaction.reply({
+                return interaction.editReply({
                     content: "Something went wrong while creating your channel. Please try again later.",
                     ephemeral: true
                 });

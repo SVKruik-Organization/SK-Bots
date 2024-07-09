@@ -18,7 +18,7 @@ function sendConfirmButtons(interaction) {
         .setStyle(ButtonStyle.Danger);
 
     interaction.reply({
-        content: 'Everything ready. Are you sure you want to close your account? You will lose all your data (purchase history, Bits, Level, etcetera).',
+        content: 'Everything is ready. Are you sure you want to close your account? You will lose all your data (purchase history, Bits, Level, etcetera).',
         components: [new ActionRowBuilder().addComponents(cancel, confirm)],
         ephemeral: true
     });

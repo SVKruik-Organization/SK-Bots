@@ -12,6 +12,7 @@ const eventSignUpHandler = require('../handlers/eventSignUpHandler.js');
 const guildUtils = require('../utils/guild.js');
 const dateUtils = require('../utils/date.js');
 const operatorHandler = require('../handlers/operatorHandler.js');
+const ticketHandler = require('../handlers/ticketHandler.js');
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -86,6 +87,10 @@ module.exports = {
                 // Operator Invite Cancel Decline
             } else if (interaction.customId.includes("cancelOperatorInvite")) {
                 operatorHandler.handleDeclineCancel(interaction);
+
+                // Close Ticket Channel
+            } else if (interaction.customId.includes("closeTicketChannel")) {
+                ticketHandler.closeChannel(interaction);
 
             }
         }
