@@ -11,7 +11,9 @@ for (const file of commandFiles) {
     try {
         if (file === "reload.js") continue;
         const command = require(`../commands/${file}`);
-        commands.push(command.data.toJSON());
+        if (command && ('data' in command)) {
+            commands.push(command.data.toJSON());
+        } else logger.log(`Reload error at ${file}`, "error");
     } catch (error) {
         logger.error(error);
     }
@@ -28,6 +30,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Herlaadt all commando's."
         })
+        .setDMPermission(true)
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
     async execute(interaction) {
         try {
@@ -58,6 +61,5 @@ module.exports = {
                 ephemeral: true
             });
         }
-    },
-    guildSpecific: false
+    }
 };

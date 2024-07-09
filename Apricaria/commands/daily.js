@@ -16,7 +16,8 @@ module.exports = {
         .setDescription('Collect your daily Bits reward.')
         .setDescriptionLocalizations({
             nl: "Haal uw dagelijkse Bits beloning op."
-        }),
+        })
+        .setDMPermission(false),
     async execute(interaction) {
         try {
             // Cooldown Checking
@@ -55,7 +56,7 @@ module.exports = {
                     dueAdd(interaction.user.id, "daily", newDate, null, interaction.user.username);
                     if (jackpotBoolean) {
                         interaction.reply({ content: `💎 You hit the JACKPOT! 💎 You received a grand total of \`${dailyreward}\` Bits. Congratulations! 🎉` });
-                        logger.log(`'${interaction.user.username}@${interaction.user.id}' hit the daily reward jackpot worth ${jackpotValue}. Their dailyreward was worth ${dailyreward - jackpotValue}. They received a total of ${dailyreward} Bits.\n`, "alert");
+                        logger.log(`'${interaction.user.username}@${interaction.user.id}' hit the daily reward jackpot worth ${jackpotValue}. Their dailyreward was worth ${dailyreward - jackpotValue}. They received a total of ${dailyreward} Bits.\n`, "warning");
                     } else interaction.reply({
                         content: `Successfully collected your daily reward: \`${dailyreward}\` Bits. Be sure to come back tomorrow!`,
                         ephemeral: true
@@ -70,6 +71,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

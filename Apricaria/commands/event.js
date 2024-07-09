@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ChannelType } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, ButtonStyle } = require('discord.js');
 const config = require('../assets/config.js');
 const { EmbedBuilder } = require('discord.js');
 const guildUtils = require('../utils/guild.js');
@@ -19,6 +19,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Creëer een evenement waar anderen aan mee kunnen doen."
         })
+        .setDMPermission(false)
         .addSubcommand(option => option
             .setName('physical')
             .setNameLocalizations({
@@ -182,7 +183,7 @@ module.exports = {
                     const signUpButton = new ButtonBuilder()
                         .setCustomId(`eventSignUp_${newTicket}`)
                         .setLabel(`Sign Up`)
-                        .setStyle('Primary');
+                        .setStyle(ButtonStyle.Primary);
 
                     // Success Confirmation
                     const embed = new EmbedBuilder()
@@ -193,7 +194,7 @@ module.exports = {
                         .addFields(
                             { name: 'Location', value: eventType === "online" ? `<#${location}>` : location, inline: true },
                             { name: 'Date', value: time(fullDate), inline: true })
-                        .addFields({ name: '----', value: 'Meta' })
+                        .addFields({ name: "-----", value: 'Meta' })
                         .setTimestamp()
                         .setFooter({ text: `Embed created by ${config.general.name}` });
                     channel.send({ embeds: [embed], components: [new ActionRowBuilder().addComponents(signUpButton)] });
@@ -211,6 +212,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

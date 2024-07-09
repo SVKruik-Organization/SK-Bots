@@ -2,7 +2,6 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const config = require('../assets/config.js');
 const { REST, Routes } = require('discord.js');
 const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
-const userUtils = require('../utils/user.js');
 const logger = require('../utils/logger.js');
 
 module.exports = {
@@ -16,6 +15,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Verwijder commando's."
         })
+        .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addSubcommand(option => option
             .setName("all")
@@ -97,6 +97,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: false
+    }
 };

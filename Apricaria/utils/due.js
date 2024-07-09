@@ -9,7 +9,7 @@ const { time } = require('@discordjs/formatters');
  * After that, checking will happen in-memory.
  */
 try {
-    modules.database.query("SELECT T.snowflake, T.expiry, T.description, T.data FROM (SELECT snowflake, xp_active_expiry AS expiry, xp_active AS description, NULL as data FROM user_inventory UNION ALL SELECT snowflake, daily_expiry, 'daily', null FROM user_general UNION ALL SELECT snowflake, date_start, 'event', event_ticket FROM event LEFT JOIN event_attendee ON event_attendee.event_ticket = event.ticket WHERE date_start > NOW()) as T WHERE T.expiry IS NOT NULL;")
+    modules.database.query("SELECT T.snowflake, T.expiry, T.description, T.data FROM (SELECT snowflake, xp_active_expiry AS expiry, xp_active AS description, NULL AS data FROM user_inventory UNION ALL SELECT snowflake, daily_expiry, 'daily', null FROM user_general UNION ALL SELECT snowflake, date_start, 'event', event_ticket FROM event LEFT JOIN event_attendee ON event_attendee.event_ticket = event.ticket WHERE date_start > NOW()) AS T WHERE T.expiry IS NOT NULL;")
         .then((data) => {
             const dueDates = [];
             for (let i = 0; i <= data.length; i++) {
@@ -39,23 +39,22 @@ function dueDateConstructor(data) {
 /**
  * Add a due date for automatic tracking.
  * Depending on type parameter will be stored in memory or database.
- * @param {string} snowflake Discord User ID of the user.
+ * @param {object} interaction Discord Interaction Object
  * @param {string} type The type of due date. Can be one of the following: daily, xp15, xp50 and event
  * @param {string} expiry The expiry datetime.
  * @param {string} data Additional payload.
- * @param {string} username Discord User Username of the user.
  */
-function dueAdd(snowflake, type, expiry, data, username) {
+function dueAdd(interaction, type, expiry, data) {
     try {
         // Daily Reward Collection
         if (type === "daily") {
-            modules.database.query("UPDATE user SET daily_expiry = DATE_ADD(NOW(), INTERVAL 1 DAY) WHERE snowflake = ?;", [snowflake])
+            modules.database.query("UPDATE user SET daily_expiry = DATE_ADD(NOW(), INTERVAL 1 DAY) WHERE snowflake = ?;", [interaction.user.id])
                 .then((data) => {
                     // Validation
-                    if (!data.affectedRows) return logger.log(`Could not update due date, as user '${snowflake}' does not have an account yet.`, "warning");
-                    logger.log(`Recorded Daily Reward cooldown for user '${username}'@'${snowflake}' ${type}@${expiry.toLocaleString()}.`, "info");
+                    if (!data.affectedRows) return logger.log(`Could not update due date, AS user '${interaction.user.id}' does not have an account yet.`, "warning");
+                    logger.log(`Recorded Daily Reward cooldown for user '${interaction.user.username}'@'${interaction.user.id}' ${type}@${expiry.toLocaleString()}.`, "info");
                     modules.dueDates.push({
-                        "snowflake": snowflake,
+                        "snowflake": interaction.user.id,
                         "expiry": getDate(expiry, null).today,
                         "description": type,
                         "data": data
@@ -68,7 +67,7 @@ function dueAdd(snowflake, type, expiry, data, username) {
             // XP-Booster Activation & Event Attendee
         } else if (type === "xp15" || type === "xp50" || type === "event") {
             modules.dueDates.push({
-                "snowflake": snowflake,
+                "snowflake": interaction.user.id,
                 "expiry": getDate(expiry, null).today,
                 "description": type,
                 "data": data

@@ -16,7 +16,8 @@ module.exports = {
         .setDescription('Information and statistics about your Tier progression.')
         .setDescriptionLocalizations({
             nl: "Informatie en statistieken over uw Tier progressie."
-        }),
+        })
+        .setDMPermission(true),
     async execute(interaction) {
         try {
             const snowflake = interaction.user.id;
@@ -38,7 +39,7 @@ module.exports = {
                         [
                             { name: 'Level', value: `\`${data[0].level}\`` },
                             { name: 'Experience', value: `\`${currentXp}\`` },
-                            { name: '-----', value: `Summary` },
+                            { name: "-----", value: `Summary` },
                             { name: 'XP Needed', value: `\`${20 * (data[0].level + 1) + 300 - currentXp}\`` },
                             { name: 'Active Booster', value: `\`${data[0].xp_active}\`${hoursLeft}` },
                             { name: '+15% Boosters', value: `\`${data[0].xp15}\`` },
@@ -55,6 +56,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

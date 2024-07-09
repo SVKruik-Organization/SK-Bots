@@ -26,7 +26,19 @@ I am very open for others joining my team. I try to make everything public, so y
 
 #### Meta
 
-- Node.js version: `v20.10.0 LTS`
-- Discord.js version: `v14.7.1`
+- Node.js version: `v20.14.0 LTS`
+- Discord.js version: `v14.15.2`
 - Project version: `v2.9.0`
 - Database: `MariaDB`
+
+#### Unique Files
+
+Stelleri and Apricaria are essentially the same bots, apart from Stelleri's faster feature-release program. But there are also some differences in the code as Stelleri uses Guild scoped commands instead of Global commands like Apricaria, among other small differences. Below you can find a list that I use for reference when bringing Apricaria up-to-speed with Stelleri. This is so that I don't replace the unique code when I bulk replace files.
+
+| # | Folder | Name | Type |
+| - | - | - | - |
+| 1 | `commands` | `delete.js` | JavaScript |
+| 2 | `commands` | `reload.js` | JavaScript |
+| 3 | Root | `.env` | Environment Variables |
+| 4 | Root | `package.json` | JSON |
+| 5 | Root | `server.js` | JavaScript |

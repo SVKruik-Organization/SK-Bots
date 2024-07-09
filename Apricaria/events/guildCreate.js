@@ -9,7 +9,7 @@ module.exports = {
     async execute(guild) {
         try {
             const fetchedGuild = await modules.client.guilds.fetch(guild.id);
-            if (!fetchedGuild) return logger.log(`Could not fetch guild '${guild.name}'@'${guild.id}'. Aborted integration.`, "info");
+            if (!fetchedGuild) return logger.log(`Could not fetch guild '${guild.name}'@'${guild.id}'. Aborted integration.`, "warning");
 
             // Administrator Role
             let administratorRole = fetchedGuild.roles.cache.find(role => role.name === `${config.general.name} Administrator`);
@@ -39,29 +39,58 @@ module.exports = {
 
             // Blinded Role Creation
             let blindedRole = fetchedGuild.roles.cache.find(role => role.name === "Blinded");
-            if (!blindedRole) blindedRole = await guild.roles.create({
-                name: "Blinded",
-                color: parseInt("AD1457", 16),
-                permissions: [],
-                position: 2
-            }).catch((error) => logger.error(error));
+            if (!blindedRole) {
+                blindedRole = await guild.roles.create({
+                    name: "Blinded",
+                    color: parseInt("AD1457", 16),
+                    permissions: [],
+                    position: 2
+                });
+            } else await blindedRole.setPosition(fetchedGuild.roles.cache.size + 1);
 
             // Blinded Channel
-            if (!(await guild.channels.fetch()).filter((channel) => channel.name === "blinded")) await fetchedGuild.channels.create({
+            if ((await guild.channels.fetch()).filter((channel) => channel.name === "blinded").length === 0) await fetchedGuild.channels.create({
                 name: "blinded",
-                type: ChannelType.GuildText
+                type: ChannelType.GuildText,
+                permissionOverwrites: [
+                    {
+                        id: blindedRole.id,
+                        allow: [PermissionFlagsBits.ViewChannel],
+                    }
+                ]
             });
 
             // Blinded Channel Permissions
             (await guild.channels.fetch()).filter((channel) => channel.type !== ChannelType.GuildCategory).forEach(channel => {
-                if (channel.name !== "blinded") {
-                    channel.permissionOverwrites.edit(blindedRole, { ViewChannel: false });
-                } else channel.permissionOverwrites.edit(blindedRole, { ViewChannel: true });
+                if (channel.name !== "blinded") channel.permissionOverwrites.edit(blindedRole, { ViewChannel: false });
             });
 
+            // Support Channel Category
+            let channel_ticket = (await guild.channels.fetch()).filter((channel) => channel.name === "tickets")[0];
+            if (!channel_ticket) channel_ticket = await fetchedGuild.channels.create({
+                name: "tickets",
+                type: ChannelType.GuildCategory,
+                permissionOverwrites: [
+                    {
+                        id: fetchedGuild.id,
+                        deny: [PermissionFlagsBits.ViewChannel],
+                    }
+                ]
+            });
+
+            // Support Role Creation
+            let supportRole = fetchedGuild.roles.cache.find(role => role.name === "Support");
+            if (!supportRole) {
+                supportRole = await guild.roles.create({
+                    name: "Support",
+                    color: parseInt("EBE3D5", 16),
+                    permissions: [],
+                    position: 1
+                });
+            } else await supportRole.setPosition(fetchedGuild.roles.cache.size + 1);
 
             // New Data
-            modules.database.query("INSERT INTO guild (snowflake, name, role_blinded) VALUES (?, ?, ?); INSERT INTO guild_settings (guild_snowflake) VALUES (?); UPDATE bot SET guild_created = guild_created + 1 WHERE name = ?;", [guild.id, guild.name, blindedRole.id, guild.id, config.general.name])
+            modules.database.query("INSERT INTO guild (snowflake, name, role_blinded, role_support, channel_ticket) VALUES (?, ?, ?, ?); INSERT INTO guild_settings (guild_snowflake) VALUES (?); UPDATE bot SET guild_created = guild_created + 1 WHERE name = ?;", [guild.id, guild.name, blindedRole.id, supportRole.id, channel_ticket.id, guild.id, config.general.name])
                 .then(() => logger.log(`${config.general.name} just joined a new Guild: '${guild.name}@${guild.id}'. Successfully generated data.`, "info"))
                 .catch((error) => {
                     if (error.code === "ER_DUP_ENTRY") {
@@ -76,7 +105,7 @@ module.exports = {
             guildUtils.guilds.push({
                 // Guild
                 "guildObject": guild,
-                "team_tag": "AAAAAAAA",
+                "team_tag": null,
                 "name": guild.name,
                 "channel_admin": null,
                 "channel_event": null,
@@ -84,7 +113,9 @@ module.exports = {
                 "channel_snippet": null,
                 "channel_broadcast": null,
                 "channel_rules": null,
+                "channel_ticket": channel_ticket,
                 "role_blinded": blindedRole,
+                "role_support": supportRole,
                 "locale": guild.locale,
                 "disabled": false,
 

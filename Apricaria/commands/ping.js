@@ -12,7 +12,8 @@ module.exports = {
         .setDescription(`Test if ${config.general.name} responds.`)
         .setDescriptionLocalizations({
             nl: `Test of ${config.general.name} reageert.`
-        }),
+        })
+        .setDMPermission(true),
     async execute(interaction) {
         try {
             const list = ["Yep!", "Here!", "Ready!", "Awake!", "I'm here!", "Yes!", "Yeah!", "Sure!", "Hello!", "Hey!", "Sup!", "Hello there!", "Oi!"];
@@ -22,6 +23,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: false
+    }
 };

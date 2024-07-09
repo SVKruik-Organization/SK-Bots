@@ -15,6 +15,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Bediening voor het economy systeem. Bekijk saldo, opnemen en inleggen."
         })
+        .setDMPermission(true)
         .addSubcommand(option => option
             .setName('withdraw')
             .setNameLocalizations({
@@ -124,7 +125,7 @@ module.exports = {
                             [
                                 { name: 'Wallet', value: `\`${data[0].wallet}\`` },
                                 { name: 'Bank', value: `\`${data[0].bank}\`` },
-                                { name: '-----', value: `Summary` },
+                                { name: "-----", value: `Summary` },
                                 { name: 'Combined', value: `\`${data[0].total}\`` }
                             ], ["shop"]);
                         interaction.reply({ embeds: [embed], ephemeral: true });
@@ -139,6 +140,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: false
+    }
 };

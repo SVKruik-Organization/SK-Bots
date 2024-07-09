@@ -1,4 +1,4 @@
-const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const logger = require('../utils/logger.js');
 const modules = require('..');
 const { dueAdd } = require('../utils/due.js');
@@ -11,18 +11,20 @@ const dateUtils = require('../utils/date.js');
  */
 function disabledButtons(interaction) {
     const confirmLabel = interaction.message.components[0].components[0].data.label;
-    const disabledConfirm = new ButtonBuilder()
-        .setCustomId('confirmBoosterActivate')
-        .setLabel(confirmLabel)
-        .setStyle('Success')
-        .setDisabled(true);
 
     const disabledCancel = new ButtonBuilder()
         .setCustomId('cancelBoosterActivate')
         .setLabel(`Cancel`)
-        .setStyle('Danger')
+        .setStyle(ButtonStyle.Secondary)
         .setDisabled(true);
-    return new ActionRowBuilder().addComponents(disabledConfirm, disabledCancel);
+
+    const disabledConfirm = new ButtonBuilder()
+        .setCustomId('confirmBoosterActivate')
+        .setLabel(confirmLabel)
+        .setStyle(ButtonStyle.Success)
+        .setDisabled(true);
+
+    return new ActionRowBuilder().addComponents(disabledCancel, disabledConfirm);
 }
 
 /**
@@ -43,19 +45,19 @@ function confirmActivateDialog(interaction, value) {
         });
     }
 
-    const confirm = new ButtonBuilder()
-        .setCustomId('confirmBoosterActivate')
-        .setLabel(`Activate ${boosterType}`)
-        .setStyle('Success');
-
     const cancel = new ButtonBuilder()
         .setCustomId('cancelBoosterActivate')
         .setLabel(`Cancel`)
-        .setStyle('Danger');
+        .setStyle(ButtonStyle.Secondary);
+
+    const confirm = new ButtonBuilder()
+        .setCustomId('confirmBoosterActivate')
+        .setLabel(`Activate ${boosterType}`)
+        .setStyle(ButtonStyle.Success);
 
     interaction.update({
         content: `Thank you for your selection. Are you sure you want to activate ${boosterType}?`,
-        components: [new ActionRowBuilder().addComponents(confirm, cancel)],
+        components: [new ActionRowBuilder().addComponents(cancel, confirm)],
         ephemeral: true
     });
 }
@@ -92,7 +94,7 @@ function confirmActivate(interaction) {
                 // + 24 Hours
                 const newDate = dateUtils.getDate(null, null).today;
                 newDate.setDate(newDate.getDate() + 1);
-                dueAdd(interaction.user.id, boosterType, newDate, null, interaction.user.username);
+                dueAdd(interaction, boosterType, newDate, null);
                 interaction.update({
                     content: `Success! Your XP-Booster has been activated for 24 hours, and is applied to all gained Experience.`,
                     components: [disabledButtons(interaction)],

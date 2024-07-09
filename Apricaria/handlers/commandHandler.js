@@ -15,9 +15,9 @@ function init(client) {
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
         const command = require(filePath);
-        if ('data' in command && 'execute' in command) {
+        if ('cooldown' in command && 'data' in command && 'execute' in command) {
             client.commands.set(command.data.name, command);
-        } else return logger.log(`Error at ${filePath}.`, "error");
+        } else logger.log(`Updating error at ${filePath}`, "error");
     }
 }
 

@@ -35,6 +35,10 @@ function error(data) {
     console.error(logData);
 }
 
+/**
+ * The writing to the log file itself.
+ * @param {string} data The text to write to the file.
+ */
 function write(data) {
     fs.appendFile(`./logs/${dateCalculation.getDate().date}.log`, data, (error) => {
         if (error) {
@@ -44,7 +48,13 @@ function write(data) {
     });
 }
 
+function apiMiddleware(req, res, next) {
+    log(`API Request || Agent: ${req.headers["user-agent"]} || HTTP ${req.httpVersion} ${req.method} ${req.url} || IP: ${req.ip} || Body: ${!!req._body} || Content Type: ${req.headers["content-type"]}`, "info");
+    next();
+}
+
 module.exports = {
     "log": log,
-    "error": error
+    "error": error,
+    "apiMiddleware": apiMiddleware
 }

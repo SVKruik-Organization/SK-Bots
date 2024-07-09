@@ -1,3 +1,5 @@
+const config = require('../assets/config.js');
+
 /**
  * Get the statistics & features for a specific subscription edition.
  * @param {string} edition The edition to get the statistics for.
@@ -8,24 +10,24 @@ function getStatitistics(edition) {
     switch (edition) {
         case "Basic":
             editionObject = {
-                seats: 1,
-                servers: 3
+                seats: config.edition.basicSeats,
+                servers: config.edition.basicServers
             }
             break;
         case "Professional":
             editionObject = {
-                seats: 3,
-                servers: 5,
+                seats: config.edition.professionalSeats,
+                servers: config.edition.professionalServers
             }
             break;
         case "Enterprise":
             editionObject = {
-                seats: 10,
-                servers: 25
+                seats: config.edition.enterpriseSeats,
+                servers: config.edition.enterpriseServers
             }
             break;
         default:
-            editionObject = {}
+            editionObject = undefined;
     }
     return editionObject;
 }

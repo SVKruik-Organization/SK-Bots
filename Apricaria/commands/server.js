@@ -14,7 +14,8 @@ module.exports = {
         .setDescription('Show some server statistics.')
         .setDescriptionLocalizations({
             nl: "Laat wat server statistieken zien."
-        }),
+        })
+        .setDMPermission(false),
     async execute(interaction) {
         try {
             // Setup
@@ -48,6 +49,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

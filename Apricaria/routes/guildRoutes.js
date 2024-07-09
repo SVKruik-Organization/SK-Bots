@@ -5,7 +5,7 @@ const modules = require('..');
 const guildUtils = require('../utils/guild.js');
 const logger = require('../utils/logger.js');
 
-router.put('/update/settings', jwtUtils.authenticateJWT, function (req, res) {
+router.put('/update/settings', jwtUtils.authenticateJWT, logger.apiMiddleware, function (req, res) {
     const newGuild = req.body;
 
     if (newGuild && "snowflake" in newGuild && "xp15" in newGuild && "xp50" in newGuild && "level_up_reward_base" in newGuild && "role_cosmetic_price" in newGuild && "role_cosmetic_power" in newGuild
@@ -28,8 +28,10 @@ router.put('/update/settings', jwtUtils.authenticateJWT, function (req, res) {
                     "channel_snippet": filteredGuild.channel_snippet,
                     "channel_broadcast": filteredGuild.channel_broadcast,
                     "channel_rules": filteredGuild.channel_rules,
+                    "channel_ticket": filteredGuild.channel_ticket,
                     "role_cosmetic_power": filteredGuild.role_cosmetic_power,
                     "role_blinded": filteredGuild.role_blinded,
+                    "role_support": filteredGuild.role_support,
                     "locale": filteredGuild.guildObject.preferredLocale,
                     "disabled": filteredGuild.disabled,
 
@@ -57,7 +59,7 @@ router.put('/update/settings', jwtUtils.authenticateJWT, function (req, res) {
     } else return res.sendStatus(400);
 });
 
-router.get('/picture', jwtUtils.authenticateJWT, async function (req, res) {
+router.get('/picture', jwtUtils.authenticateJWT, logger.apiMiddleware, async function (req, res) {
     const guilds = req.body;
     const pictures = [];
     for (let i = 0; i < guilds.length; i++) {

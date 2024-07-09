@@ -15,7 +15,8 @@ module.exports = {
         .setDescription(`Let ${config.general.name} display some statistics.`)
         .setDescriptionLocalizations({
             nl: `Laat ${config.general.name} enkele statistieken weergeven.`
-        }),
+        })
+        .setDMPermission(true),
     async execute(interaction) {
         try {
             const commands = fs.readdirSync("commands").length;
@@ -38,6 +39,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: false
+    }
 };

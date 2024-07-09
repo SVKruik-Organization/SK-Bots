@@ -17,6 +17,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Creëer een geplanned evenement. Alleen voor community servers."
         })
+        .setDMPermission(false)
         .addSubcommand(option => option
             .setName('voice')
             .setDescription('An event that will take place inside a voice channel.')
@@ -231,7 +232,7 @@ module.exports = {
     async execute(interaction) {
         try {
             // Permission Validation
-            if (!(await userUtils.checkAdmin(interaction.user.id, interaction.guild))) return interaction.reply({
+            if (!(await userUtils.checkAdmin(interaction))) return interaction.reply({
                 content: `You do not have the required permissions to perform this elevated command. Please try again later, or contact moderation to receive elevated permissions.`,
                 ephemeral: true
             });
@@ -307,6 +308,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: true
+    }
 };

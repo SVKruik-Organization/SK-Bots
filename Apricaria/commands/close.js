@@ -15,6 +15,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: "Uw account sluiten. U zal toegang verliezen toch account specifieke commando's."
         })
+        .setDMPermission(true)
         .addStringOption(option => option
             .setName('pincode')
             .setNameLocalizations({
@@ -52,6 +53,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: false
+    }
 };

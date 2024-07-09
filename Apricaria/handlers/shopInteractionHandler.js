@@ -1,4 +1,4 @@
-const { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ButtonBuilder } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } = require('discord.js');
 const modules = require('..');
 const logger = require('../utils/logger.js');
 const userIncreaseHandler = require('./userIncreaseHandler.js');
@@ -58,7 +58,7 @@ async function purchaseOptions(interaction, purchaseOption) {
     const button = new ButtonBuilder()
         .setCustomId('openShopBuyModal')
         .setLabel(`Buy ${purchaseOption}`)
-        .setStyle('Success');
+        .setStyle(ButtonStyle.Success);
 
     await interaction.update({
         content: 'Thank you for your selection. Click this button to fill in the quantity.',
@@ -105,7 +105,7 @@ async function modalInputHandler(interaction) {
         amount = parseInt(amount);
         if (amount < 1) return interaction.update({ content: 'You must buy atleast one item. Please try again.', ephemeral: true });
 
-        modules.database.query("SELECT xp15, xp50, role_cosmetic_price, wallet, bank, (wallet + bank) as total FROM guild_settings LEFT JOIN economy ON 1 = 1 WHERE guild_settings.guild_snowflake = ? AND economy.snowflake = ?;", [interaction.guild.id, interaction.user.id])
+        modules.database.query("SELECT xp15, xp50, role_cosmetic_price, wallet, bank, (wallet + bank) AS total FROM guild_settings LEFT JOIN economy ON 1 = 1 WHERE guild_settings.guild_snowflake = ? AND economy.snowflake = ?;", [interaction.guild.id, interaction.user.id])
             .then((pricingData) => {
                 if (pricingData.length === 0) return interaction.reply({
                     content: "This command requires you to have an account. Create an account with the `/register` command.",
@@ -139,10 +139,10 @@ async function modalInputHandler(interaction) {
                             const targetGuild = guildUtils.findGuildById(interaction.guild.id);
                             let xpReward = config.tier.purchase;
                             if (targetGuild && targetGuild.xp_increase_purchase) xpReward = targetGuild.xp_increase_purchase;
-                            userIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, xpReward, interaction.channelId, interaction.client, interaction.user, interaction.guild.id);
+                            userIncreaseHandler.increaseXp(interaction, xpReward);
 
                             // History
-                            const historyResponse = await purchaseHistory.post(total, product, amount, "Shop Command Purchase", interaction, remaining, interaction.guild.id);
+                            const historyResponse = await purchaseHistory.post(total, product, amount, "Shop Command Purchase", interaction, remaining, interaction);
                             if (historyResponse) {
                                 interaction.reply({
                                     content: `All set! Thank you so much for your purchase! Your new Wallet balance is \`${remaining}\` Bits.${product.indexOf("xp") >= 0 ? " Remember that you have to activate XP-Boosters for them to work. You can do this by using the \`/inventory activate\` command." : ""}`,

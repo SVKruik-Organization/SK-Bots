@@ -11,7 +11,8 @@ const closeInteractionHandler = require('../handlers/closeInteractionHandler.js'
 const eventSignUpHandler = require('../handlers/eventSignUpHandler.js');
 const guildUtils = require('../utils/guild.js');
 const dateUtils = require('../utils/date.js');
-const operatorInviteHandler = require('../handlers/operatorInviteHandler.js');
+const operatorHandler = require('../handlers/operatorHandler.js');
+const ticketHandler = require('../handlers/ticketHandler.js');
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -36,7 +37,19 @@ module.exports = {
 
                 // Operator Invite Decline Selection Menu
             } else if (interaction.customId === "operatorInviteDeclineSelectMenu") {
-                operatorInviteHandler.handleDeclineSelect(interaction);
+                operatorHandler.handleDeclineSelect(interaction);
+
+                // Operator Selection Menu
+            } else if (interaction.customId === "operatorSelectMenu") {
+                operatorHandler.handleSelectionMenu(interaction);
+
+                // Operator Modify Menu
+            } else if (interaction.customId === "operatorModifyMenu") {
+                operatorHandler.handleModifyMenu(interaction);
+
+                // Operator Modify Remove Menu
+            } else if (interaction.customId === "operatorModifyRemoveMenu") {
+                operatorHandler.handleModifyRemoveMenu(interaction);
 
             }
         }
@@ -69,7 +82,15 @@ module.exports = {
 
                 // Operator Invite Decline
             } else if (interaction.customId.includes("declineOperatorInvite")) {
-                operatorInviteHandler.handleDeclineFinal(interaction);
+                operatorHandler.handleDeclineFinal(interaction);
+
+                // Operator Invite Cancel Decline
+            } else if (interaction.customId.includes("cancelOperatorInvite")) {
+                operatorHandler.handleDeclineCancel(interaction);
+
+                // Close Ticket Channel
+            } else if (interaction.customId.includes("closeTicketChannel")) {
+                ticketHandler.closeChannel(interaction);
 
             }
         }
@@ -79,6 +100,13 @@ module.exports = {
             if (interaction.customId === "shopBuyModal") {
                 shopInteractionHandler.modalInputHandler(interaction);
             }
+        }
+
+        // Autocomplete
+        if (interaction.isAutocomplete()) {
+            const command = interaction.client.commands.get(interaction.commandName);
+            if (!command) return logger.log(`No command for ${interaction.commandName} was found.`, "warning");
+            await command.autocomplete(interaction);
         }
 
         // Normal Slash Interactions
@@ -131,7 +159,7 @@ module.exports = {
             const targetGuild = guildUtils.findGuildById(interaction.guild.id);
             let xpReward = config.tier.slashCommand;
             if (targetGuild && targetGuild.xp_increase_slash) xpReward = targetGuild.xp_increase_slash;
-            userIncreaseHandler.increaseXp(interaction.user.id, interaction.user.username, xpReward, interaction.channelId, interaction.client, interaction.user, interaction.guild.id);
+            userIncreaseHandler.increaseXp(interaction, xpReward);
         }
 
         // Logging
@@ -144,10 +172,6 @@ module.exports = {
 
         // Executing
         try {
-            if (!interaction.guild && command.guildSpecific) return interaction.reply({
-                content: `This command is not supported in DM's. Use this command in a server instead.`,
-                ephemeral: true
-            });
             command.execute(interaction);
         } catch (error) {
             logger.log(`There was an error while executing || ${interaction.commandName} ||`, "error");

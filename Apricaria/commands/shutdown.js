@@ -14,6 +14,7 @@ module.exports = {
         .setDescriptionLocalizations({
             nl: `Zet ${config.general.name} uit. Deze actie is onomkeerbaar vanuit Discord, een handmatige herstart is vereist.`
         })
+        .setDMPermission(true)
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
         try {
@@ -23,8 +24,10 @@ module.exports = {
                 ephemeral: true
             });
 
+            // Database Connection
             await modules.database.end();
             logger.log("Terminated database connection. Shutting down.", "alert");
+
             interaction.reply({ content: `${config.general.name} is logging off. Bye!` });
             setTimeout(() => {
                 process.exit(0);
@@ -32,6 +35,5 @@ module.exports = {
         } catch (error) {
             logger.error(error);
         }
-    },
-    guildSpecific: false
+    }
 };
