@@ -29,9 +29,7 @@ module.exports = {
             logger.log("Terminated database connection. Shutting down.", "alert");
 
             interaction.reply({ content: `${config.general.name} is logging off. Bye!` });
-            setTimeout(() => {
-                process.exit(0);
-            }, 1000);
+            setTimeout(() => process.exit(0), 1000);
         } catch (error) {
             logger.error(error);
         }

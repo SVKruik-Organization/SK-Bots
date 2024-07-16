@@ -7,8 +7,6 @@ module.exports = {
     name: Events.ClientReady,
     once: true,
     execute() {
-        setTimeout(() => {
-            logger.log(`\n\nSession started on ${rawDate.time}, ${rawDate.date}.\n${config.general.name} is now online!\n\n\t------\n`, "info");
-        }, 1000);
+        setTimeout(() => logger.log(`\n\nSession started on ${rawDate.time}, ${rawDate.date}.\n${config.general.name} is now online!\n\n\t------\n`, "info"), 1000);
     },
 };

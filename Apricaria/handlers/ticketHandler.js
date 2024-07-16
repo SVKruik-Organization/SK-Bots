@@ -8,9 +8,7 @@ function closeChannel(interaction) {
         content: `Alright, I will close this channel in \`${cooldown / 1000}\` seconds.`,
         components: []
     });
-    setTimeout(() => {
-        interaction.channel.delete();
-    }, cooldown);
+    setTimeout(() => interaction.channel.delete(), cooldown);
 }
 
 module.exports = {

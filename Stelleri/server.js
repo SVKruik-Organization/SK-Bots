@@ -40,12 +40,12 @@ app.put("*", logger.apiMiddleware);
 app.delete("*", logger.apiMiddleware);
 
 // Default
-app.get(prefix, jwtUtils.authenticateJWT, logger.apiMiddleware, (req, res) => {
-    res.json({ message: `Default ${config.general.name} Endpoint` });
+app.get(prefix, jwtUtils.authenticateJWT, (req, res) => {
+    res.json({ message: `Authenticated Default ${config.general.name} Endpoint` });
 });
 
 // JWT Login
-app.post(`${prefix}/login`, logger.apiMiddleware, (req, res) => {
+app.post(`${prefix}/login`, (req, res) => {
     const { username, password } = req.body;
 
     modules.database.query("SELECT operator.id, operator.snowflake, operator.username AS 'operator_username', user_general.username AS 'user_username', email, password, service_tag, operator.date_creation, operator.date_update FROM operator LEFT JOIN user_general ON operator.snowflake = user_general.snowflake WHERE operator.username = ?;", [username])

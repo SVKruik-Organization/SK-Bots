@@ -48,6 +48,12 @@ function write(data) {
     });
 }
 
+/**
+ * Logger for Express requests.
+ * @param req The request.
+ * @param res The responds.
+ * @param next Send downstream.
+ */
 function apiMiddleware(req, res, next) {
     log(`API Request || Agent: ${req.headers["user-agent"]} || HTTP ${req.httpVersion} ${req.method} ${req.url} || IP: ${req.ip} || Body: ${!!req._body} || Content Type: ${req.headers["content-type"]}`, "info");
     next();

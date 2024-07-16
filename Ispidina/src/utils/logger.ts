@@ -1,4 +1,5 @@
 import { getDate } from './date';
+import { NextFunction, Response } from "express";
 import fs from 'node:fs';
 
 /**
@@ -47,8 +48,14 @@ function write(data: string): void {
     });
 }
 
-function apiMiddleware(req: Request, res: Response, next: Function): void {
-    log(`API Request || Agent: ${req.headers.get("user-agent")} || HTTP 1.1 ${req.method} ${req.url} || Body: ${!!req.body} || Content Type: ${req.headers.get("content-type")}`, "info");
+/**
+ * Logger for Express requests.
+ * @param req The request.
+ * @param res The responds.
+ * @param next Send downstream.
+ */
+function apiMiddleware(req: any, res: Response, next: NextFunction) {
+    log(`API Request || Agent: ${req.headers.get("user-agent")} || HTTP ${req.httpVersion} ${req.method} ${req.url} || IP: ${req.ip} || Body: ${!!req._body} || Content Type: ${req.headers["content-type"]}`, "info");
     next();
 }
 
