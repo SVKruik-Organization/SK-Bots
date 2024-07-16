@@ -1,3 +1,3 @@
 # Discord Bots - Deployment
 
-WIP
+Laravel deployment server to restart the selected bots on the Lowtide server.

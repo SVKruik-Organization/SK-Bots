@@ -8,25 +8,25 @@ Below you can find some information and links to even more information.
 
 #### Bots Overview
 
-| Name | Purpose | Meaning | Public |
+| Name | Purpose | Meaning | Public | CI/CD |
 | - | - | - | - |
-| Apricaria | General Purpose | [European Golden Plover](https://en.wikipedia.org/wiki/European_golden_plover) | From version v2.9.0 |
-| Interpres | GitHub API | [Ruddy Turnstone](https://en.wikipedia.org/wiki/Ruddy_turnstone) | No |
-| Stelleri | Testing | [Steller's Eider](https://en.wikipedia.org/wiki/Steller%27s_eider) | No |
-| Ispidina | TypeScript | [African Pygmy Kingfisher](https://en.wikipedia.org/wiki/Ispidina) | No |
+| [Apricaria](https://bots.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Apricaria) | General Purpose | [European Golden Plover](https://en.wikipedia.org/wiki/European_golden_plover) | From version v2.10.0 | Yes |
+| [Stelleri](https://bots.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Stelleri) | Early-Access Features | [Steller's Eider](https://en.wikipedia.org/wiki/Steller%27s_eider) | No | No |
+| [Ispidina](https://bots.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Ispidina) | TypeScript | [African Pygmy Kingfisher](https://en.wikipedia.org/wiki/Ispidina) | No | No |
+| [Interpres](https://bots.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Interpres) | GitHub API | [Ruddy Turnstone](https://en.wikipedia.org/wiki/Ruddy_turnstone) | No | No |
 
 #### Documentation Links
 
 - Available [commands](https://github.com/SVKruik-Organization/Discord-Bots/blob/main/Documentation/Commands.md)
-- . . .
+- Dedicated [website](https://bots.stefankruik.com/documentation)
 
 #### Contributing
 
-I am very open for others joining my team. I try to make everything public, so you have full read access to the project. If you browsed around the project and think 'I can help!', don't hesitate to [reach out](mailto:sv.kruik@gmail.com?subject=SVKruik%20Organization%20Contributing&body=Please%20specify%20in%20what%20part%20of%20the%20infrastructure%20you%20would%20like%20to%20contribute.%0A%0AOr%20just%20ask%20for%20my%20other%20modes%20of%20communication%2C%20and%20we%20can%20link!)!
+I am very open for others joining my team. I try to make everything public, so you have full read access to the project. If you browsed around the project and think 'I can help!', don't hesitate to [reach out](https://bots.stefankruik.com/documentation/read/Doc/Contributing)!
 
 #### Meta
 
-- Node.js version: `v20.14.0 LTS`
+- Node.js version: `v20.15.1 LTS`
 - Discord.js version: `v14.15.2`
 - Project version: `v2.9.0`
 - Database: `MariaDB`
