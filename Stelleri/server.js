@@ -1,19 +1,5 @@
-// Express Settings
-const express = require("express");
-const port = process.env.SERVER_PORT;
-const app = express();
-const cors = require("cors");
-app.use(express.json());
-const prefix = process.env.SERVER_PREFIX;
-
-// CORS Config
-const corsOptions = {
-    origin: ["http://localhost:3002"],
-    optionsSuccessStatus: 200
-}
-app.use(cors(corsOptions));
-
 // Dependencies
+const express = require("express");
 const logger = require('./utils/logger.js');
 const modules = require('.');
 const jwtSecret = process.env.SERVER_SECRET;
@@ -22,22 +8,33 @@ const jwt = require('jsonwebtoken');
 const jwtUtils = require('./utils/jwt.js');
 const config = require('./assets/config.js');
 
-// Import Other Routes
-const guildRoutes = require('./routes/guildRoutes.js');
-app.use(`${prefix}/guilds`, guildRoutes);
-const broadcastRoutes = require('./routes/broadcastRoutes.js');
-app.use(`${prefix}/broadcasts`, broadcastRoutes);
+// Express Settings
+const port = process.env.SERVER_PORT;
+const app = express();
+const cors = require("cors");
+app.use(express.json());
+const prefix = process.env.SERVER_PREFIX;
+app.use(logger.apiMiddleware);
+
+// CORS Config
+const corsOptions = {
+    origin: ["http://localhost:3002"],
+    optionsSuccessStatus: 200
+}
+app.use(cors(corsOptions));
 
 // Init
 app.listen(port, () => {
     logger.log(`Update server listening on port ${port}.`, "info");
 });
 
-// Logging
-app.get("*", logger.apiMiddleware);
-app.post("*", logger.apiMiddleware);
-app.put("*", logger.apiMiddleware);
-app.delete("*", logger.apiMiddleware);
+// Import Other Routes
+const sensorRoutes = require('./routes/sensorRoutes.js');
+app.use(`${prefix}/sensors`, sensorRoutes);
+const guildRoutes = require('./routes/guildRoutes.js');
+app.use(`${prefix}/guilds`, guildRoutes);
+const broadcastRoutes = require('./routes/broadcastRoutes.js');
+app.use(`${prefix}/broadcasts`, broadcastRoutes);
 
 // Default
 app.get(prefix, jwtUtils.authenticateJWT, (req, res) => {

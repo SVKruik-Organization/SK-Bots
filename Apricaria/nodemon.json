@@ -1,0 +1,7 @@
+{
+    "ext": "js",
+    "ignore": [
+        "sensors.json"
+    ],
+    "exec": "node ./index.js"
+}
