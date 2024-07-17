@@ -38,13 +38,13 @@ async function checkOperator(interaction) {
     try {
         const data = await modules.database.query("SELECT guild.team_tag, account_status, team_owner FROM operator_member LEFT JOIN guild ON operator_member.team_tag = guild.team_tag WHERE operator_member.snowflake = ? AND guild.snowflake = ?;", [interaction.user.id, interaction.guild.id]);
         if (data.length === 0) {
-            interaction.reply({
+            await interaction.reply({
                 content: `You do not have the required permissions to perform this elevated command. Note that this is an Operator command, so you need additional permissionsand a **special account**. This is not the \`/register\` account. Please try again later, or contact <@${config.general.authorSnowflake}> if you think this is a mistake.`,
                 ephemeral: true
             });
             return { hasPermissions: false, data: [] };
         } else if (data[0].account_status < 2) {
-            interaction.reply({
+            await interaction.reply({
                 content: "I see you already have an account, but it is not verified for this server yet (the Operator team that manages this server). Verification is required for use of Operator commands. Please verify your account and try again later.",
                 ephemeral: true
             });

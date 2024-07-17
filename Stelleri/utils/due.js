@@ -48,14 +48,16 @@ function dueAdd(interaction, type, expiry, data) {
     try {
         // Daily Reward Collection
         if (type === "daily") {
-            modules.database.query("UPDATE user SET daily_expiry = DATE_ADD(NOW(), INTERVAL 1 DAY) WHERE snowflake = ?;", [interaction.user.id])
+            modules.database.query("UPDATE user_general SET daily_expiry = DATE_ADD(NOW(), INTERVAL 1 DAY) WHERE snowflake = ?;", [interaction.user.id])
                 .then((data) => {
                     // Validation
-                    if (!data.affectedRows) return logger.log(`Could not update due date, AS user '${interaction.user.id}' does not have an account yet.`, "warning");
-                    logger.log(`Recorded Daily Reward cooldown for user '${interaction.user.username}'@'${interaction.user.id}' ${type}@${expiry.toLocaleString()}.`, "info");
+                    if (!data.affectedRows) return logger.log(`Could not update due date, as user '${interaction.user.id}' does not have an account yet.`, "warning");
+
+                    const expiryDateObject = getDate(expiry, null);
+                    logger.log(`Recorded Daily Reward cooldown for user '${interaction.user.username}'@'${interaction.user.id}' ${type}@${expiryDateObject.fullDate}.`, "info");
                     modules.dueDates.push({
                         "snowflake": interaction.user.id,
-                        "expiry": getDate(expiry, null).today,
+                        "expiry": expiryDateObject.today,
                         "description": type,
                         "data": data
                     });
@@ -99,7 +101,7 @@ function purgeExpired() {
         // Update Database
         for (let i = 0; i < expiredDueDates.length; i++) {
             if (expiredDueDates[i].description === "daily") {
-                modules.database.query("UPDATE user SET daily_expiry = NULL WHERE snowflake = ?", [expiredDueDates[i].snowflake])
+                modules.database.query("UPDATE user_general SET daily_expiry = NULL WHERE snowflake = ?", [expiredDueDates[i].snowflake])
                     .catch((error) => {
                         logger.error(error);
                         return logger.log("Updating expired due dates went wrong for type 'daily'.", "warning");

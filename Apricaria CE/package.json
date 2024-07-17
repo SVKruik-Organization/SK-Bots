@@ -1,0 +1,25 @@
+{
+    "name": "apricaria-ce",
+    "version": "2.9.0",
+    "description": "Concise General Purpose Bot",
+    "main": "index.js",
+    "scripts": {
+        "update": "node deployGlobalCommands.js",
+        "start": "nodemon index.js"
+    },
+    "author": "SVKruik",
+    "license": "ISC",
+    "dependencies": {
+        "@discordjs/formatters": "^0.3.3",
+        "@vscode/vscode-languagedetection": "^1.0.22",
+        "cors": "^2.8.5",
+        "discord.js": "^14.15.2",
+        "dotenv": "^16.4.5",
+        "express": "^4.19.2",
+        "mariadb": "^3.3.0"
+    },
+    "devDependencies": {
+        "prettier": "^3.2.5",
+        "prettier-plugin-sql": "^0.18.0"
+    }
+}

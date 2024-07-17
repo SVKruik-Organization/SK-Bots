@@ -19,9 +19,8 @@ exports.cooldowns = {
 // Website Links
 exports.urls = {
     website: "https://bots.stefankruik.com",
-    botRepository: "https://github.com/SVKruik-Organization/Discord-Bots",
-    botCommanderRepository: "https://github.com/SVKruik-Organization/Bot-Commander",
-    botCommanderWebsite: "https://bots.stefankruik.com" // .com/products/commander
+    docs: "https://bots.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Apricaria",
+    botCommanderWebsite: "https://bots.stefankruik.com" // TODO .com/products/commander
 }
 
 // Economy Settings

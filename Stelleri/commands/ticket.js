@@ -24,7 +24,7 @@ module.exports = {
                 ephemeral: true
             });
 
-            interaction.reply({
+            await interaction.reply({
                 content: `Hey there, thanks for contacting support. I am on it, give me one second.`,
                 ephemeral: true
             });
@@ -55,7 +55,7 @@ module.exports = {
 
                 // New Channel
                 data.send({
-                    content: "Welcome to this private channel. Support will be right with you @everyone.\n\nWhen your question/issue is resolved, you can use the following button to close the ticket:",
+                    content: "Welcome to this private channel. Support will be right with you @everyone.\n\nWhen your question/issue is resolved, you can use the following button to close the ticket channel:",
                     components: [new ActionRowBuilder().addComponents(close)],
                     ephemeral: true
                 });

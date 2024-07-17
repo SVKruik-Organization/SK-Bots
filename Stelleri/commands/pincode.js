@@ -56,21 +56,22 @@ module.exports = {
                     });
 
                     // User Validation
+                    // TODO
                     if (data[0].pincode !== oldPincode) return interaction.reply({
                         content: `Your old pincode does not match the current one. Please try again. If you want to reset your pincode (in case you forgot your pincode), please follow this [link](${config.urls.website}).`,
                         ephemeral: true
                     });
 
                     // Update
-                    modules.database.query("UPDATE user SET pincode = ? WHERE snowflake = ?;", [newPincode, snowflake])
-                        .then((data) => {
+                    modules.database.query("UPDATE user_general SET pincode = ? WHERE snowflake = ?;", [newPincode, snowflake])
+                        .then(async (data) => {
                             // Validation
                             if (!data.affectedRows) return interaction.reply({
                                 content: "This command requires you to have an account. Create an account with the `/register` command.",
                                 ephemeral: true
                             });
 
-                            interaction.reply({
+                            await interaction.reply({
                                 content: `Your pincode has been updated successfully. New pincode: \`${newPincode}\`. Safe it save!`,
                                 ephemeral: true
                             });

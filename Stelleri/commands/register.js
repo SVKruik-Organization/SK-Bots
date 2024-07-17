@@ -33,7 +33,7 @@ module.exports = {
             const username = interaction.user.username;
             const pincode = interaction.options.getString('pincode');
 
-            modules.database.query("INSERT INTO user (snowflake, username, pincode) VALUES (?, ?, ?); INSERT INTO tier (snowflake) VALUES (?); INSERT INTO economy (snowflake) VALUES (?); INSERT INTO user_inventory (snowflake) VALUES (?); INSERT INTO user_commands (snowflake) VALUES (?);",
+            modules.database.query("INSERT INTO user_general (snowflake, username, pincode) VALUES (?, ?, ?); INSERT INTO tier (snowflake) VALUES (?); INSERT INTO economy (snowflake) VALUES (?); INSERT INTO user_inventory (snowflake) VALUES (?); INSERT INTO user_commands (snowflake) VALUES (?);",
                 [snowflake, username, pincode, snowflake, snowflake, snowflake, snowflake])
                 .then(() => {
                     interaction.reply({

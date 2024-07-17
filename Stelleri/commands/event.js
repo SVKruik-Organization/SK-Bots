@@ -173,7 +173,8 @@ module.exports = {
             // Date Processing & Validation
             const rawDate = interaction.options.getString('date');
             const rawTime = interaction.options.getString('time');
-            const fullDate = datetimeParser(rawDate, rawTime, interaction);
+            const fullDate = datetimeParser(rawDate, rawTime);
+            if (typeof fullDate === "boolean") return interaction.reply({ content: "Your date or time input is invalid. Please check your inputs try again. Also note that the event date must be into the future.", ephemeral: true });
 
             const onlineBoolean = eventType === "online";
             const location = eventType === "online" ? interaction.options.getChannel("location").id : interaction.options.getString("location");

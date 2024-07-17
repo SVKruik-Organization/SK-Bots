@@ -237,7 +237,7 @@ module.exports = {
                 ephemeral: true
             });
 
-            interaction.reply({
+            await interaction.reply({
                 content: `Creating scheduled event. One moment please.`,
                 ephemeral: true
             });
@@ -248,7 +248,8 @@ module.exports = {
             const description = interaction.options.getString('description');
             const rawDate = interaction.options.getString('date');
             const rawTime = interaction.options.getString('time');
-            const parsedDate = datetimeParser(rawDate, rawTime, interaction);
+            const parsedDate = datetimeParser(rawDate, rawTime);
+            if (typeof parsedDate === "boolean") return interaction.editReply({ content: "Your date or time input is invalid. Please check your inputs try again. Also note that the event date must be into the future.", ephemeral: true });
             const eventManager = new GuildScheduledEventManager(interaction.guild);
             const image = interaction.options.getAttachment('cover');
 
@@ -267,7 +268,7 @@ module.exports = {
                     return interaction.followUp({
                         content: "The file you uploaded is not supported. Please choose an image and try again.",
                         ephemeral: true
-                    })
+                    });
                 } else eventObject.image = image.url;
             }
 
@@ -281,7 +282,9 @@ module.exports = {
             } else if (eventType === "external") {
                 eventObject.entityMetadata = { location: interaction.options.getString('location') };
                 eventObject.entityType = GuildScheduledEventEntityType.External;
-                eventObject.scheduledEndTime = datetimeParser(rawDate, interaction.options.getString('endtime'), interaction)
+                const endDate = datetimeParser(rawDate, interaction.options.getString('endtime'));
+                if (typeof endDate === "boolean") return interaction.editReply({ content: "Your date or time input is invalid. Please check your inputs try again. Also note that the event date must be into the future.", ephemeral: true });
+                eventObject.scheduledEndTime = endDate;
             }
 
             // Database Processing

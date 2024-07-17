@@ -75,6 +75,25 @@ module.exports = {
             let title = interaction.options.getString('title');
             if (title === undefined || title === null) title = "- Unnamed Snippet";
 
+            let errorStatus = false;
+            if (language === "html" && code.includes("<!--")) {
+                errorStatus = true;
+            } else if (language === "html" && code.includes("<!--")) {
+                errorStatus = true;
+            } else if (language === "scss" && code.includes("/*")) {
+                errorStatus = true;
+                errorStatus = true;
+            } else if ((language === "javascript" || language === "typescript") && (code.includes("//") || code.includes("/**"))) {
+                errorStatus = true;
+            } else if (language === "vue" && (code.includes("//") || code.includes("/**") || code.includes("/*") || code.includes("<!--"))) {
+                errorStatus = true;
+            } else if (language === "sql" && code.includes("--")) errorStatus = true;
+
+            if (errorStatus) return interaction.reply({
+                content: `I tried formatting your \`${language}\` code but noticed comments being present. The Prettier formatting API messes up code snippets with inline comments because it cannot see line-breaks.\n\nPlease remove them before sending them. Sorry for this inconvenience. You can also send the code manually with a [Markdown code block](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#code). That's what I do under the hood.`,
+                ephemeral: true
+            })
+
             try {
                 if (language === "javascript") {
                     code = await prettier.format(code, { semi: false, parser: 'babel' });
@@ -93,7 +112,7 @@ module.exports = {
                 highlight = "css";
             } else if (language === "vue") highlight === "html";
 
-            channel.send({ content: `<@${snowflake}> ${title} \`${highlight}\`\n\n\`\`\`${language}\n${code}\n\`\`\`` });
+            await channel.send({ content: `<@${snowflake}> ${title} \`${highlight}\`\n\n\`\`\`${language}\n${code}\n\`\`\`` });
             interaction.reply({
                 content: `Message created. Check your code-snippet here: <#${channel.id}>.`,
                 ephemeral: true

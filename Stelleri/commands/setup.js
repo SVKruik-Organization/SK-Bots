@@ -209,7 +209,7 @@ module.exports = {
                     ephemeral: true
                 });
 
-                const embed = embedConstructor.create("Server Configuration", `${interaction.guild.name} Setup`, interaction.user,
+                const embed = embedConstructor.create("Server Configuration", `Settings and channel configuration of \`${interaction.guild.name}\`.`, interaction.user,
                     [
                         { name: 'Admin Channel', value: `${targetGuild.channel_admin || "Not Configured"}` },
                         { name: 'Event Channel', value: `${targetGuild.channel_event || "Not Configured"}` },
@@ -232,11 +232,11 @@ module.exports = {
                         },
                         {
                             name: 'How-To',
-                            value: 'To update or register, please fill the other marked AS optional fields. Fields that are left empty, will be stored AS empty (resetting the value). Use this command carefully, AS erroneous input will disable certain commands.'
+                            value: 'To update or register, please fill the other marked as optional fields. Fields that are left empty, will be stored as empty (resetting the value). Use this command carefully, as erroneous input will disable certain commands.'
                         },
                         {
                             name: 'Advanced Config',
-                            value: `When you try to update the configuration, you might notice the lack of customization. This is because it would not be UIX friendly to show 30 different options in only one command or to have multiple commands for different settings. To fix this, another standalone desktop application has been built. This app enables you to customize the bot to your liking including custom pricing and viewing statistics. For more information, checkout this [website](${config.urls.botCommanderWebsite}).`
+                            value: `When you try to update the configuration, you might notice the lack of customization. This is because it would not be UIX friendly to show 30 different options in only one command or to have multiple commands for different settings. To fix this, another standalone desktop and weba application have been built. These apps enables you to customize the bot to your liking including custom pricing and viewing statistics. For more information, checkout my [website](${config.urls.website}).`
                         }
                     ], ["server"]);
                 interaction.reply({ embeds: [embed], ephemeral: true });

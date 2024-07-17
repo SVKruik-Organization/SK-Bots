@@ -40,9 +40,6 @@ async function processCpuTemperature() {
             logger.log("Apricaria Sensor API connection lost.", "warning");
         } else if (error.cause.code === "UND_ERR_HEADERS_TIMEOUT") {
             logger.log("Apricaria Sensor API fetch timed out.", "warning");
-        } else {
-            console.log(error.cause);
-            return logger.error(error);
-        }
+        } else return logger.error(error);
     }
 }

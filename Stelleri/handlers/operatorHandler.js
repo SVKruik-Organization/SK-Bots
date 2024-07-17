@@ -14,7 +14,8 @@ function handleDeclineInit(interaction) {
     modules.database.query("SELECT operator_invite.snowflake as inviter, edition, operator.username, operator_team.team_tag FROM operator_invite LEFT JOIN operator_team ON operator_invite.team_tag = operator_team.team_tag LEFT JOIN operator ON operator.snowflake = operator_invite.snowflake WHERE snowflake_recv = ?;", [interaction.user.id])
         .then((data) => {
             if (data.length === 0) return interaction.reply({
-                content: `Hello there, <@${interaction.user.id}>! You do not have any pending Operator invites at the moment and/or you don't have an Operator account yet.`
+                content: "You do not have any pending Operator invites at the moment and/or you don't have an Operator account yet.",
+                ephemeral: true
             });
 
             const stringOptions = [];
@@ -31,8 +32,9 @@ function handleDeclineInit(interaction) {
                 .addOptions(stringOptions);
 
             return interaction.reply({
-                content: `Hello there, <@${interaction.user.id}>! What invite would you like to decline?`,
-                components: [new ActionRowBuilder().addComponents(select)]
+                content: "What invite would you like to decline?",
+                components: [new ActionRowBuilder().addComponents(select)],
+                ephemeral: true
             });
         }).catch((error) => {
             logger.error(error);
@@ -188,7 +190,7 @@ async function handleSelectionMenu(interaction) {
                     .setColor(config.general.color)
                     .setTitle("Operator Overview")
                     .setDescription(`Here is an overview of your plan statistics and team members for your selected teamtag.`)
-                    .setuser({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
+                    .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
                     .addFields(seats)
                     .addFields(
                         { name: "Information", value: "-----" },
@@ -198,7 +200,7 @@ async function handleSelectionMenu(interaction) {
                         { name: 'Edition', value: `\`${data[0].edition}\``, inline: true },
                         { name: 'Creation Date', value: time(data[0].date_creation), inline: true },
                         { name: 'Update Date', value: time(data[0].date_update), inline: true },
-                        { name: 'Note', value: `Changing your subscription details and advanced settings can be done with the [Bot Commander](${config.urls.botCommanderWebsite}) application or the [website](${config.urls.website}). If you have any questions or concerns, don't hesitate to reach out to <@${config.general.userSnowflake}>.` })
+                        { name: 'Note', value: `Changing your subscription details and advanced settings can be done with the [Bot Commander](${config.urls.botCommanderWebsite}) application or the [website](${config.urls.website}). If you have any questions or concerns, don't hesitate to reach out to <@${config.general.authorSnowflake}>.` })
                     .setTimestamp()
                     .setFooter({ text: `Embed created by ${config.general.name}` });
                 return interaction.update({
@@ -258,12 +260,13 @@ async function handleModifyMenu(interaction) {
                 // Finalize
                 modules.database.query("INSERT INTO operator_invite (snowflake, snowflake_recv, team_tag) VALUES (?, ?, ?)", [interaction.user.id, targetMember.id, teamTag])
                     .then(() => {
+                        // TODO
                         const registerLink = `${config.urls.website}/login?team=${teamTag}&owner=${interaction.user.id}&target=${targetMember.id}`;
                         const embed = new EmbedBuilder()
                             .setColor(config.general.color)
                             .setTitle("New Operator Invite")
                             .setDescription(`Hello <@${targetMember.id}>! <@${interaction.user.id}> has invited **you** to join his Operator team.`)
-                            .setuser({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
+                            .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
                             .addFields(
                                 { name: "Instructions", value: "-----" },
                                 { name: 'Accept', value: `If you decide to join them, you can click on this [link](${registerLink}). It will direct you to my website, where you can create an Operator account if you don't have one yet, and finalize registration..` },

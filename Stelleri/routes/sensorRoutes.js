@@ -7,8 +7,9 @@ const fs = require('node:fs');
 const { EmbedBuilder } = require('discord.js');
 
 router.post('/cpu', jwtUtils.authenticateInternalComms, async function (req, res) {
-    const sensorSettings = JSON.parse(fs.readFileSync(__dirname + '/../settings/sensors.json', "utf-8"));
     const data = req.body;
+    if (!data || !("cpuData" in data) || !("temperatureData" in data)) return res.sendStatus(400);
+    const sensorSettings = JSON.parse(fs.readFileSync(__dirname + '/../settings/sensors.json', "utf-8"));
 
     if (data.temperatureData.main > 45 && sensorSettings.acknowledgeHighTemperature === false) {
         const author = await findUserById(config.general.authorSnowflake);

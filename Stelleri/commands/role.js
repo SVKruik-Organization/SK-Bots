@@ -97,12 +97,10 @@ module.exports = {
                                         ephemeral: true
                                     });
                                 });
-                            } else {
-                                interaction.reply({
-                                    content: "Your color is invalid. Make sure your color is in HEX format, like so: `000000`. Hashtag prefix is not needed.",
-                                    ephemeral: true
-                                });
-                            }
+                            } else interaction.reply({
+                                content: "Your color is invalid. Make sure your color is in HEX format, like so: `000000`. Hashtag prefix is not needed.",
+                                ephemeral: true
+                            });
                         }).catch((error) => {
                             logger.error(error);
                             return interaction.reply({

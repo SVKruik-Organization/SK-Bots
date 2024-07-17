@@ -24,7 +24,7 @@ module.exports = {
             })
             .setDescription("Add the Blind role.")
             .setDescriptionLocalizations({
-                nl: "Voeg de Verblind rol toe."
+                nl: "Voeg de Blind rol toe."
             })
             .addUserOption(option => option
                 .setName('target')
@@ -43,7 +43,7 @@ module.exports = {
             })
             .setDescription("Remove the Blind role.")
             .setDescriptionLocalizations({
-                nl: "Verwijder de Verblind rol."
+                nl: "Verwijder de Blind rol."
             })
             .addUserOption(option => option
                 .setName('target')

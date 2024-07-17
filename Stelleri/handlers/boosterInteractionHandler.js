@@ -10,7 +10,7 @@ const dateUtils = require('../utils/date.js');
  * @returns Disabled buttons.
  */
 function disabledButtons(interaction) {
-    const confirmLabel = interaction.message.components[0].components[0].data.label;
+    const confirmLabel = interaction.message.components[0].components[1].data.label;
 
     const disabledCancel = new ButtonBuilder()
         .setCustomId('cancelBoosterActivate')
@@ -39,7 +39,7 @@ function confirmActivateDialog(interaction, value) {
 
     if (boostersLeft === 0) {
         return interaction.update({
-            content: `Unfortunately, you do not have any XP-Boosters of this type (\`${boosterType}\`) left. Check your available XP-Boosters with the \`/tier\` command.`,
+            content: `Unfortunately, you do not have any XP-Boosters of this type (\`${boosterType}\`) left. Check your available XP-Boosters with the \`/inventory overview\` command.`,
             components: [],
             ephemeral: true
         });
@@ -69,7 +69,7 @@ function confirmActivateDialog(interaction, value) {
  */
 function confirmActivate(interaction) {
     try {
-        const boosterType = interaction.message.components[0].components[0].data.label.split(" ")[1];
+        const boosterType = interaction.message.components[0].components[1].data.label.split(" ")[1];
 
         // Sanitizing against SQL injection
         let row = null;

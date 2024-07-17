@@ -1,5 +1,4 @@
 import * as config from "../assets/config";
-import { CommandInteraction, InteractionResponse } from 'discord.js';
 
 /**
  * Timestamp Calculation
@@ -60,10 +59,9 @@ function difference(dateFuture: Date, datePast: Date): { remainingHours: number,
  * Parse seperate date and time input to one Date object.
  * @param rawDate The day/month/year input.
  * @param rawTime The hour:minute input.
- * @param interaction Then active Discord interaction.
  * @returns On error or the parsed date.
  */
-function datetimeParser(rawDate: string, rawTime: string, interaction: CommandInteraction): Date | Promise<InteractionResponse<boolean>> {
+function datetimeParser(rawDate: string, rawTime: string): Date | boolean {
     // const [day, month, year] = rawDate.split("/");
     const day: number = parseInt(rawDate.split("/")[0]);
     const month: number = parseInt(rawDate.split("/")[1]);
@@ -72,13 +70,13 @@ function datetimeParser(rawDate: string, rawTime: string, interaction: CommandIn
     const hour: number = parseInt(rawTime.split(":")[0]);
     const minute: number = parseInt(rawTime.split(":")[1]);
 
-    if (day > 31 || month > 12 || year > new Date().getFullYear() + 2 || hour > 23 || minute > 59) return interaction.reply({ content: "Your date/time input is invalid. Please try again.", ephemeral: true });
+    if (day > 31 || month > 12 || year > new Date().getFullYear() + 2 || hour > 23 || minute > 59) return false;
     let fullDate: Date;
     try {
         fullDate = new Date(year, month - 1, day, hour, minute);
-        if (isNaN(fullDate.getTime()) || fullDate < getDate(null, null).today) return interaction.reply({ content: "Your date/time input is invalid. Use the arrow-up key and try again.", ephemeral: true });
+        if (isNaN(fullDate.getTime()) || fullDate < getDate(null, null).today) return false;
     } catch (error) {
-        return interaction.reply({ content: "Your date/time input is invalid. Use the arrow-up key and try again.", ephemeral: true });
+        return false
     }
 
     return fullDate;

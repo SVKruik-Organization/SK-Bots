@@ -53,30 +53,7 @@ function difference(dateFuture, datePast) {
     return { remainingHours, remainingMinutes };
 }
 
-/**
- * Parse seperate date and time input to one Date object.
- * @param {string} rawDate The day/month/year input.
- * @param {string} rawTime The hour:minute input.
- * @param {CommandInteraction} interaction Then active Discord interaction.
- * @returns On error or the parsed date.
- */
-function datetimeParser(rawDate, rawTime, interaction) {
-    const [day, month, year] = rawDate.split("/");
-    const [hour, minute] = rawTime.split(":");
-    if (day > 31 || month > 12 || year > new Date().getFullYear() + 2 || hour > 23 || minute > 59) return interaction.reply({ content: "Your date/time input is invalid. Please try again.", ephemeral: true });
-    let fullDate;
-    try {
-        fullDate = new Date(year, month - 1, day, hour, minute);
-        if (isNaN(fullDate.getTime()) || fullDate < getDate(null, null).today) return interaction.reply({ content: "Your date/time input is invalid. Use the arrow-up key and try again.", ephemeral: true });
-    } catch (error) {
-        return interaction.reply({ content: "Your date/time input is invalid. Use the arrow-up key and try again.", ephemeral: true });
-    }
-
-    return fullDate;
-}
-
 module.exports = {
     "getDate": getDate,
-    "difference": difference,
-    "datetimeParser": datetimeParser
+    "difference": difference
 }

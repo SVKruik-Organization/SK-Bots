@@ -119,7 +119,7 @@ module.exports = {
                 modules.database.query("INSERT INTO user_administrator (user_snowflake, user_username, guild_snowflake) VALUES (?, ?, ?);", [targetUser.id, targetUser.username, interaction.guild.id])
                     .then(() => {
                         fetchedTargetUser.roles.add(adminRole);
-                        logger.log(`${targetUser.username} has been granted Administrator privileges by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "warning");
+                        logger.log(`${targetUser.username} has been granted Administrator privileges by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "info");
                         return interaction.reply({
                             content: `Successfully added user <@${targetUser.id}> to the Administrators of this server. They can now use commands that require elevated permissions.`,
                             ephemeral: true
@@ -141,7 +141,7 @@ module.exports = {
             } else if (actionType === "remove") {
                 modules.database.query("DELETE FROM user_administrator WHERE user_snowflake = ? AND guild_snowflake = ?;", [targetUser.id, interaction.guild.id])
                     .then(() => {
-                        logger.log(`${targetUser.username}'s Administrator privileges were removed by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "warning");
+                        logger.log(`${targetUser.username}'s Administrator privileges were removed by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "info");
                         fetchedTargetUser.roles.remove(adminRole);
                         return interaction.reply({
                             content: `Successfully removed user <@${targetUser.id}> from the Administrators of this server. They can no longer use commands that require elevated permissions.`,

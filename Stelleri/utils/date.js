@@ -5,7 +5,7 @@ const { CommandInteraction } = require('discord.js');
  * Timestamp Calculation
  * @param {Date} datetime Overwrite Date.now.
  * @param {string} preferredLocale Overwrite default locale.
- * @returns Object with date, time and now.
+ * @returns Object with date, time, now and the full date string.
  */
 function getDate(datetime, preferredLocale) {
     let targetDate = new Date();
@@ -25,6 +25,7 @@ function getDate(datetime, preferredLocale) {
 
     const date = `${dd}-${mm}-${yyyy}`;
     const time = `${hh}:${m}`;
+    const fullDate = `${time} ${date}`;
 
     /**
      * Time formatter.
@@ -35,7 +36,7 @@ function getDate(datetime, preferredLocale) {
         return value < 10 ? "0" + value : value.toString();
     }
 
-    return { date, time, today };
+    return { date, time, today, fullDate };
 }
 
 /**
@@ -61,18 +62,18 @@ function difference(dateFuture, datePast) {
  * @param {string} rawDate The day/month/year input.
  * @param {string} rawTime The hour:minute input.
  * @param {CommandInteraction} interaction Then active Discord interaction.
- * @returns On error or the parsed date.
+ * @returns False n error or the parsed date.
  */
-function datetimeParser(rawDate, rawTime, interaction) {
+function datetimeParser(rawDate, rawTime) {
     const [day, month, year] = rawDate.split("/");
     const [hour, minute] = rawTime.split(":");
-    if (day > 31 || month > 12 || year > new Date().getFullYear() + 2 || hour > 23 || minute > 59) return interaction.reply({ content: "Your date/time input is invalid. Please try again.", ephemeral: true });
+    if (day > 31 || month > 12 || year > new Date().getFullYear() + 2 || hour > 23 || minute > 59) return false
     let fullDate;
     try {
         fullDate = new Date(year, month - 1, day, hour, minute);
-        if (isNaN(fullDate.getTime()) || fullDate < getDate(null, null).today) return interaction.reply({ content: "Your date/time input is invalid. Use the arrow-up key and try again.", ephemeral: true });
+        if (isNaN(fullDate.getTime()) || fullDate < getDate(null, null).today) return false;
     } catch (error) {
-        return interaction.reply({ content: "Your date/time input is invalid. Use the arrow-up key and try again.", ephemeral: true });
+        return false
     }
 
     return fullDate;

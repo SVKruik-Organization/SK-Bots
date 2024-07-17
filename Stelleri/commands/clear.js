@@ -37,7 +37,7 @@ module.exports = {
             });
 
             const amount = interaction.options.getInteger('amount');
-            interaction.reply({
+            await interaction.reply({
                 content: `Deleting ${amount} messages . . .`,
                 ephemeral: true
             });
@@ -46,7 +46,7 @@ module.exports = {
             setTimeout(() => {
                 interaction.deleteReply();
                 interaction.channel.bulkDelete(amount).catch(() => {
-                    interaction.reply({
+                    interaction.editReply({
                         content: "Atleast one of the messages you are trying to delete is older than \`14\` days. Discord is not allowing me to do that, so you will have to delete them manually (or lower your clear amount to potentially exclude the erroneous message).",
                         ephemeral: true
                     });

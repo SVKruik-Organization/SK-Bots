@@ -43,7 +43,7 @@ module.exports = {
 
             // Process
             modules.database.query("UPDATE economy SET wallet = wallet + ? WHERE snowflake = ?;", [dailyreward, interaction.user.id])
-                .then((data) => {
+                .then(async (data) => {
                     // Validation
                     if (!data.affectedRows) return interaction.reply({
                         content: "This command requires you to have an account. Create an account with the `/register` command.",
@@ -53,9 +53,9 @@ module.exports = {
                     // + 24 Hours
                     const newDate = dateUtils.getDate(null, null).today;
                     newDate.setDate(newDate.getDate() + 1);
-                    dueAdd(interaction.user.id, "daily", newDate, null, interaction.user.username);
+                    dueAdd(interaction, "daily", newDate, null);
                     if (jackpotBoolean) {
-                        interaction.reply({ content: `💎 You hit the JACKPOT! 💎 You received a grand total of \`${dailyreward}\` Bits. Congratulations! 🎉` });
+                        await interaction.reply({ content: `💎 You hit the JACKPOT! 💎 You received a grand total of \`${dailyreward}\` Bits. Congratulations! 🎉` });
                         logger.log(`'${interaction.user.username}@${interaction.user.id}' hit the daily reward jackpot worth ${jackpotValue}. Their dailyreward was worth ${dailyreward - jackpotValue}. They received a total of ${dailyreward} Bits.\n`, "warning");
                     } else interaction.reply({
                         content: `Successfully collected your daily reward: \`${dailyreward}\` Bits. Be sure to come back tomorrow!`,

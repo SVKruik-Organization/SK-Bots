@@ -37,12 +37,10 @@ module.exports = {
                     const match = inputPincode === dataPincode;
                     if (match) {
                         sendConfirmButtons(interaction);
-                    } else {
-                        interaction.reply({
-                            content: "Your pincode is not correct. If you forgot your pincode, you can request it with `/pincode`.",
-                            ephemeral: true
-                        });
-                    }
+                    } else interaction.reply({
+                        content: "Your pincode is not correct. If you forgot your pincode, you can request it with `/pincode`.",
+                        ephemeral: true
+                    });
                 }).catch((error) => {
                     logger.error(error);
                     return interaction.reply({

@@ -3,6 +3,7 @@ const config = require('../assets/config.js');
 const logger = require('../utils/logger.js');
 const modules = require('..');
 const guildUtils = require('../utils/guild.js');
+const { findUserById } = require('../utils/user.js');
 
 module.exports = {
     name: Events.GuildCreate,
@@ -135,8 +136,15 @@ module.exports = {
                 "xp_increase_slash": 15,
                 "xp_increase_purchase": 25
             });
+
+            (await findUserById(config.general.authorSnowflake)).send({
+                content: `I have been added to a new server: '${guild.name}@${guild.id}'. Check console for any errors during this process.`
+            });
         } catch (error) {
             logger.error(error);
+            (await findUserById(config.general.authorSnowflake)).send({
+                content: `I have been added to a new server: '${guild.name}@${guild.id}'. Something unfortunately went wrong though, so check the console.`
+            });
         }
     }
 };
