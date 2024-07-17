@@ -3,7 +3,7 @@ const modules = require('../index.js');
 const config = require('../assets/config.js');
 const userIncreaseHandler = require('../handlers/userIncreaseHandler.js');
 const guildUtils = require('../utils/guild.js');
-const fs = require('node:fs');
+const { handleAcknowledge } = require('../handlers/dmCommandHandler.js');
 
 module.exports = {
     name: Events.MessageCreate,
@@ -27,14 +27,13 @@ module.exports = {
 
             // Message inside DM
         } else {
-            switch (message.content) {
-                case "/acknowledge temperature":
-                    const sensorSettings = JSON.parse(fs.readFileSync(__dirname + '/../settings/sensors.json', "utf-8"));
-                    sensorSettings.acknowledgeHighTemperature = true;
-                    fs.writeFileSync(__dirname + "/../settings/sensors.json", JSON.stringify(sensorSettings, null, 2), "utf-8");
+            if (message.content.charAt(0) !== "/") return;
+            switch (message.content.split(" ")[0]) {
+                case "/acknowledge":
+                    handleAcknowledge(message);
                     break;
                 default:
-                    break;
+                    return message.reply({ content: `Hello there <@${message.author.id}>, \`${message.content}\` is not a valid DM command.` });
             }
         }
     }
