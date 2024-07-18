@@ -17,7 +17,7 @@ function log(data, rawType) {
         } else logData = `${dateCalculation.getDate().time} [${type.toUpperCase()}] ${data}\n`;
         write(logData);
         console.log(logData);
-        if (type === "fatal") return process.exit(1);
+        if (type === "fatal") throw new Error("Fatal log type. Terminated process.");
         return true;
     } catch (error) {
         error(error);

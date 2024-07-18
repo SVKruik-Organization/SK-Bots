@@ -40,7 +40,7 @@ try {
                 console.log(`Successfully loaded ${data.length} commands for guild ${queryData[i].name}.`);
             }
             console.log("\n");
-            process.exit(1);
+            process.exit(0);
         }).catch((error) => {
             logger.error(error);
         });

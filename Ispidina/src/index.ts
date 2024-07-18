@@ -25,7 +25,7 @@ client.commands = new Collection<string, Command>();
 client.cooldowns = new Collection<string, Collection<string, Date>>();
 
 // Database Connection
-if (!process.env.PORT) process.exit(1);
+if (!process.env.HOST || !process.env.PORT) throw new Error("Missing database credentials.");
 const database: Pool = mariadb.createPool({
     host: process.env.HOST,
     port: parseInt(process.env.PORT),

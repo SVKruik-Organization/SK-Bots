@@ -25,7 +25,7 @@ for (const file of commandFiles) {
             { body: commands })
         console.log(`Successfully loaded ${data.length} global commands.`);
         console.log("\n");
-        process.exit(1);
+        process.exit(0);
     } catch (error) {
         console.error(error);
     }
