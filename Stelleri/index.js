@@ -1,5 +1,6 @@
 require('dotenv').config();
 const mariadb = require('mariadb');
+const amqp = require('amqplib');
 const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js');
 const commandHandler = require('./handlers/commandHandler.js');
 const eventHandler = require('./handlers/eventHandler.js');
@@ -31,6 +32,25 @@ const database = mariadb.createPool({
     database: process.env.DATABASE,
     password: process.env.PASSWORD,
     multipleStatements: true
+});
+
+// Uplink Connection
+async function uplinkConnection() {
+    try {
+        return await (await amqp.connect({
+            "protocol": "amqp",
+            "hostname": process.env.AMQP_HOST,
+            "port": parseInt(process.env.AMQP_PORT),
+            "username": process.env.AMQP_USERNAME,
+            "password": process.env.AMQP_PASSWORD
+        })).createChannel();
+    } catch (error) {
+        logger.error(error);
+    }
+}
+uplinkConnection().then(async (channel) => {
+    module.exports.uplink = channel;
+    require('./uplink.js').init();
 });
 
 // Exporting Values
