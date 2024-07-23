@@ -8,4 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${{ secrets.BROADCAST_PASSWORD }}" -d '${{ toJson(github.event.release) }}' ${{ secrets.RELEASE_BROADCAST_ENDPOINT }}
+          curl -X POST \
+               -H "Content-Type: application/json" \
+               -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_PASSWORD }}" \
+               -d '${{ toJson(github.event.release) }}' \
+               ${{ secrets.DEPLOYMENT_ENDPOINT }}

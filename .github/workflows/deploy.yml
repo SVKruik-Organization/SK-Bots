@@ -7,4 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          ls
+          curl -X POST \
+               -H "Content-Type: application/json" \
+               -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_PASSWORD }}" \
+               -d '{"type":"push","repository":"Discord-Bots"}' \
+               ${{ secrets.DEPLOYMENT_ENDPOINT }}
