@@ -10,5 +10,5 @@ jobs:
           curl -X POST \
                -H "Content-Type: application/json" \
                -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_PASSWORD }}" \
-               -d '{"type":"push","repository":"Discord-Bots"}' \
+               -d '{"type":"push","repository":"Discord-Bots", "payload": {}}' \
                ${{ secrets.DEPLOYMENT_ENDPOINT }}
