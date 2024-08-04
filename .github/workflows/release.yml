@@ -1,15 +1,15 @@
-name: Release Broadcast
+name: Release Bots
 on:
   release:
     types: [created]
 
 jobs:
-  broadcast:
+  release:
     runs-on: ubuntu-latest
     steps:
       - run: |
           curl -X POST \
                -H "Content-Type: application/json" \
                -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_PASSWORD }}" \
-               -d '{"type":"push","repository":"Discord-Bots", "payload":${{ toJson(github.event.release) }}}' \
+               -d '{"type":"release","repository":"Discord-Bots", "payload":${{ toJson(github.event.release) }}}' \
                ${{ secrets.DEPLOYMENT_ENDPOINT }}
