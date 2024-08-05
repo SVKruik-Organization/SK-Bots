@@ -29,12 +29,8 @@ app.listen(port, () => {
 });
 
 // Import Other Routes
-const sensorRoutes = require('./routes/sensorRoutes.js');
-app.use(`${prefix}/sensors`, sensorRoutes);
 const guildRoutes = require('./routes/guildRoutes.js');
 app.use(`${prefix}/guilds`, guildRoutes);
-const broadcastRoutes = require('./routes/broadcastRoutes.js');
-app.use(`${prefix}/broadcasts`, broadcastRoutes);
 
 // Default
 app.get(prefix, jwtUtils.authenticateJWT, (req, res) => {

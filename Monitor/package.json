@@ -18,7 +18,10 @@
   "homepage": "https://github.com/SVKruik-Organization/Discord-Bots#readme",
   "dependencies": {
     "dotenv": "^16.4.5",
-    "osx-temperature-sensor": "^1.0.8",
-    "systeminformation": "^5.22.11"
+    "systeminformation": "^5.22.11",
+    "amqplib": "^0.10.4"
+  },
+  "devDependencies": {
+    "osx-temperature-sensor": "^1.0.8"
   }
 }

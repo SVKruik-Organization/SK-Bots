@@ -1,6 +1,7 @@
 require('dotenv').config();
 const si = require('systeminformation');
 const logger = require('./utils/logger');
+const amqp = require('amqplib');
 
 // Start
 logger.log("Started statistics monitor.\n", "info");
@@ -14,32 +15,33 @@ setInterval(async () => await processCpuTemperature(), process.env.TEMPERATURE_I
 async function processCpuTemperature() {
     try {
         // Setup
-        const url = process.env.STATISTICS_ENDPOINT;
         const temperatureData = await si.cpuTemperature();
         const cpuData = await si.cpu();
         logger.log(`${cpuData.brand} CPU Temperature: ${temperatureData.main}`, (temperatureData.main > process.env.TEMPERATURE_THRESHOLD && cpuData.vendor !== "Apple") ? "warning" : "info");
 
         // Notify Apricaria when high temperature
-        if (!url || temperatureData.main < process.env.TEMPERATURE_THRESHOLD) return;
-        await fetch(url, {
-            method: "POST",
-            headers: {
-                "content-type": "application/json",
-                "authorization": `Bearer ${process.env.INTERNAL_TOKEN}`
-            },
-            body: JSON.stringify({
+        if (temperatureData.main < process.env.TEMPERATURE_THRESHOLD) return;
+        const channel = await (await amqp.connect({
+            "protocol": "amqp",
+            "hostname": process.env.AMQP_HOST,
+            "port": parseInt(process.env.AMQP_PORT),
+            "username": process.env.AMQP_USERNAME,
+            "password": process.env.AMQP_PASSWORD
+        })).createChannel();
+        channel.assertExchange("bot-exchange", "direct", { durable: false });
+        channel.publish("bot-exchange", "Apricaria", Buffer.from(JSON.stringify({
+            sender: "Discord-Bots/Monitor",
+            recipient: "Discord-Bots/Apricaria",
+            trigger_source: "Temperature Sensor",
+            reason: "High Tide CPU Temperature",
+            task: "Temperature",
+            content: {
                 "temperatureData": temperatureData,
                 "cpuData": cpuData
-            })
-        });
+            },
+            timestamp: new Date()
+        })));
     } catch (error) {
-        if (!error.cause && !error.cause.code) return logger.error(error);
-        if (error.cause.code === "ECONNREFUSED") {
-            logger.log("Apricaria Sensor API offline.", "warning");
-        } else if (error.cause.code === "UND_ERR_SOCKET") {
-            logger.log("Apricaria Sensor API connection lost.", "warning");
-        } else if (error.cause.code === "UND_ERR_HEADERS_TIMEOUT") {
-            logger.log("Apricaria Sensor API fetch timed out.", "warning");
-        } else return logger.error(error);
+        logger.error(error);
     }
 }
