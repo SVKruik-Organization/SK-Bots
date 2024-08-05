@@ -29,7 +29,8 @@
         "mariadb": "^3.3.0",
         "mathjs": "^12.4.2",
         "prettier": "^3.2.5",
-        "prettier-plugin-sql": "^0.18.0"
+        "prettier-plugin-sql": "^0.18.0",
+        "shelljs": "^0.8.5"
     },
     "devDependencies": {
         "@vscode/vscode-languagedetection": "^1.0.22"

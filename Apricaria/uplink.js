@@ -6,6 +6,7 @@ const { findUserById } = require('./utils/user.js');
 const fs = require('node:fs');
 const { EmbedBuilder } = require('discord.js');
 const { time } = require('@discordjs/formatters');
+const shell = require('shelljs');
 
 /**
  * Initialize the Uplink listener to handle incoming tasks.
@@ -150,9 +151,13 @@ async function temperatureHandler(data) {
  * @param {object} messageContent The Uplink message
  */
 function deploymentHandler(messageContent) {
-    if (process.platform !== "linux") return
-    logger.log(`Received new deploy task from ${messageContent.sender}. Running deployment script for Apricaria & Stelleri.`, "alert");
-    shell.exec("bash deploy.sh");
+    try {
+        if (process.platform !== "linux") return
+        logger.log(`Received new deploy task from ${messageContent.sender}. Running deployment script for Apricaria & Stelleri.`, "alert");
+        shell.exec("bash deploy.sh");
+    } catch (error) {
+        logger.error(error);
+    }
 }
 
 module.exports = {
