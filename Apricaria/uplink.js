@@ -132,6 +132,9 @@ async function temperatureHandler(data) {
                 .setTitle("High CPU Temperature Warning")
                 .addFields(
                     { name: "Model", value: data.cpuData.brand, inline: true },
+                    { name: "Device Name", value: data.deviceName, inline: true },
+                )
+                .addFields(
                     { name: "Speed", value: `\`${data.cpuData.speed}\` Ghz`, inline: true },
                     { name: "Temperature", value: `\`${data.temperatureData.main}\` °C`, inline: true })
                 .setTimestamp()

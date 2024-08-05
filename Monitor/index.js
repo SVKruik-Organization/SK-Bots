@@ -2,6 +2,7 @@ require('dotenv').config();
 const si = require('systeminformation');
 const logger = require('./utils/logger');
 const amqp = require('amqplib');
+const os = require('node:os');
 
 // Start
 logger.log("Started statistics monitor.\n", "info");
@@ -37,7 +38,8 @@ async function processCpuTemperature() {
             task: "Temperature",
             content: {
                 "temperatureData": temperatureData,
-                "cpuData": cpuData
+                "cpuData": cpuData,
+                "deviceName": os.hostname()
             },
             timestamp: new Date()
         })));
