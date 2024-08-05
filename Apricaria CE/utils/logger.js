@@ -54,8 +54,8 @@ function write(data) {
  * @param res The responds.
  * @param next Send downstream.
  */
-function apiMiddleware(req, res, next) {
-    log(`API Request || Agent: ${req.headers["user-agent"]} || HTTP ${req.httpVersion} ${req.method} ${req.url} || IP: ${req.ip} || Body: ${!!req._body} || Content Type: ${req.headers["content-type"]}`, "info");
+function apiMiddleware(req, _res, next) {
+    log(`API Request || Agent: ${req.headers["user-agent"]} || HTTP ${req.httpVersion} ${req.method} ${req.url} || IP: ${req.ip} || Body: ${req.body ? `(100 char limit) ${JSON.stringify(req.body).slice(0, 100)}` : "None"}`, "info");
     next();
 }
 

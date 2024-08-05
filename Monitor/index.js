@@ -8,7 +8,7 @@ processCpuTemperature();
 setInterval(async () => await processCpuTemperature(), process.env.TEMPERATURE_INTERVAL);
 
 /**
- * Fetch the CPU temperature and send it to Apricaria or Stelleri.
+ * Fetch the CPU temperature and send it to Apricaria.
  * @returns On error.
  */
 async function processCpuTemperature() {
@@ -19,8 +19,8 @@ async function processCpuTemperature() {
         const cpuData = await si.cpu();
         logger.log(`${cpuData.brand} CPU Temperature: ${temperatureData.main}`, (temperatureData.main > process.env.TEMPERATURE_THRESHOLD && cpuData.vendor !== "Apple") ? "warning" : "info");
 
-        // Notify Apricaria or Stelleri
-        if (!url) return;
+        // Notify Apricaria when high temperature
+        if (!url || temperatureData.main < process.env.TEMPERATURE_THRESHOLD) return;
         await fetch(url, {
             method: "POST",
             headers: {
