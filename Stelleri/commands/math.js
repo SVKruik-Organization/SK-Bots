@@ -29,7 +29,7 @@ module.exports = {
             const expression = interaction.options.getString('expression');
             const answer = math.evaluate(expression).toString();
             const embed = new EmbedBuilder()
-                .setColor(config.general.color)
+                .setColor(config.colors.bot)
                 .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
                 .addFields(
                     { name: 'Math Expression', value: `\`${expression}\`` },

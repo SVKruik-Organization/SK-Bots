@@ -55,7 +55,7 @@ module.exports = {
             const pfp = interaction.user.avatarURL();
 
             const embed = new EmbedBuilder()
-                .setColor(config.general.color)
+                .setColor(config.colors.bot)
                 .setTitle(`New Suggestion: ${title}`)
                 .setAuthor({ name: username, iconURL: pfp })
                 .setDescription(`${description}`)

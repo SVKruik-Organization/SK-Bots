@@ -5,6 +5,7 @@ const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js'
 const commandHandler = require('./handlers/commandHandler.js');
 const eventHandler = require('./handlers/eventHandler.js');
 const logger = require('./utils/logger.js');
+const interest = require('./utils/interest.js');
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -63,6 +64,7 @@ module.exports = {
 // Initializers
 commandHandler.init(client);
 eventHandler.init(client);
+interest.init();
 client.cooldowns = new Collection();
 require('./utils/due.js').dueDates;
 require('./server.js');

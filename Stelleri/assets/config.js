@@ -1,6 +1,5 @@
 exports.general = {
     name: "Stelleri",
-    color: "#E4B081",
     clientId: "1071428183003500544",
     imageURL: "https://i.imgur.com/9X7PIG0.png",
     authorSnowflake: "422704748488163332",
@@ -16,6 +15,12 @@ exports.cooldowns = {
     E: 86400
 };
 
+// Accent Colors
+exports.colors = {
+    bot: "#E4B081",
+    warning: "#FF4C4C"
+}
+
 // Website Links
 exports.urls = {
     website: "https://bots.stefankruik.com",
@@ -25,8 +30,7 @@ exports.urls = {
 
 // Economy Settings
 exports.economy = {
-    levelUpFallback: 20,
-    interestRate: 1.0005
+    levelUpFallback: 20
 }
 
 // Interaction Experience Rewards

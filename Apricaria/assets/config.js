@@ -1,6 +1,5 @@
 exports.general = {
     name: "Apricaria",
-    color: "#898266",
     clientId: "1150713787784110110",
     imageURL: "https://i.imgur.com/6OeWaIW.jpg",
     authorSnowflake: "422704748488163332",
@@ -16,6 +15,12 @@ exports.cooldowns = {
     E: 86400
 };
 
+// Accent Colors
+exports.colors = {
+    bot: "#898266",
+    warning: "#FF4C4C"
+}
+
 // Website Links
 exports.urls = {
     website: "https://bots.stefankruik.com",
@@ -26,11 +31,12 @@ exports.urls = {
 // Economy Settings
 exports.economy = {
     levelUpFallback: 20,
-    interestRate: 1.0005
+    interestRate: 1.0005 // TODO - Guild Specific
 }
 
 // Interaction Experience Rewards
 exports.tier = {
+    react: 1,
     normalMessage: 5,
     slashCommand: 15,
     purchase: 25

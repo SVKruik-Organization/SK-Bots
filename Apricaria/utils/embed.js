@@ -15,7 +15,7 @@ const logger = require('../utils/logger.js');
  */
 function create(title, subfieldTitle, user, fields, relatedCommands) {
     const embed = new EmbedBuilder()
-        .setColor(config.general.color)
+        .setColor(config.colors.bot)
         .setTitle(title)
         .setAuthor({ name: user.username, iconURL: user.avatarURL() })
         .setDescription(subfieldTitle)
@@ -49,7 +49,7 @@ async function customShopCatalog(interaction) {
             });
 
             const embed = new EmbedBuilder()
-                .setColor(config.general.color)
+                .setColor(config.colors.bot)
                 .setTitle("Shop Catalog")
                 .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
                 .setDescription("Use the previous dropdown menu to open the shop if you have decided on something. Prices on all of these items are managed by this server.")

@@ -88,7 +88,7 @@ async function broadcastHandler(data) {
         }
 
         const embed = new EmbedBuilder()
-            .setColor(config.general.color)
+            .setColor(config.colors.bot)
             .setTitle("New version released!")
             .setDescription(`New features will soon be shipped to <@${config.general.clientId}> in your server.`)
             .setAuthor({ name: release.author_username, iconURL: release.author_avatar, url: release.author_url })
@@ -128,15 +128,16 @@ async function temperatureHandler(data) {
             const author = await findUserById(config.general.authorSnowflake);
 
             const embed = new EmbedBuilder()
-                .setColor("#FF4C4C")
+                .setColor(config.colors.warning)
                 .setTitle("High CPU Temperature Warning")
                 .addFields(
-                    { name: "Model", value: data.cpuData.brand, inline: true },
-                    { name: "Device Name", value: data.deviceName, inline: true },
-                )
+                    { name: "Model", value: `\`${data.cpuData.brand}\``, inline: true },
+                    { name: "Device Name", value: `\`${data.deviceName}\``, inline: true },
+                    { name: "\u200B", value: "\u200B", inline: true })
                 .addFields(
                     { name: "Speed", value: `\`${data.cpuData.speed}\` Ghz`, inline: true },
-                    { name: "Temperature", value: `\`${data.temperatureData.main}\` °C`, inline: true })
+                    { name: "Temperature", value: `\`${data.temperatureData.main}\` °C`, inline: true },
+                    { name: "\u200B", value: "\u200B", inline: true })
                 .setTimestamp()
                 .setFooter({ text: "Send '/acknowledge temperature' to suppress." });
 

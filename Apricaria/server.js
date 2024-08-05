@@ -26,7 +26,7 @@ app.use(cors(corsOptions));
 
 // Init
 app.listen(port, () => {
-    logger.log(`Update server listening on port ${port}.`, "info");
+    logger.log(`Apricaria API server listening on port ${port}.`, "info");
 });
 
 // Import Other Routes

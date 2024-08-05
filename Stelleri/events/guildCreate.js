@@ -27,7 +27,7 @@ module.exports = {
             if (!botColorRole) {
                 botColorRole = await guild.roles.create({
                     name: `${config.general.name} Accent`,
-                    color: parseInt(config.general.color.substring(1), 16),
+                    color: parseInt(config.colors.bot.substring(1), 16),
                     permissions: [],
                     position: fetchedGuild.roles.cache.size + 1
                 });

@@ -36,7 +36,7 @@ module.exports = {
             // Response
             const data = (await response.json())[0].fact;
             const embed = new EmbedBuilder()
-                .setColor(config.general.color)
+                .setColor(config.colors.bot)
                 .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
                 .addFields(
                     { name: 'Random Fact', value: data },

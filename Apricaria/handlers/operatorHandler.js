@@ -187,7 +187,7 @@ async function handleSelectionMenu(interaction) {
                     ephemeral: true
                 });
                 const embed = new EmbedBuilder()
-                    .setColor(config.general.color)
+                    .setColor(config.colors.bot)
                     .setTitle("Operator Overview")
                     .setDescription(`Here is an overview of your plan statistics and team members for your selected teamtag.`)
                     .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
@@ -260,10 +260,10 @@ async function handleModifyMenu(interaction) {
                 // Finalize
                 modules.database.query("INSERT INTO operator_invite (snowflake, snowflake_recv, team_tag) VALUES (?, ?, ?)", [interaction.user.id, targetMember.id, teamTag])
                     .then(() => {
-                        // TODO
+                        // TODO - Register Link Handling
                         const registerLink = `${config.urls.website}/login?team=${teamTag}&owner=${interaction.user.id}&target=${targetMember.id}`;
                         const embed = new EmbedBuilder()
-                            .setColor(config.general.color)
+                            .setColor(config.colors.bot)
                             .setTitle("New Operator Invite")
                             .setDescription(`Hello <@${targetMember.id}>! <@${interaction.user.id}> has invited **you** to join his Operator team.`)
                             .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })

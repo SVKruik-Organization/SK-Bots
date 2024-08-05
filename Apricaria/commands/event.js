@@ -188,7 +188,7 @@ module.exports = {
 
                     // Success Confirmation
                     const embed = new EmbedBuilder()
-                        .setColor(config.general.color)
+                        .setColor(config.colors.bot)
                         .setTitle(title)
                         .setAuthor({ name: username, iconURL: pfp })
                         .setDescription(description)
