@@ -21,7 +21,7 @@
     "systeminformation": "^5.22.11",
     "amqplib": "^0.10.4"
   },
-  "devDependencies": {
+  "optionalDependencies": {
     "osx-temperature-sensor": "^1.0.8"
   }
 }

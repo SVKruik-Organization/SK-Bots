@@ -11,21 +11,21 @@ echo "Git setup complete"
 
 # Apricaria - api.stefankruik.com/apricaria
 cd Apricaria
-npm install
+npm install --omit=dev
 npm run update
 [ -d logs ] || mkdir logs
 echo "Apricaria update complete"
 
 # Stelleri - api.stefankruik.com/stelleri
 cd ../Stelleri
-npm install
+npm install --omit=dev
 npm run update
 [ -d logs ] || mkdir logs
 echo "Stelleri update complete"
 
 # Monitor
 cd ../Monitor
-npm install
+npm install --omit=dev
 [ -d logs ] || mkdir logs
 echo "Monitor update complete"
 

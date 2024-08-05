@@ -150,6 +150,7 @@ async function temperatureHandler(data) {
  * @param {object} messageContent The Uplink message
  */
 function deploymentHandler(messageContent) {
+    if (process.platform !== "linux") return
     logger.log(`Received new deploy task from ${messageContent.sender}. Running deployment script for Apricaria & Stelleri.`, "alert");
     shell.exec("bash deploy.sh");
 }
