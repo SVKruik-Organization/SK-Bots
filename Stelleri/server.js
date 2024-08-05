@@ -9,7 +9,8 @@ const jwtUtils = require('./utils/jwt.js');
 const config = require('./assets/config.js');
 
 // Express Settings
-const port = process.env.SERVER_PORT;
+const manualPort = process.argv.slice(2)[0];
+const port = (manualPort && manualPort.length !== 4 ? process.env.SERVER_PORT : parseInt(manualPort)) || process.env.SERVER_PORT;
 const app = express();
 const cors = require("cors");
 app.use(express.json());

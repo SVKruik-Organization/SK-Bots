@@ -12,14 +12,14 @@ echo "Git setup complete"
 # Apricaria - api.stefankruik.com/apricaria
 cd Apricaria
 npm install --omit=dev
-npm run update
+npm run update 9088
 [ -d logs ] || mkdir logs
 echo "Apricaria update complete"
 
 # Stelleri - api.stefankruik.com/stelleri
 cd ../Stelleri
 npm install --omit=dev
-npm run update
+npm run update 9087
 [ -d logs ] || mkdir logs
 echo "Stelleri update complete"
 
