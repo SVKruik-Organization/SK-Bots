@@ -39,6 +39,7 @@ async function processCpuTemperature() {
             content: {
                 "temperatureData": temperatureData,
                 "cpuData": cpuData,
+                "memoryData": await si.mem(),
                 "deviceName": os.hostname()
             },
             timestamp: new Date()

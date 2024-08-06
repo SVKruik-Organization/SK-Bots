@@ -34,7 +34,7 @@ function increaseXp(interaction, amount) {
                         if (tierData[0] && !tierData[0].affectedRows) return;
 
                         const responseData = tierData[1][0];
-                        if (responseData.xp >= (20 * (responseData.level + 1) + 300)) {
+                        if (responseData.xp >= (targetGuild.xp_formula.split(",")[0] * (responseData.level + 1) + targetGuild.xp_formula.split(",")[1])) {
                             const bitsRewardFallback = config.economy.levelUpFallback;
                             modules.database.query("UPDATE tier SET level = level + 1, xp = 0 WHERE snowflake = ?; UPDATE economy SET bank = bank + ? WHERE snowflake = ?;", [interaction.user.id, ((targetGuild ? targetGuild.level_up_reward_base : bitsRewardFallback) * (responseData.level + 1)), interaction.user.id])
                                 .then(async (data) => {
@@ -63,7 +63,7 @@ function increaseXp(interaction, amount) {
                                             }).then(async () => {
                                                 try {
                                                     await guild.members.fetch(interaction.user.id).then(async (user) => {
-                                                        const roles = Array.from(user.roles.cache, ([snowflake, value]) => (value));
+                                                        const roles = Array.from(user.roles.cache, ([_snowflake, value]) => (value));
                                                         for (let i = 0; i <= roles.length; i++) {
                                                             const role = roles[i];
                                                             if (roles.length === i && rawGuild.role_level_enable) {

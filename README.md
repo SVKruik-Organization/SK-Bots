@@ -10,10 +10,10 @@ Below you can find some information and links to even more information.
 #### Bots Overview
 
 | Name | Purpose | Meaning | Public | CI/CD |
-| - | - | - | - |
+| - | - | - | - |-|
 | [Apricaria](https://bots.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Apricaria) | General Purpose | [European Golden Plover](https://en.wikipedia.org/wiki/European_golden_plover) | From version v2.10.0 | Yes |
-| [Apricaria CE](https://bots.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Apricaria_CE) | Concise General Purpose | [European Golden Plover](https://en.wikipedia.org/wiki/European_golden_plover) | From version v2.10.0 | Yes |
-| [Stelleri](https://bots.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Stelleri) | Early-Access Features | [Steller's Eider](https://en.wikipedia.org/wiki/Steller%27s_eider) | No | No |
+| [Apricaria CE](https://bots.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Apricaria_CE) | Concise General Purpose | [European Golden Plover](https://en.wikipedia.org/wiki/European_golden_plover) | From version v2.10.0 | No |
+| [Stelleri](https://bots.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Stelleri) | Early-Access Features | [Steller's Eider](https://en.wikipedia.org/wiki/Steller%27s_eider) | No | Yes |
 | [Ispidina](https://bots.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Ispidina) | TypeScript | [African Pygmy Kingfisher](https://en.wikipedia.org/wiki/Ispidina) | No | No |
 | [Interpres](https://bots.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Interpres) | GitHub API | [Ruddy Turnstone](https://en.wikipedia.org/wiki/Ruddy_turnstone) | No | No |
 

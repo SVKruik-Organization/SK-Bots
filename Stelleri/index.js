@@ -13,7 +13,8 @@ const client = new Client({
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessageReactions,
         GatewayIntentBits.DirectMessages,
-        GatewayIntentBits.GuildScheduledEvents
+        GatewayIntentBits.GuildScheduledEvents,
+        GatewayIntentBits.GuildMessagePolls
     ],
     partials: [
         Partials.Channel,

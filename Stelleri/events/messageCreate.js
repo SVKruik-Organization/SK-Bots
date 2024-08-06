@@ -14,8 +14,8 @@ module.exports = {
         // Message inside Server/Guild
         if (message.guildId) {
             const targetGuild = guildUtils.findGuildById(message.guild.id);
-            let xpReward = config.tier.normalMessage;
-            if (targetGuild && targetGuild.xp_increase_normal) xpReward = targetGuild.xp_increase_normal;
+            let xpReward = config.tier.message;
+            if (targetGuild && targetGuild.xp_increase_message) xpReward = targetGuild.xp_increase_message;
             userIncreaseHandler.increaseXp({
                 "user": message.author,
                 "client": modules.client,

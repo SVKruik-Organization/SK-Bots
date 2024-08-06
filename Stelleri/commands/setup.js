@@ -153,7 +153,7 @@ module.exports = {
                 modules.database.query("UPDATE guild SET channel_admin = ?, channel_broadcast = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ?, role_support = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE guild_snowflake = ?;",
                     [channel_admin ? channel_admin.id : null, channel_broadcast ? channel_broadcast.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, channel_ticket ? channel_ticket.id : null, role_blinded ? role_blinded.id : null, role_support ? role_support.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
                     .then(() => {
-                        const filteredGuild = guildUtils.guilds.filter(guild => guild.guildObject.id === interaction.guild.id);
+                        const filteredGuild = guildUtils.guilds.filter(guild => guild.guildObject.id === interaction.guild.id)[0];
                         guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);
                         guildUtils.guilds.push({
                             // Guild
@@ -184,9 +184,12 @@ module.exports = {
                             "role_level_color": filteredGuild.role_level_color || "FC6736",
                             "jackpot": filteredGuild.jackpot || 10000,
                             "welcome": filteredGuild.welcome || 1,
-                            "xp_increase_normal": filteredGuild.xp_increase_normal || 5,
+                            "xp_increase_reaction": filteredGuild.xp_increase_reaction || 1,
+                            "xp_increase_poll": filteredGuild.xp_increase_poll || 3,
+                            "xp_increase_message": filteredGuild.xp_increase_message || 5,
                             "xp_increase_slash": filteredGuild.xp_increase_slash || 15,
-                            "xp_increase_purchase": filteredGuild.xp_increase_purchase || 25
+                            "xp_increase_purchase": filteredGuild.xp_increase_purchase || 25,
+                            "xp_formula": filteredGuild.xp_formula || "20,300"
                         });
 
                         interaction.reply({

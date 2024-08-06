@@ -137,7 +137,7 @@ async function temperatureHandler(data) {
                 .addFields(
                     { name: "Speed", value: `\`${data.cpuData.speed}\` Ghz`, inline: true },
                     { name: "Temperature", value: `\`${data.temperatureData.main}\` °C`, inline: true },
-                    { name: "\u200B", value: "\u200B", inline: true })
+                    { name: "Memory Usage", value: `\`${Math.round(data.memoryData.used / (1024 ** 3))}\`/\`${Math.round(data.memoryData.total / (1024 ** 3))}\` GiB`, inline: true })
                 .setTimestamp()
                 .setFooter({ text: "Send '/acknowledge temperature' to suppress." });
 

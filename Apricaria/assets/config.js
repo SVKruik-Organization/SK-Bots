@@ -37,7 +37,8 @@ exports.economy = {
 // Interaction Experience Rewards
 exports.tier = {
     react: 1,
-    normalMessage: 5,
+    poll: 3,
+    message: 5,
     slashCommand: 15,
     purchase: 25
 };

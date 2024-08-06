@@ -118,9 +118,12 @@ async function guildConstructor(guild) {
             "role_level_color": guild.role_level_color,
             "jackpot": guild.jackpot,
             "welcome": guild.welcome,
-            "xp_increase_normal": guild.xp_increase_normal,
+            "xp_increase_reaction": guild.xp_increase_reaction,
+            "xp_increase_pole": guild.xp_increase_pole,
+            "xp_increase_message": guild.xp_increase_message,
             "xp_increase_slash": guild.xp_increase_slash,
-            "xp_increase_purchase": guild.xp_increase_purchase
+            "xp_increase_purchase": guild.xp_increase_purchase,
+            "xp_formula": guild.xp_formula
         }
     } catch (error) {
         if (error.status !== 404) {

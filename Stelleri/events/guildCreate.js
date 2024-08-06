@@ -132,9 +132,12 @@ module.exports = {
                 "role_level_color": "FFFFFF",
                 "jackpot": 10000,
                 "welcome": true,
-                "xp_increase_normal": 5,
+                "xp_increase_reaction": 1,
+                "xp_increase_poll": 3,
+                "xp_increase_message": 5,
                 "xp_increase_slash": 15,
-                "xp_increase_purchase": 25
+                "xp_increase_purchase": 25,
+                "xp_formula": "20,300"
             });
 
             (await findUserById(config.general.authorSnowflake)).send({
