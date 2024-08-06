@@ -31,7 +31,7 @@ exports.urls = {
 // Economy Settings
 exports.economy = {
     levelUpFallback: 20,
-    interestRate: 1.0005 // TODO - Guild Specific
+    interestRate: 1.0005
 }
 
 // Interaction Experience Rewards
