@@ -1,10 +1,10 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const config = require('../config.js');
-const userUtils = require('../utils/user.js');
-const logger = require('../utils/logger.js');
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
+import config from '../config';
+import userUtils from '../utils/user';
+import logger from '../utils/logger';
 
-module.exports = {
-    cooldown: config.cooldowns.A,
+export default {
+    cooldown: cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('clear')
         .setNameLocalizations({
@@ -28,16 +28,16 @@ module.exports = {
             .setRequired(true)
             .setMinValue(1)
             .setMaxValue(50)),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
-            if (!(await userUtils.checkAdmin(interaction))) return interaction.reply({
+            if (!(await checkAdmin(interaction))) return interaction.reply({
                 content: `You do not have the required permissions to perform this elevated command. Please try again later, or contact moderation to receive elevated permissions.`,
                 ephemeral: true
             });
 
             const amount = interaction.options.getInteger('amount');
-            await interaction.reply({
+            await return interaction.reply({
                 content: `Deleting ${amount} messages . . .`,
                 ephemeral: true
             });
@@ -52,8 +52,8 @@ module.exports = {
                     });
                 });
             }, 1000);
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

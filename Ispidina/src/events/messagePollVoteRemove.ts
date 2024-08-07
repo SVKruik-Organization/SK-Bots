@@ -1,28 +1,28 @@
 const { Events } = require('discord.js');
-const logger = require('../utils/logger.js');
+const logger = require('../utils/logger');
 const modules = require('..');
-const config = require('../config.js');
-const guildUtils = require('../utils/guild.js');
-const userIncreaseHandler = require('../handlers/userIncreaseHandler.js');
+const config = require('../config');
+const guildUtils = require('../utils/guild');
+const userIncreaseHandler = require('../handlers/userIncreaseHandler');
 
-module.exports = {
+export default {
     name: Events.MessagePollVoteRemove,
     execute(event, user) {
         try {
-            const targetGuild = guildUtils.findGuildById(event.message.guildId);
-            let xpReward = config.tier.poll;
+            const targetGuild = findGuildById(event.message.guildId);
+            let xpReward = tier.poll;
             if (targetGuild && targetGuild.xp_increase_poll) xpReward = targetGuild.xp_increase_poll;
             userIncreaseHandler.increaseXp({
                 "user": user,
-                "client": modules.client,
+                "client": customClient,
                 "channelId": event.message.channelId,
                 "guild": {
                     "id": event.message.guildId
                 }
             }, -xpReward);
             console.log(user.username, xpReward);
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

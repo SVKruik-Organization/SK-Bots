@@ -1,13 +1,13 @@
-const { SlashCommandBuilder } = require('discord.js');
-const modules = require('..');
-const config = require('../config.js');
-const logger = require('../utils/logger.js');
-const guildUtils = require('../utils/guild.js');
-const { dueAdd } = require('../utils/due.js');
-const dateUtils = require('../utils/date.js');
+import { SlashCommandBuilder } from 'discord.js';
+import modules from '..';
+import config from '../config';
+import logger from '../utils/logger';
+import guildUtils from '../utils/guild';
+import { dueAdd } from '../utils/due';
+import dateUtils from '../utils/date';
 
-module.exports = {
-    cooldown: config.cooldowns.A,
+export default {
+    cooldown: cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('dailyreward')
         .setNameLocalizations({
@@ -18,13 +18,13 @@ module.exports = {
             nl: "Haal uw dagelijkse Bits beloning op."
         })
         .setDMPermission(false),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Cooldown Checking
-            const dueDate = modules.dueDates.filter(dueDate =>
+            const dueDate = dueDates.filter(dueDate =>
                 dueDate.description === "daily" && dueDate.snowflake === interaction.user.id);
             if (dueDate.length > 0) {
-                const dateDifference = dateUtils.difference(dueDate[0].expiry, dateUtils.getDate(null, null).today);
+                const dateDifference = difference(dueDate[0].expiry, getDate(null, null).today);
                 return interaction.reply({
                     content: `I appreciate your enthousiasm, but I am afraid you have already collected your Daily Reward for this day. Come back in approximately \`${dateDifference.remainingHours}\` hours and \`${dateDifference.remainingMinutes}\` minutes.`,
                     ephemeral: true
@@ -33,7 +33,7 @@ module.exports = {
 
             // Jackpot Value Determining
             let jackpotValue = 10000;
-            const targetGuild = guildUtils.findGuildById(interaction.guild.id);
+            const targetGuild = findGuildById(interaction.guild.id);
             if (targetGuild && targetGuild.jackpot) jackpotValue = targetGuild.jackpot;
 
             // Jackpot Boolean
@@ -42,7 +42,7 @@ module.exports = {
             if (jackpotBoolean) dailyreward += jackpotValue;
 
             // Process
-            modules.database.query("UPDATE economy SET wallet = wallet + ? WHERE snowflake = ?;", [dailyreward, interaction.user.id])
+            database.query("UPDATE economy SET wallet = wallet + ? WHERE snowflake = ?;", [dailyreward, interaction.user.id])
                 .then(async (data) => {
                     // Validation
                     if (!data.affectedRows) return interaction.reply({
@@ -51,25 +51,25 @@ module.exports = {
                     });
 
                     // + 24 Hours
-                    const newDate = dateUtils.getDate(null, null).today;
+                    const newDate = getDate(null, null).today;
                     newDate.setDate(newDate.getDate() + 1);
                     dueAdd(interaction, "daily", newDate, null);
                     if (jackpotBoolean) {
-                        await interaction.reply({ content: `💎 You hit the JACKPOT! 💎 You received a grand total of \`${dailyreward}\` Bits. Congratulations! 🎉` });
-                        logger.log(`'${interaction.user.username}@${interaction.user.id}' hit the daily reward jackpot worth ${jackpotValue}. Their dailyreward was worth ${dailyreward - jackpotValue}. They received a total of ${dailyreward} Bits.\n`, "warning");
-                    } else interaction.reply({
+                        await return interaction.reply({ content: `💎 You hit the JACKPOT! 💎 You received a grand total of \`${dailyreward}\` Bits. Congratulations! 🎉` });
+                        logMessage(`'${interaction.user.username}@${interaction.user.id}' hit the daily reward jackpot worth ${jackpotValue}. Their dailyreward was worth ${dailyreward - jackpotValue}. They received a total of ${dailyreward} Bits.\n`, "warning");
+                    } else return interaction.reply({
                         content: `Successfully collected your daily reward: \`${dailyreward}\` Bits. Be sure to come back tomorrow!`,
                         ephemeral: true
                     });
-                }).catch((error) => {
-                    logger.error(error);
+                }).catch((error: any) => {
+                    logError(error);
                     return interaction.reply({
                         content: "Something went wrong while updating your information. Please try again later.",
                         ephemeral: true
                     });
                 });
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

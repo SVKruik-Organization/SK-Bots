@@ -1,10 +1,10 @@
 const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config.js');
+const config = require('../config');
 const { EmbedBuilder } = require('discord.js');
-const logger = require('../utils/logger.js');
+const logger = require('../utils/logger');
 
-module.exports = {
-    cooldown: config.cooldowns.B,
+export default {
+    cooldown: cooldowns.B,
     data: new SlashCommandBuilder()
         .setName('fact')
         .setNameLocalizations({
@@ -15,7 +15,7 @@ module.exports = {
             nl: "Krijg een willekeurig feit."
         })
         .setDMPermission(true),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Fetch
             const response = await fetch("https://api.api-ninjas.com/v1/facts", {
@@ -36,16 +36,16 @@ module.exports = {
             // Response
             const data = (await response.json())[0].fact;
             const embed = new EmbedBuilder()
-                .setColor(config.colors.bot)
+                .setColor(colors.bot)
                 .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
                 .addFields(
                     { name: 'Random Fact', value: data },
                     { name: 'Related Commands', value: "\`/rps\` \`/coin\` \`/math\` \`/dice\`" })
                 .setTimestamp()
-                .setFooter({ text: `Embed created by ${config.general.name}` });
-            interaction.reply({ embeds: [embed] });
-        } catch (error) {
-            logger.error(error);
+                .setFooter({ text: `Embed created by ${general.name}` });
+            return interaction.reply({ embeds: [embed] });
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

@@ -1,15 +1,15 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, ButtonStyle } = require('discord.js');
-const config = require('../config.js');
+const config = require('../config');
 const { EmbedBuilder } = require('discord.js');
-const guildUtils = require('../utils/guild.js');
+const guildUtils = require('../utils/guild');
 const modules = require('..');
-const ticket = require('../utils/ticket.js');
-const logger = require('../utils/logger.js');
+const ticket = require('../utils/ticket');
+const logger = require('../utils/logger');
 const { time } = require('@discordjs/formatters');
-const { datetimeParser } = require('../utils/date.js');
+const { datetimeParser } = require('../utils/date');
 
-module.exports = {
-    cooldown: config.cooldowns.D,
+export default {
+    cooldown: cooldowns.D,
     data: new SlashCommandBuilder()
         .setName('event')
         .setNameLocalizations({
@@ -152,10 +152,10 @@ module.exports = {
                 .setRequired(true)
                 .setMinLength(5)
                 .setMaxLength(5))),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Init
-            const targetGuild = guildUtils.findGuildById(interaction.guild.id);
+            const targetGuild = findGuildById(interaction.guild.id);
             const eventType = interaction.options.getSubcommand();
             if (!targetGuild || !targetGuild.channel_event) return interaction.reply({
                 content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
@@ -178,7 +178,7 @@ module.exports = {
 
             const onlineBoolean = eventType === "online";
             const location = eventType === "online" ? interaction.options.getChannel("location").id : interaction.options.getString("location");
-            modules.database.query("INSERT INTO event (ticket, guild_snowflake, creator_snowflake, title, description, location, date_start, online, scheduled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0);", [newTicket, interaction.guild.id, interaction.user.id, title, description, location, fullDate, onlineBoolean])
+            database.query("INSERT INTO event (ticket, guild_snowflake, creator_snowflake, title, description, location, date_start, online, scheduled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0);", [newTicket, interaction.guild.id, interaction.user.id, title, description, location, fullDate, onlineBoolean])
                 .then(() => {
                     // Sign Up Button
                     const signUpButton = new ButtonBuilder()
@@ -188,7 +188,7 @@ module.exports = {
 
                     // Success Confirmation
                     const embed = new EmbedBuilder()
-                        .setColor(config.colors.bot)
+                        .setColor(colors.bot)
                         .setTitle(title)
                         .setAuthor({ name: username, iconURL: pfp })
                         .setDescription(description)
@@ -197,21 +197,21 @@ module.exports = {
                             { name: 'Date', value: time(fullDate), inline: true })
                         .addFields({ name: "-----", value: 'Meta' })
                         .setTimestamp()
-                        .setFooter({ text: `Embed created by ${config.general.name}` });
+                        .setFooter({ text: `Embed created by ${general.name}` });
                     channel.send({ embeds: [embed], components: [new ActionRowBuilder().addComponents(signUpButton)] });
-                    interaction.reply({
+                    return interaction.reply({
                         content: `Event created. Check your event here: <#${channel.id}>.`,
                         ephemeral: true
                     });
-                }).catch((error) => {
-                    logger.error(error);
+                }).catch((error: any) => {
+                    logError(error);
                     return interaction.reply({
                         content: "Something went wrong while creating your event. Please try again later.",
                         ephemeral: true
                     });
                 });
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

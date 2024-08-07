@@ -1,9 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config.js');
-const logger = require('../utils/logger.js');
+const config = require('../config');
+const logger = require('../utils/logger');
 
-module.exports = {
-    cooldown: config.cooldowns.B,
+export default {
+    cooldown: cooldowns.B,
     data: new SlashCommandBuilder()
         .setName('dice')
         .setNameLocalizations({
@@ -14,14 +14,14 @@ module.exports = {
             nl: "Gooi de dobbelsteen!"
         })
         .setDMPermission(true),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             const list = ["1!", "2!", "3!", "4!", "5!", "6!"];
             const random = list[Math.floor(Math.random() * list.length)];
 
-            interaction.reply({ content: `🎲 ${random}` });
-        } catch (error) {
-            logger.error(error);
+            return interaction.reply({ content: `🎲 ${random}` });
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

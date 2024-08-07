@@ -1,10 +1,10 @@
 const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config.js');
-const logger = require('../utils/logger.js');
-const operatorHandler = require('../handlers/operatorHandler.js');
+const config = require('../config');
+const logger = require('../utils/logger');
+const operatorHandler = require('../handlers/operatorHandler');
 
-module.exports = {
-    cooldown: config.cooldowns.A,
+export default {
+    cooldown: cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('decline')
         .setNameLocalizations({
@@ -15,11 +15,11 @@ module.exports = {
             nl: "Wijs een Operator-uitnodiging af."
         })
         .setDMPermission(true),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             operatorHandler.handleDeclineInit(interaction);
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

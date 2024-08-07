@@ -1,9 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config.js');
-const logger = require('../utils/logger.js');
+const config = require('../config');
+const logger = require('../utils/logger');
 
-module.exports = {
-    cooldown: config.cooldowns.B,
+export default {
+    cooldown: cooldowns.B,
     data: new SlashCommandBuilder()
         .setName('rps')
         .setNameLocalizations({
@@ -29,7 +29,7 @@ module.exports = {
                 { name: 'Paper', value: 'paper' },
                 { name: 'Scissors', value: 'scissors' }
             )),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Setup
             const userChoice = interaction.options.getString('type');
@@ -63,9 +63,9 @@ module.exports = {
                 } else if (userChoice === "rock") reply += "- You win!";
             }
 
-            interaction.reply({ content: reply });
-        } catch (error) {
-            logger.error(error);
+            return interaction.reply({ content: reply });
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

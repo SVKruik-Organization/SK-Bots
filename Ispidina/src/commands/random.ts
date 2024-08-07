@@ -1,9 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config.js');
-const logger = require('../utils/logger.js');
+const config = require('../config');
+const logger = require('../utils/logger');
 
-module.exports = {
-    cooldown: config.cooldowns.B,
+export default {
+    cooldown: cooldowns.B,
     data: new SlashCommandBuilder()
         .setName('random')
         .setNameLocalizations({
@@ -25,14 +25,14 @@ module.exports = {
             })
             .setRequired(true)
             .setMinValue(2)),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             const bound = interaction.options.getInteger('maximum');
             const random = Math.floor(Math.random() * bound) + 1;
 
-            interaction.reply({ content: `Random number: \`${random}\`.` });
-        } catch (error) {
-            logger.error(error);
+            return interaction.reply({ content: `Random number: \`${random}\`.` });
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

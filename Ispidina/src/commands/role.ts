@@ -1,11 +1,11 @@
 const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config.js');
-const guildUtils = require('../utils/guild.js');
+const config = require('../config');
+const guildUtils = require('../utils/guild');
 const modules = require('..');
-const logger = require('../utils/logger.js');
+const logger = require('../utils/logger');
 
-module.exports = {
-    cooldown: config.cooldowns.C,
+export default {
+    cooldown: cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('role')
         .setNameLocalizations({
@@ -29,10 +29,10 @@ module.exports = {
             .setMinLength(6)
             .setMaxLength(6)
             .setAutocomplete(true)),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Init
-            const targetGuild = guildUtils.findGuildById(interaction.guild.id);
+            const targetGuild = findGuildById(interaction.guild.id);
             if (!targetGuild || !targetGuild.role_cosmetic_power) return interaction.reply({
                 content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
                 ephemeral: true
@@ -42,11 +42,11 @@ module.exports = {
             const snowflake = interaction.user.id;
             const color = interaction.options.getString('color');
             const regex = "^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
-            const role = targetGuild.guildObject.roles.cache.find(role => role.name === interaction.user.username);
-            let position = targetGuild.guildObject.roles.cache.size - targetGuild.role_cosmetic_power;
+            const role = targetGuild.guild_object.roles.cache.find(role => role.name === interaction.user.username);
+            let position = targetGuild.guild_object.roles.cache.size - targetGuild.role_cosmetic_power;
             if (position < 2) position = 2;
 
-            modules.database.query("SELECT role_cosmetic FROM user_inventory WHERE snowflake = ?", [interaction.user.id])
+            database.query("SELECT role_cosmetic FROM user_inventory WHERE snowflake = ?", [interaction.user.id])
                 .then((data) => {
                     if (data.length === 0) {
                         return interaction.reply({
@@ -60,7 +60,7 @@ module.exports = {
                         });
                     }
 
-                    modules.database.query("UPDATE user_inventory SET role_cosmetic = role_cosmetic - 1 WHERE snowflake = ?", [interaction.user.id])
+                    database.query("UPDATE user_inventory SET role_cosmetic = role_cosmetic - 1 WHERE snowflake = ?", [interaction.user.id])
                         .then(async (data) => {
                             // Validation
                             if (!data.affectedRows) return interaction.reply({
@@ -77,7 +77,7 @@ module.exports = {
                                     permissions: []
                                 }).then(() => {
                                     const role = interaction.guild.roles.cache.find((role) => role.name === interaction.user.username);
-                                    targetGuild.guildObject.members.fetch(snowflake).then((user) => {
+                                    targetGuild.guild_object.members.fetch(snowflake).then((user) => {
                                         if (!user) return interaction.reply({
                                             content: "Something went wrong while creating your role. Please try again later.",
                                             ephemeral: true
@@ -85,38 +85,38 @@ module.exports = {
 
                                         // Finalize
                                         user.roles.add(role);
-                                        interaction.reply({
+                                        return interaction.reply({
                                             content: `\`#${color}\` -- great color! You look awesome!`,
                                             ephemeral: true
                                         });
                                     });
-                                }).catch((error) => {
-                                    logger.error(error);
+                                }).catch((error: any) => {
+                                    logError(error);
                                     return interaction.reply({
                                         content: "Something went wrong while creating your role. Please try again later.",
                                         ephemeral: true
                                     });
                                 });
-                            } else interaction.reply({
+                            } else return interaction.reply({
                                 content: "Your color is invalid. Make sure your color is in HEX format, like so: `000000`. Hashtag prefix is not needed.",
                                 ephemeral: true
                             });
-                        }).catch((error) => {
-                            logger.error(error);
+                        }).catch((error: any) => {
+                            logError(error);
                             return interaction.reply({
                                 content: "Something went wrong while updating your information. You have not been charged. Please try again later.",
                                 ephemeral: true
                             });
                         });
-                }).catch((error) => {
-                    logger.error(error);
+                }).catch((error: any) => {
+                    logError(error);
                     return interaction.reply({
                         content: "Something went wrong while retrieving the required information. Please try again later.",
                         ephemeral: true
                     });
                 });
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     },
     async autocomplete(interaction) {

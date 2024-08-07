@@ -1,13 +1,13 @@
-const { SlashCommandBuilder, PermissionFlagsBits, ChannelType } = require('discord.js');
-const config = require('../config.js');
-const modules = require('..');
-const embedConstructor = require('../utils/embed.js');
-const guildUtils = require('../utils/guild.js');
-const userUtils = require('../utils/user.js');
-const logger = require('../utils/logger.js');
+import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, ChatInputCommandInteraction, TextBasedChannel, Role, CategoryChannel } from 'discord.js';
+import { cooldowns, urls } from '../config';
+import { database } from '..';
+import { create } from '../utils/embed';
+import { guilds, findGuildById, setGuilds, addGuild } from '../utils/guild';
+import { checkOperator } from '../utils/user';
+import { logError } from '../utils/logger';
 
-module.exports = {
-    cooldown: config.cooldowns.C,
+export default {
+    cooldown: cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('setup')
         .setNameLocalizations({
@@ -125,39 +125,41 @@ module.exports = {
             .setDescriptionLocalizations({
                 nl: "Lees hoe en waarom dit commando te gebruiken."
             })),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
-            const operatorData = await userUtils.checkOperator(interaction);
+            if (!interaction.guild) return;
+            const operatorData = await checkOperator(interaction);
             if (!operatorData.hasPermissions) return;
 
             // Setup
-            const actionType = interaction.options.getSubcommand('action');
-            const targetGuild = guildUtils.findGuildById(interaction.guild.id);
-            const guildSnapshot = guildUtils.guilds;
+            const actionType = interaction.options.getSubcommand();
+            const targetGuild = findGuildById(interaction.guild.id);
+            const guildSnapshot = guilds;
 
             // Optional Options
-            const channel_admin = interaction.options.getChannel('channel_admin') || null;
-            const channel_event = interaction.options.getChannel('channel_event') || null;
-            const channel_suggestion = interaction.options.getChannel('channel_suggestion') || null;
-            const channel_snippet = interaction.options.getChannel('channel_snippet') || null;
-            const channel_broadcast = interaction.options.getChannel('channel_broadcast') || null;
-            const channel_rules = interaction.options.getChannel('channel_rules') || (interaction.guild.rulesChannelId ? await interaction.client.channels.fetch(interaction.guild.rulesChannelId) : null);
-            const channel_ticket = interaction.options.getChannel('channel_ticket') || null;
-            const role_blinded = interaction.options.getRole('role_blinded') || null;
-            const role_support = interaction.options.getRole('role_support') || null;
+            const channel_admin = interaction.options.getChannel('channel_admin') as TextBasedChannel || null;
+            const channel_event = interaction.options.getChannel('channel_event') as TextBasedChannel || null;
+            const channel_suggestion = interaction.options.getChannel('channel_suggestion') as TextBasedChannel || null;
+            const channel_snippet = interaction.options.getChannel('channel_snippet') as TextBasedChannel || null;
+            const channel_broadcast = interaction.options.getChannel('channel_broadcast') as TextBasedChannel || null;
+            const channel_rules = interaction.options.getChannel('channel_rules') as TextBasedChannel || (interaction.guild.rulesChannelId ? await interaction.client.channels.fetch(interaction.guild.rulesChannelId) : null);
+            const channel_ticket = interaction.options.getChannel('channel_ticket') as CategoryChannel || null;
+            const role_blinded = interaction.options.getRole('role_blinded') as Role || null;
+            const role_support = interaction.options.getRole('role_support') as Role || null;
             const role_cosmetic_power = interaction.options.getInteger('role_cosmetic_power') || 2;
 
             // Update
             if (actionType === "register") {
-                modules.database.query("UPDATE guild SET channel_admin = ?, channel_broadcast = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ?, role_support = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE guild_snowflake = ?;",
+                database.query("UPDATE guild SET channel_admin = ?, channel_broadcast = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ?, role_support = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE guild_snowflake = ?;",
                     [channel_admin ? channel_admin.id : null, channel_broadcast ? channel_broadcast.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, channel_ticket ? channel_ticket.id : null, role_blinded ? role_blinded.id : null, role_support ? role_support.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
                     .then(() => {
-                        const filteredGuild = guildUtils.guilds.filter(guild => guild.guildObject.id === interaction.guild.id)[0];
-                        guildUtils.guilds = guildUtils.guilds.filter(guild => guild.guildObject.id !== interaction.guild.id);
-                        guildUtils.guilds.push({
+                        if (!interaction.guild) return;
+                        const filteredGuild = guilds.filter(guild => guild.guild_object.id === interaction.guild?.id)[0];
+                        setGuilds(guilds.filter(guild => guild.guild_object.id !== interaction.guild?.id));
+                        addGuild({
                             // Guild
-                            "guildObject": interaction.guild,
+                            "guild_object": interaction.guild,
                             "team_tag": filteredGuild.team_tag,
                             "name": interaction.guild.name,
                             "channel_admin": channel_admin,
@@ -169,7 +171,6 @@ module.exports = {
                             "channel_ticket": channel_ticket,
                             "role_blinded": role_blinded,
                             "role_support": role_support,
-                            "locale": interaction.guild.preferredLocale,
                             "disabled": false,
 
                             // Settings
@@ -180,25 +181,27 @@ module.exports = {
                             "role_cosmetic_power": filteredGuild.role_cosmetic_power || 3,
                             "role_level_power": filteredGuild.role_level_power || 5,
                             "role_level_max": filteredGuild.role_level_max || 1000,
-                            "role_level_enable": filteredGuild.role_level_enable || 1,
+                            "role_level_enable": filteredGuild.role_level_enable || true,
                             "role_level_color": filteredGuild.role_level_color || "FC6736",
                             "jackpot": filteredGuild.jackpot || 10000,
-                            "welcome": filteredGuild.welcome || 1,
+                            "welcome": filteredGuild.welcome || true,
                             "xp_increase_reaction": filteredGuild.xp_increase_reaction || 1,
                             "xp_increase_poll": filteredGuild.xp_increase_poll || 3,
                             "xp_increase_message": filteredGuild.xp_increase_message || 5,
                             "xp_increase_slash": filteredGuild.xp_increase_slash || 15,
                             "xp_increase_purchase": filteredGuild.xp_increase_purchase || 25,
-                            "xp_formula": filteredGuild.xp_formula || "20,300"
+                            "xp_formula": filteredGuild.xp_formula || "20,300",
+                            "guild_date_creation": filteredGuild.guild_date_creation,
+                            "guild_date_update": filteredGuild.guild_date_update
                         });
 
-                        interaction.reply({
-                            content: `Setup update successful. Additional commands reloaded and ready for action. For other settings like welcome messages and other parameters, please use the [SK Commander](${config.urls.skCommander}) application or the [website](${config.urls.website}).`,
+                        return interaction.reply({
+                            content: `Setup update successful. Additional commands reloaded and ready for action. For other settings like welcome messages and other parameters, please use the [SK Commander](${urls.skCommander}) application or the [website](${urls.website}).`,
                             ephemeral: true
                         });
-                    }).catch((error) => {
-                        logger.error(error);
-                        guildUtils.guilds = guildSnapshot;
+                    }).catch((error: any) => {
+                        logError(error);
+                        setGuilds(guildSnapshot);
                         return interaction.reply({
                             content: "Something went wrong while updating the server configuration. Please try again later.",
                             ephemeral: true
@@ -212,40 +215,43 @@ module.exports = {
                     ephemeral: true
                 });
 
-                const embed = embedConstructor.create("Server Configuration", `Settings and channel configuration of \`${interaction.guild.name}\`.`, interaction.user,
+                const embed = create("Server Configuration", `Settings and channel configuration of \`${interaction.guild.name}\`.`, interaction.user,
                     [
-                        { name: 'Admin Channel', value: `${targetGuild.channel_admin || "Not Configured"}` },
-                        { name: 'Event Channel', value: `${targetGuild.channel_event || "Not Configured"}` },
-                        { name: 'Suggestion Channel', value: `${targetGuild.channel_suggestion || "Not Configured"}` },
-                        { name: 'Snippet Channel', value: `${targetGuild.channel_snippet || "Not Configured"}` },
-                        { name: 'Broadcast Channel', value: `${targetGuild.channel_broadcast || "Not Configured"}` },
-                        { name: 'Rules Channel', value: `${targetGuild.channel_rules || "Not Configured"}` },
-                        { name: 'Ticket Category', value: `${targetGuild.channel_ticket || "Not Configured"}` },
-                        { name: 'Power Roles', value: `\`${targetGuild.role_cosmetic_power || 0}\`` },
-                        { name: 'Blinded Role', value: `${targetGuild.role_blinded || "Not Configured"}` },
-                        { name: 'Support Role', value: `${targetGuild.role_support || "Not Configured"}` }
+                        { name: 'Admin Channel', value: `${targetGuild.channel_admin || "Not Configured"}`, inline: false },
+                        { name: 'Event Channel', value: `${targetGuild.channel_event || "Not Configured"}`, inline: false },
+                        { name: 'Suggestion Channel', value: `${targetGuild.channel_suggestion || "Not Configured"}`, inline: false },
+                        { name: 'Snippet Channel', value: `${targetGuild.channel_snippet || "Not Configured"}`, inline: false },
+                        { name: 'Broadcast Channel', value: `${targetGuild.channel_broadcast || "Not Configured"}`, inline: false },
+                        { name: 'Rules Channel', value: `${targetGuild.channel_rules || "Not Configured"}`, inline: false },
+                        { name: 'Ticket Category', value: `${targetGuild.channel_ticket || "Not Configured"}`, inline: false },
+                        { name: 'Power Roles', value: `\`${targetGuild.role_cosmetic_power || 0}\``, inline: false },
+                        { name: 'Blinded Role', value: `${targetGuild.role_blinded || "Not Configured"}`, inline: false },
+                        { name: 'Support Role', value: `${targetGuild.role_support || "Not Configured"}`, inline: false }
                     ], ["server"]);
-                interaction.reply({ embeds: [embed], ephemeral: true });
+                return interaction.reply({ embeds: [embed], ephemeral: true });
             } else if (actionType === "help") {
-                const embed = embedConstructor.create("Server Configuration", "Command Usage Help", interaction.user,
+                const embed = create("Server Configuration", "Command Usage Help", interaction.user,
                     [
                         {
                             name: 'General',
-                            value: "This command is reserved for Operators that want to check or configure their server configuration. Some commands are server/channel-specific, and therefore require setup."
+                            value: "This command is reserved for Operators that want to check or configure their server configuration. Some commands are server/channel-specific, and therefore require setup.",
+                            inline: false
                         },
                         {
                             name: 'How-To',
-                            value: 'To update or register, please fill the other marked as optional fields. Fields that are left empty, will be stored as empty (resetting the value). Use this command carefully, as erroneous input will disable certain commands.'
+                            value: "To update or register, please fill the other marked as optional fields. Fields that are left empty, will be stored as empty (resetting the value). Use this command carefully, as erroneous input will disable certain commands.",
+                            inline: false
                         },
                         {
                             name: 'Advanced Config',
-                            value: `When you try to update the configuration, you might notice the lack of customization. This is because it would not be UIX friendly to show 30 different options in only one command or to have multiple commands for different settings. To fix this, another standalone desktop and weba application have been built. These apps enables you to customize the bot to your liking including custom pricing and viewing statistics. For more information, checkout my [website](${config.urls.website}).`
+                            value: `When you try to update the configuration, you might notice the lack of customization. This is because it would not be UIX friendly to show 30 different options in only one command or to have multiple commands for different settings. To fix this, another standalone desktop and weba application have been built. These apps enables you to customize the bot to your liking including custom pricing and viewing statistics. For more information, checkout my [website](${urls.website}).`,
+                            inline: false
                         }
                     ], ["server"]);
-                interaction.reply({ embeds: [embed], ephemeral: true });
+                return interaction.reply({ embeds: [embed], ephemeral: true });
             }
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

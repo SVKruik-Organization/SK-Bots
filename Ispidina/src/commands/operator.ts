@@ -1,11 +1,11 @@
 const { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, SlashCommandBuilder } = require('discord.js');
-const config = require('../config.js');
-const userUtils = require('../utils/user.js');
-const logger = require('../utils/logger.js');
+const config = require('../config');
+const userUtils = require('../utils/user');
+const logger = require('../utils/logger');
 const modules = require('..');
 
-module.exports = {
-    cooldown: config.cooldowns.C,
+export default {
+    cooldown: cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('operator')
         .setNameLocalizations({
@@ -44,7 +44,7 @@ module.exports = {
             .setDescriptionLocalizations({
                 nl: "Bekijk een overzicht aan leden en uw actieve abonnement."
             })),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
             const operatorData = await userUtils.checkOperator(interaction);
@@ -54,14 +54,14 @@ module.exports = {
             const actionType = interaction.options.getSubcommand();
             const targetMember = interaction.options.getUser("target");
             if (targetMember && targetMember.id === interaction.user.id) return interaction.reply({
-                content: `You cannot ${actionType} yourself ${actionType === "add" ? "to" : "from"} a team that you are already a member of via commands. To transfer ownership and use other advanced operations, please use the [SK Commander](${config.urls.skCommander}) application or the [website](${config.urls.website}).`,
+                content: `You cannot ${actionType} yourself ${actionType === "add" ? "to" : "from"} a team that you are already a member of via commands. To transfer ownership and use other advanced operations, please use the [SK Commander](${urls.skCommander}) application or the [website](${urls.website}).`,
                 ephemeral: true
             });
 
-            modules.database.query("SELECT et.team_tag, et.edition, username FROM operator_team et LEFT JOIN operator_member em ON et.team_tag = em.team_tag LEFT JOIN operator_member em2 ON em.team_tag = em2.team_tag LEFT JOIN operator ON em2.snowflake = operator.snowflake WHERE em.snowflake = ? AND em2.team_owner = 1;", interaction.user.id)
+            database.query("SELECT et.team_tag, et.edition, username FROM operator_team et LEFT JOIN operator_member em ON et.team_tag = em.team_tag LEFT JOIN operator_member em2 ON em.team_tag = em2.team_tag LEFT JOIN operator ON em2.snowflake = operator.snowflake WHERE em.snowflake = ? AND em2.team_owner = 1;", interaction.user.id)
                 .then(async (data) => {
                     if (!data.length) return interaction.reply({
-                        content: `You are not in any teams right now. You can join a team when you get invited, or create a new one yourself on the [website](${config.urls.website}).`,
+                        content: `You are not in any teams right now. You can join a team when you get invited, or create a new one yourself on the [website](${urls.website}).`,
                         ephemeral: true
                     });
 
@@ -85,15 +85,15 @@ module.exports = {
                         components: [new ActionRowBuilder().addComponents(select)],
                         ephemeral: true
                     });
-                }).catch((error) => {
-                    logger.error(error);
+                }).catch((error: any) => {
+                    logError(error);
                     return interaction.reply({
                         content: "Something went wrong while retrieving your teams. Please try again later.",
                         ephemeral: true
                     });
                 })
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

@@ -1,11 +1,11 @@
 const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config.js');
+const config = require('../config');
 const prettier = require('prettier');
-const guildUtils = require('../utils/guild.js');
-const logger = require('../utils/logger.js');
+const guildUtils = require('../utils/guild');
+const logger = require('../utils/logger');
 
-module.exports = {
-    cooldown: config.cooldowns.B,
+export default {
+    cooldown: cooldowns.B,
     data: new SlashCommandBuilder()
         .setName('snippet')
         .setNameLocalizations({
@@ -58,10 +58,10 @@ module.exports = {
             .setRequired(true)
             .setMinLength(1)
             .setMaxLength(50)),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Init
-            const targetGuild = guildUtils.findGuildById(interaction.guild.id);
+            const targetGuild = findGuildById(interaction.guild.id);
             if (!targetGuild || !targetGuild.channel_snippet) return interaction.reply({
                 content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
                 ephemeral: true
@@ -100,7 +100,7 @@ module.exports = {
                 } else if (language === "sql") {
                     code = await prettier.format(code, { parser: "sql", plugins: ["prettier-plugin-sql"] })
                 } else code = await prettier.format(code, { semi: false, parser: language });
-            } catch (error) {
+            } catch (error: any) {
                 return interaction.reply({
                     content: "Something went wrong while parsing your code. Check for syntax errors, and try again.",
                     ephemeral: true
@@ -113,12 +113,12 @@ module.exports = {
             } else if (language === "vue") highlight === "html";
 
             await channel.send({ content: `<@${snowflake}> ${title} \`${highlight}\`\n\n\`\`\`${language}\n${code}\n\`\`\`` });
-            interaction.reply({
+            return interaction.reply({
                 content: `Message created. Check your code-snippet here: <#${channel.id}>.`,
                 ephemeral: true
             });
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

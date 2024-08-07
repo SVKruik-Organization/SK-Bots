@@ -1,9 +1,9 @@
 const { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, SlashCommandBuilder } = require('discord.js');
-const config = require('../config.js');
-const logger = require('../utils/logger.js');
+const config = require('../config');
+const logger = require('../utils/logger');
 
-module.exports = {
-    cooldown: config.cooldowns.C,
+export default {
+    cooldown: cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('shop')
         .setNameLocalizations({
@@ -14,7 +14,7 @@ module.exports = {
             nl: "Geef uw Bits uit aan gafe extra's en cosmetica."
         })
         .setDMPermission(false),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             const select = new StringSelectMenuBuilder()
                 .setCustomId('shopSelectMenu')
@@ -35,8 +35,8 @@ module.exports = {
                 components: [new ActionRowBuilder().addComponents(select)],
                 ephemeral: true
             });
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

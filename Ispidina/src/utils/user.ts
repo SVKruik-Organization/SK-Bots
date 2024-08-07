@@ -1,45 +1,55 @@
-const modules = require('..');
-const logger = require('./logger.js');
-const config = require('../config.js');
+import { customClient, database } from '..';
+import { logError } from './logger';
+import { general } from '../config';
+import { ChatInputCommandInteraction, GuildMember, User } from 'discord.js';
+import { OperatorCheck } from '../types';
 
 /**
  *
- * @param {string} userId Find a specific User by snowflake (id).
+ * @param userId Find a specific User by snowflake (id).
  * @returns Discord User Object
  */
-async function findUserById(userId) {
-    return await modules.client.users.fetch(userId);
+export async function findUserById(userId: string): Promise<User> {
+    return await customClient.users.fetch(userId);
 }
 
 /**
  * Check if the user has the rights to perform this command.
- * @param {object} interaction Discord Interaction Object
- * @returns {boolean} If the user is an Administrator.
+ * @param interaction Discord Interaction Object
+ * @returns If the user is an Administrator.
  */
-async function checkAdmin(interaction) {
+export async function checkAdmin(interaction: ChatInputCommandInteraction): Promise<boolean> {
     try {
-        const data = await modules.database.query("SELECT user_snowflake FROM user_administrator WHERE user_snowflake = ? AND guild_snowflake = ?;", [interaction.user.id, interaction.guild.id]);
+        // Guild
+        if (!interaction.guild) return false;
+        const data: Array<string> = await database.query("SELECT user_snowflake FROM user_administrator WHERE user_snowflake = ? AND guild_snowflake = ?;", [interaction.user.id, interaction.guild.id]);
         if (data.length === 0) return false;
-        const member = await interaction.guild.members.cache.get(interaction.user.id);
-        const hasRole = await member.roles.cache.some(role => role.name === `${config.general.name} Administrator`);
+
+        // Member
+        const member: GuildMember | undefined = interaction.guild.members.cache.get(interaction.user.id);
+        if (!member) return false;
+
+        // Role
+        const hasRole: boolean = member.roles.cache.some(role => role.name === `${general.name} Administrator`);
         return hasRole;
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logError(error);
         return false;
     }
 }
 
 /**
  * Check if someone is an Operator for elevated commands in the current server.
- * @param {object} interaction Discord Interaction Object
- * @returns {}
+ * @param interaction Discord Interaction Object
+ * @returns
  */
-async function checkOperator(interaction) {
+export async function checkOperator(interaction: ChatInputCommandInteraction): Promise<OperatorCheck> {
     try {
-        const data = await modules.database.query("SELECT guild.team_tag, account_status, team_owner FROM operator_member LEFT JOIN guild ON operator_member.team_tag = guild.team_tag WHERE operator_member.snowflake = ? AND guild.snowflake = ?;", [interaction.user.id, interaction.guild.id]);
+        if (!interaction.guild) return { hasPermissions: false, data: [] };
+        const data = await database.query("SELECT guild.team_tag, account_status, team_owner FROM operator_member LEFT JOIN guild ON operator_member.team_tag = guild.team_tag WHERE operator_member.snowflake = ? AND guild.snowflake = ?;", [interaction.user.id, interaction.guild.id]);
         if (data.length === 0) {
             await interaction.reply({
-                content: `You do not have the required permissions to perform this elevated command. Note that this is an Operator command, so you need additional permissionsand a **special account**. This is not the \`/register\` account. Please try again later, or contact <@${config.general.authorId}> if you think this is a mistake.`,
+                content: `You do not have the required permissions to perform this elevated command. Note that this is an Operator command, so you need additional permissionsand a **special account**. This is not the \`/register\` account. Please try again later, or contact <@${general.authorId}> if you think this is a mistake.`,
                 ephemeral: true
             });
             return { hasPermissions: false, data: [] };
@@ -51,15 +61,8 @@ async function checkOperator(interaction) {
             return { hasPermissions: false, data: data[0] };
         }
         return { hasPermissions: true, data: data[0] };
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logError(error);
         return { hasPermissions: false, data: [] };
     }
-}
-
-
-module.exports = {
-    "checkAdmin": checkAdmin,
-    "checkOperator": checkOperator,
-    "findUserById": findUserById
 }

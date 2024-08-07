@@ -1,17 +1,17 @@
-const { ButtonBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, EmbedBuilder, ButtonStyle } = require('discord.js');
-const { time } = require('@discordjs/formatters');
-const config = require('../config.js');
-const modules = require('..');
-const userUtils = require('../utils/user.js');
-const logger = require('../utils/logger.js');
-const editionUtils = require('../utils/edition.js');
+import { ButtonBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, EmbedBuilder, ButtonStyle, StringSelectMenuInteraction, ChatInputCommandInteraction, ButtonInteraction, User } from 'discord.js';
+import { time } from '@discordjs/formatters';
+import { general, colors, urls } from '../config';
+import { database } from '..';
+import { findUserById } from '../utils/user';
+import { logError, logMessage } from '../utils/logger';
+import { getStatitistics } from '../utils/edition';
 
 /**
  * Handle Operator invite rejection.
- * @param {object} interaction Discord Interaction Object
+ * @param interaction Discord Interaction Object
  */
-function handleDeclineInit(interaction) {
-    modules.database.query("SELECT operator_invite.snowflake as inviter, edition, operator.username, operator_team.team_tag FROM operator_invite LEFT JOIN operator_team ON operator_invite.team_tag = operator_team.team_tag LEFT JOIN operator ON operator.snowflake = operator_invite.snowflake WHERE snowflake_recv = ?;", [interaction.user.id])
+export function handleDeclineInit(interaction: ChatInputCommandInteraction) {
+    database.query("SELECT operator_invite.snowflake as inviter, edition, operator.username, operator_team.team_tag FROM operator_invite LEFT JOIN operator_team ON operator_invite.team_tag = operator_team.team_tag LEFT JOIN operator ON operator.snowflake = operator_invite.snowflake WHERE snowflake_recv = ?;", [interaction.user.id])
         .then((data) => {
             if (data.length === 0) return interaction.reply({
                 content: "You do not have any pending Operator invites at the moment and/or you don't have an Operator account yet.",
@@ -36,8 +36,8 @@ function handleDeclineInit(interaction) {
                 components: [new ActionRowBuilder().addComponents(select)],
                 ephemeral: true
             });
-        }).catch((error) => {
-            logger.error(error);
+        }).catch((error: any) => {
+            logError(error);
             return interaction.reply({
                 content: `Something went wrong while loading your pending invites. Please try again later.`
             });
@@ -46,9 +46,9 @@ function handleDeclineInit(interaction) {
 
 /**
  * Handle the selected team.
- * @param {object} interaction Discord Interaction Object
+ * @param interaction Discord Interaction Object
  */
-async function handleDeclineSelect(interaction) {
+export async function handleDeclineSelect(interaction: StringSelectMenuInteraction) {
     const selectedTeamTag = interaction.values[0].split("-")[1];
     const inviterId = interaction.values[0].split("-")[2];
 
@@ -70,28 +70,28 @@ async function handleDeclineSelect(interaction) {
 
 /**
  * Handle the final rejection.
- * @param {object} interaction Discord Interaction Object
+ * @param interaction Discord Interaction Object
  */
-function handleDeclineFinal(interaction) {
-    const teamTag = interaction.customId.split("-")[1];
-    modules.database.query("SELECT * FROM operator_member WHERE team_tag = ? AND team_owner = 1; DELETE FROM operator_invite WHERE snowflake_recv = ? AND team_tag = ?;", [teamTag, interaction.user.id, teamTag])
+export function handleDeclineFinal(interaction: ButtonInteraction) {
+    const teamTag: string = interaction.customId.split("-")[1];
+    database.query("SELECT * FROM operator_member WHERE team_tag = ? AND team_owner = 1; DELETE FROM operator_invite WHERE snowflake_recv = ? AND team_tag = ?;", [teamTag, interaction.user.id, teamTag])
         .then(async (data) => {
-            interaction.interaction.edit({
+            interaction.update({
                 content: `Alright, I declined the pending invite and sent a interaction to ${data[0][0] ? `<@${data[0][0].snowflake}>` : "the inviter"}.`,
                 components: []
             });
 
             // Notify Team Owner
             if (data[0].length === 0) return;
-            const teamOwnerUser = await userUtils.findUserById(data[0][0].snowflake);
-            logger.log(`User '${interaction.user.username}'@'${interaction.user.id}' has declined '${teamOwnerUser.username}'@'${teamOwnerUser.id}' to join their Operator team '${teamTag}'.`, "info");
+            const teamOwnerUser = await findUserById(data[0][0].snowflake);
+            logMessage(`User '${interaction.user.username}'@'${interaction.user.id}' has declined '${teamOwnerUser.username}'@'${teamOwnerUser.id}' to join their Operator team '${teamTag}'.`, "info");
             teamOwnerUser.send({ content: `<@${interaction.user.id}> has declined the Operator invite to join your team (\`${teamTag}\`).` })
                 .catch(() => {
-                    logger.log(`Sending Operator invite decline interaction to team owner '${teamOwnerUser.username}'@'${teamOwnerUser.id}' was not succesful.`, "warning");
+                    logMessage(`Sending Operator invite decline interaction to team owner '${teamOwnerUser.username}'@'${teamOwnerUser.id}' was not succesful.`, "warning");
                 });
-        }).catch((error) => {
-            logger.error(error);
-            return interaction.interaction.reply({
+        }).catch((error: any) => {
+            logError(error);
+            return interaction.reply({
                 content: "Something went wrong while removing your invite. Please try again later.",
                 components: []
             });
@@ -100,10 +100,10 @@ function handleDeclineFinal(interaction) {
 
 /**
  * Cancel the final rejection.
- * @param {object} interaction Discord Interaction Object
+ * @param interaction Discord Interaction Object
  */
-function handleDeclineCancel(interaction) {
-    return interaction.interaction.edit({
+export function handleDeclineCancel(interaction: ButtonInteraction) {
+    return interaction.update({
         content: "Alright, I did not decline your Operator invitation. It will stay as pending untill you accept or decline it.",
         components: []
     });
@@ -111,13 +111,13 @@ function handleDeclineCancel(interaction) {
 
 /**
  * Handle the selection to modify/overview a team.
- * @param {object} interaction Discord Interaction Object
+ * @param interaction Discord Interaction Object
  */
-async function handleSelectionMenu(interaction) {
-    const teamTag = interaction.values[0].split("-")[1];
-    const actionType = interaction.values[0].split("-")[2];
-    let rawTargetMemberId = interaction.values[0].split("-")[3];
-    const targetMemberId = rawTargetMemberId === "null" ? null : rawTargetMemberId;
+export async function handleSelectionMenu(interaction: StringSelectMenuInteraction) {
+    const teamTag: string = interaction.values[0].split("-")[1];
+    const actionType: string = interaction.values[0].split("-")[2];
+    let rawTargetMemberId: string = interaction.values[0].split("-")[3];
+    const targetMemberId: string | null = rawTargetMemberId === "null" ? null : rawTargetMemberId;
 
     if (actionType === "modify") {
         const select = new StringSelectMenuBuilder()
@@ -139,13 +139,13 @@ async function handleSelectionMenu(interaction) {
             ephemeral: true
         });
     } else if (actionType === "overview") {
-        modules.database.query("SELECT operator_member.*, edition, (SELECT COUNT(*) FROM guild WHERE team_tag = ?) AS server_count FROM operator_member LEFT JOIN operator_team ON operator_team.team_tag = operator_member.team_tag WHERE operator_member.team_tag = ?;", [teamTag, teamTag])
+        database.query("SELECT operator_member.*, edition, (SELECT COUNT(*) FROM guild WHERE team_tag = ?) AS server_count FROM operator_member LEFT JOIN operator_team ON operator_team.team_tag = operator_member.team_tag WHERE operator_member.team_tag = ?;", [teamTag, teamTag])
             .then((data) => {
                 /**
                  * Convert Account Status to text.
-                 * @param {string} input Account status.
+                 * @param input Account status.
                  */
-                function getStatus(input) {
+                function getStatus(input: number) {
                     switch (input) {
                         case 0:
                             return "🟣 **Invite Pending**"
@@ -180,14 +180,14 @@ async function handleSelectionMenu(interaction) {
                 }
 
                 // Reply
-                let editionObject = editionUtils.getStatitistics(data[0].edition);
+                let editionObject = getStatitistics(data[0].edition);
                 if (!editionObject) return interaction.update({
                     content: "Something went wrong while retrieving the required information. Please try again later.",
                     components: [],
                     ephemeral: true
                 });
                 const embed = new EmbedBuilder()
-                    .setColor(config.colors.bot)
+                    .setColor(colors.bot)
                     .setTitle("Operator Overview")
                     .setDescription(`Here is an overview of your plan statistics and team members for your selected teamtag.`)
                     .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
@@ -200,16 +200,16 @@ async function handleSelectionMenu(interaction) {
                         { name: 'Edition', value: `\`${data[0].edition}\``, inline: true },
                         { name: 'Creation Date', value: time(data[0].date_creation), inline: true },
                         { name: 'Update Date', value: time(data[0].date_update), inline: true },
-                        { name: 'Note', value: `Changing your subscription details and advanced settings can be done with the [SK Commander](${config.urls.skCommander}) application or the [website](${config.urls.website}). If you have any questions or concerns, don't hesitate to reach out to <@${config.general.authorId}>.` })
+                        { name: 'Note', value: `Changing your subscription details and advanced settings can be done with the [SK Commander](${urls.skCommander}) application or the [website](${urls.website}). If you have any questions or concerns, don't hesitate to reach out to <@${general.authorId}>.` })
                     .setTimestamp()
-                    .setFooter({ text: `Embed created by ${config.general.name}` });
+                    .setFooter({ text: `Embed created by ${general.name}` });
                 return interaction.update({
                     embeds: [embed],
                     components: [],
                     ephemeral: true
                 });
-            }).catch((error) => {
-                logger.error(error);
+            }).catch((error: any) => {
+                logError(error);
                 return interaction.update({
                     content: "Something went wrong while retrieving your information. Please try again later.",
                     components: [],
@@ -221,12 +221,12 @@ async function handleSelectionMenu(interaction) {
 
 /**
  * Handle the selection to modify a team.
- * @param {object} interaction Discord Interaction Object
+ * @param interaction Discord Interaction Object
  */
-async function handleModifyMenu(interaction) {
-    const actionType = interaction.values[0].split("-")[1];
-    const teamTag = interaction.values[0].split("-")[2];
-    const targetMember = await userUtils.findUserById(interaction.values[0].split("-")[3]);
+export async function handleModifyMenu(interaction: StringSelectMenuInteraction) {
+    const actionType: string = interaction.values[0].split("-")[1];
+    const teamTag: string = interaction.values[0].split("-")[2];
+    const targetMember: User = await findUserById(interaction.values[0].split("-")[3]);
 
     if (targetMember.bot) return interaction.update({
         content: `User <@${targetMember.id}> is a bot, and can therefore not be invited to your team.`,
@@ -234,7 +234,7 @@ async function handleModifyMenu(interaction) {
         ephemeral: true
     });
 
-    modules.database.query("SELECT edition, capacity_operator, capacity_server, COUNT(operator_member.team_tag) as operator_count, em.snowflake as owner_snowflake, IFNULL((SELECT 1 FROM operator_member WHERE snowflake = ? AND team_tag = ?), 0) as presence FROM operator_team LEFT JOIN operator_member ON operator_member.team_tag = operator_team.team_tag LEFT JOIN operator_member em ON em.team_tag = operator_team.team_tag WHERE operator_team.team_tag = ? AND em.team_owner = 1;", [targetMember.id, teamTag, teamTag])
+    database.query("SELECT edition, capacity_operator, capacity_server, COUNT(operator_member.team_tag) as operator_count, em.snowflake as owner_snowflake, IFNULL((SELECT 1 FROM operator_member WHERE snowflake = ? AND team_tag = ?), 0) as presence FROM operator_team LEFT JOIN operator_member ON operator_member.team_tag = operator_team.team_tag LEFT JOIN operator_member em ON em.team_tag = operator_team.team_tag WHERE operator_team.team_tag = ? AND em.team_owner = 1;", [targetMember.id, teamTag, teamTag])
         .then(async (data) => {
             if (data[0].owner_snowflake !== interaction.user.id) return interaction.update({
                 content: `Only the owner of team \`${teamTag}\` can ${actionType === "invite" ? `invite <@${targetMember.id}> to this team.` : `remove <@${targetMember.id}> from this team.`}`,
@@ -252,51 +252,51 @@ async function handleModifyMenu(interaction) {
 
                 // Capacity
                 if (data[0].operator_count >= data[0].capacity_operator) return interaction.update({
-                    content: `Your \`${data[0].edition}\` team does not have the capacity for another member (${data[0].operator_count}/${data[0].capacity_operator} seats used). Upgrade your current plan or request a custom solution on the [website](${config.urls.website}).`,
+                    content: `Your \`${data[0].edition}\` team does not have the capacity for another member (${data[0].operator_count}/${data[0].capacity_operator} seats used). Upgrade your current plan or request a custom solution on the [website](${urls.website}).`,
                     components: [],
                     ephemeral: true
                 });
 
                 // Finalize
-                modules.database.query("INSERT INTO operator_invite (snowflake, snowflake_recv, team_tag) VALUES (?, ?, ?)", [interaction.user.id, targetMember.id, teamTag])
+                database.query("INSERT INTO operator_invite (snowflake, snowflake_recv, team_tag) VALUES (?, ?, ?)", [interaction.user.id, targetMember.id, teamTag])
                     .then(() => {
                         // TODO - Register Link Handling
-                        const registerLink = `${config.urls.website}/login?team=${teamTag}&owner=${interaction.user.id}&target=${targetMember.id}`;
+                        const registerLink = `${urls.website}/login?team=${teamTag}&owner=${interaction.user.id}&target=${targetMember.id}`;
                         const embed = new EmbedBuilder()
-                            .setColor(config.colors.bot)
+                            .setColor(colors.bot)
                             .setTitle("New Operator Invite")
                             .setDescription(`Hello <@${targetMember.id}>! <@${interaction.user.id}> has invited **you** to join his Operator team.`)
-                            .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
+                            .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() as string })
                             .addFields(
                                 { name: "Instructions", value: "-----" },
                                 { name: 'Accept', value: `If you decide to join them, you can click on this [link](${registerLink}). It will direct you to my website, where you can create an Operator account if you don't have one yet, and finalize registration..` },
                                 { name: 'Decline', value: `If you do not want to join their team, please send me \`/operatorDecline\`, and I will remove your record & notify <@${interaction.user.id}>.` },
-                                { name: 'Safety', value: `If I have spammed you with invites and/or you do not know about any of this, please contact <@${config.general.userSnowflake}> to get this fixed!` },
-                                { name: 'Information', value: `If you want to know more about this whole 'Operator' thing, you can read more about it [here](${config.urls.website}).` },
+                                { name: 'Safety', value: `If I have spammed you with invites and/or you do not know about any of this, please contact <@${general.authorId}> to get this fixed!` },
+                                { name: 'Information', value: `If you want to know more about this whole 'Operator' thing, you can read more about it [here](${urls.website}).` },
                                 { name: 'Meta', value: "-----" })
                             .addFields(
                                 { name: 'Teamtag', value: `\`${teamTag}\``, inline: true },
                                 { name: 'Edition', value: `\`${data[0].edition}\``, inline: true },
                                 { name: 'Date', value: time(), inline: true })
                             .setTimestamp()
-                            .setFooter({ text: `Embed created by ${config.general.name}` });
+                            .setFooter({ text: `Embed created by ${general.name}` });
                         targetMember.send({ embeds: [embed] })
                             .then(() => {
-                                logger.log(`User '${interaction.user.username}'@'${interaction.user.id}' has invited '${targetMember.username}'@'${targetMember.id}' to join their Operator team '${teamTag}' in Guild '${interaction.guild.name}'@'${interaction.guild.id}'. Instructions sent directly.`, "info");
+                                logMessage(`User '${interaction.user.username}'@'${interaction.user.id}' has invited '${targetMember.username}'@'${targetMember.id}' to join their Operator team '${teamTag}' in Guild '${interaction.guild?.name}'@'${interaction.guild?.id}'. Instructions sent directly.`, "info");
                                 return interaction.update({
                                     content: `So far so good! I need some additional information like email and password from <@${targetMember.id}>, so I DM'd them with futher instructions. I will send you a notification (if you have allowed this) when this user has accepted or declined your invite. That's all for now!`,
                                     components: [],
                                     ephemeral: true
                                 });
                             }).catch(() => {
-                                logger.log(`User '${interaction.user.username}'@'${interaction.user.id}' has invited '${targetMember.username}'@'${targetMember.id}' to join their Operator team '${teamTag}' in Guild '${interaction.guild.name}'@'${interaction.guild.id}'. Instructions must be send by the inviter.`, "info");
+                                logMessage(`User '${interaction.user.username}'@'${interaction.user.id}' has invited '${targetMember.username}'@'${targetMember.id}' to join their Operator team '${teamTag}' in Guild '${interaction.guild?.name}'@'${interaction.guild?.id}'. Instructions must be send by the inviter.`, "info");
                                 return interaction.update({
                                     content: `All checks passed, but I couldn't reach your soon-to-be teammate. They might have DM's from applications like myself disabled. Can you please them this link instead?\n\n\`${registerLink}\``,
                                     components: [],
                                     ephemeral: true
                                 });
                             });
-                    }).catch((error) => {
+                    }).catch((error: any) => {
                         if (error.interaction.includes("operator_invite_unique")) {
                             return interaction.update({
                                 content: `You have already invited <@${targetMember.id}>, and your request is now pending. Please be patient while they consider your request, or DM them to hurry up.`,
@@ -304,7 +304,7 @@ async function handleModifyMenu(interaction) {
                                 ephemeral: true
                             });
                         } else {
-                            logger.error(error);
+                            logError(error);
                             return interaction.update({
                                 content: "Something went wrong while updating your information. Please try again later.",
                                 components: [],
@@ -332,8 +332,8 @@ async function handleModifyMenu(interaction) {
                     ephemeral: true
                 });
             }
-        }).catch((error) => {
-            logger.error(error);
+        }).catch((error: any) => {
+            logError(error);
             return interaction.update({
                 content: `Something went wrong while retrieving the required information. Please try again later.`,
                 components: [],
@@ -344,24 +344,24 @@ async function handleModifyMenu(interaction) {
 
 /**
  * Handle the selection to remove a user from an invite or team.
- * @param {object} interaction Discord Interaction Object
+ * @param interaction Discord Interaction Object
  */
-async function handleModifyRemoveMenu(interaction) {
+export async function handleModifyRemoveMenu(interaction: StringSelectMenuInteraction) {
     const actionType = interaction.values[0].split("-")[1];
     const teamTag = interaction.values[0].split("-")[2];
-    const targetMember = await userUtils.findUserById(interaction.values[0].split("-")[3]);
+    const targetMember = await findUserById(interaction.values[0].split("-")[3]);
 
     if (actionType === "invite") {
-        modules.database.query("DELETE FROM operator_invite WHERE team_tag = ? AND snowflake_recv = ?;", [teamTag, targetMember.id])
+        database.query("DELETE FROM operator_invite WHERE team_tag = ? AND snowflake_recv = ?;", [teamTag, targetMember.id])
             .then(() => {
-                logger.log(`User '${interaction.user.username}'@'${interaction.user.id}' has cancelled any pending invites to '${targetMember.username}'@'${targetMember.id}' from their Operator team '${teamTag}' in Guild '${interaction.guild.name}'@'${interaction.guild.id}'.`, "warning");
+                logMessage(`User '${interaction.user.username}'@'${interaction.user.id}' has cancelled any pending invites to '${targetMember.username}'@'${targetMember.id}' from their Operator team '${teamTag}' in Guild '${interaction.guild?.name}'@'${interaction.guild?.id}'.`, "warning");
                 return interaction.update({
                     content: `Cancelled any pending invites from team \`${teamTag}\` to <@${targetMember.id}>.`,
                     components: [],
                     ephemeral: true
                 });
-            }).catch((error) => {
-                logger.error(error);
+            }).catch((error: any) => {
+                logError(error);
                 return interaction.update({
                     content: "Something went wrong while cancelling the invite. Please try again later.",
                     components: [],
@@ -369,16 +369,16 @@ async function handleModifyRemoveMenu(interaction) {
                 });
             });
     } else if (actionType === "team") {
-        modules.database.query("DELETE FROM operator_member WHERE team_tag = ? AND snowflake = ?;", [teamTag, targetMember.id])
+        database.query("DELETE FROM operator_member WHERE team_tag = ? AND snowflake = ?;", [teamTag, targetMember.id])
             .then(() => {
-                logger.log(`User '${interaction.user.username}'@'${interaction.user.id}' has removed '${targetMember.username}'@'${targetMember.id}' from their Operator team '${teamTag}' in Guild '${interaction.guild.name}'@'${interaction.guild.id}'.`, "warning");
+                logMessage(`User '${interaction.user.username}'@'${interaction.user.id}' has removed '${targetMember.username}'@'${targetMember.id}' from their Operator team '${teamTag}' in Guild '${interaction.guild?.name}'@'${interaction.guild?.id}'.`, "warning");
                 return interaction.update({
                     content: `Removed <@${targetMember.id}> from team \`${teamTag}\`. One new seat available.`,
                     components: [],
                     ephemeral: true
                 });
-            }).catch((error) => {
-                logger.error(error);
+            }).catch((error: any) => {
+                logError(error);
                 return interaction.update({
                     content: "Something went wrong while removing this user from your team. Please try again later.",
                     components: [],
@@ -386,14 +386,4 @@ async function handleModifyRemoveMenu(interaction) {
                 });
             });
     }
-}
-
-module.exports = {
-    "handleDeclineInit": handleDeclineInit,
-    "handleDeclineSelect": handleDeclineSelect,
-    "handleDeclineFinal": handleDeclineFinal,
-    "handleDeclineCancel": handleDeclineCancel,
-    "handleSelectionMenu": handleSelectionMenu,
-    "handleModifyMenu": handleModifyMenu,
-    "handleModifyRemoveMenu": handleModifyRemoveMenu
 }

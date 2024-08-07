@@ -1,6 +1,5 @@
-const general = {
+export const general = {
     name: "Ispidina",
-    color: "#2B8DFF",
     clientId: "1252669921242910831",
     imageURL: "https://files.stefankruik.com/Bots/Ispidina.png",
     authorId: "422704748488163332",
@@ -16,8 +15,14 @@ export enum cooldowns {
     E = 86400
 };
 
+// Accent Colors
+export enum colors {
+    bot = "#2B8DFF",
+    warning = "#FF4C4C"
+}
+
 // Website Links
-const urls = {
+export const urls = {
     website: "https://platform.stefankruik.com",
     docs: "https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Ispidina",
     skCommander: "https://platform.stefankruik.com" // TODO .com/products/commander
@@ -45,5 +50,3 @@ export enum edition {
     enterpriseSeats = 10,
     enterpriseServers = 25
 }
-
-export { general, urls }

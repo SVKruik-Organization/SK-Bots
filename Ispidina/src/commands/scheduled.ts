@@ -1,13 +1,13 @@
 const { SlashCommandBuilder, PermissionFlagsBits, GuildScheduledEventManager, GuildScheduledEventPrivacyLevel, GuildScheduledEventEntityType, ChannelType } = require('discord.js');
-const config = require('../config.js');
+const config = require('../config');
 const modules = require('..');
-const logger = require('../utils/logger.js');
-const userUtils = require('../utils/user.js');
-const { datetimeParser } = require('../utils/date.js');
-const { createTicket } = require('../utils/ticket.js');
+const logger = require('../utils/logger');
+const userUtils = require('../utils/user');
+const { datetimeParser } = require('../utils/date');
+const { createTicket } = require('../utils/ticket');
 
-module.exports = {
-    cooldown: config.cooldowns.A,
+export default {
+    cooldown: cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('scheduled')
         .setNameLocalizations({
@@ -229,15 +229,15 @@ module.exports = {
                 })
                 .setRequired(false)))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
-            if (!(await userUtils.checkAdmin(interaction))) return interaction.reply({
+            if (!(await checkAdmin(interaction))) return interaction.reply({
                 content: `You do not have the required permissions to perform this elevated command. Please try again later, or contact moderation to receive elevated permissions.`,
                 ephemeral: true
             });
 
-            await interaction.reply({
+            await return interaction.reply({
                 content: `Creating scheduled event. One moment please.`,
                 ephemeral: true
             });
@@ -259,7 +259,7 @@ module.exports = {
                 scheduledStartTime: parsedDate,
                 privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly,
                 description: description,
-                reason: `Scheduled Event ${config.general.name} Command`
+                reason: `Scheduled Event ${general.name} Command`
             }
 
             if (image) {
@@ -299,17 +299,17 @@ module.exports = {
                         content: "Scheduled event successfully created. You can view it at the top-left of the screen. There, you can register for this event.",
                         ephemeral: true
                     });
-                    modules.database.query("INSERT INTO event (ticket, payload, guild_snowflake, creator_snowflake, title, description, location, online, scheduled, date_start) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", [createTicket(), data.id, interaction.guild.id, interaction.user.id, title, description, processedLocation, processedOnline, 1, parsedDate])
-                        .catch((error) => logger.error(error));
-                }).catch((error) => {
-                    logger.error(error);
+                    database.query("INSERT INTO event (ticket, payload, guild_snowflake, creator_snowflake, title, description, location, online, scheduled, date_start) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", [createTicket(), data.id, interaction.guild.id, interaction.user.id, title, description, processedLocation, processedOnline, 1, parsedDate])
+                        .catch((error) => logError(error));
+                }).catch((error: any) => {
+                    logError(error);
                     interaction.followUp({
                         content: "Something went wrong while creating the scheduled event. Please try again later.",
                         ephemeral: true
                     });
                 });
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

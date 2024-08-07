@@ -1,11 +1,11 @@
 const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config.js');
+const config = require('../config');
 const { EmbedBuilder } = require('discord.js');
-const guildUtils = require('../utils/guild.js');
-const logger = require('../utils/logger.js');
+const guildUtils = require('../utils/guild');
+const logger = require('../utils/logger');
 
-module.exports = {
-    cooldown: config.cooldowns.C,
+export default {
+    cooldown: cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('suggestion')
         .setNameLocalizations({
@@ -38,10 +38,10 @@ module.exports = {
             })
             .setRequired(true)
             .setMaxLength(600)),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Init
-            const targetGuild = guildUtils.findGuildById(interaction.guild.id);
+            const targetGuild = findGuildById(interaction.guild.id);
             if (!targetGuild || !targetGuild.channel_suggestion) return interaction.reply({
                 content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
                 ephemeral: true
@@ -55,22 +55,22 @@ module.exports = {
             const pfp = interaction.user.avatarURL();
 
             const embed = new EmbedBuilder()
-                .setColor(config.colors.bot)
+                .setColor(colors.bot)
                 .setTitle(`New Suggestion: ${title}`)
                 .setAuthor({ name: username, iconURL: pfp })
                 .setDescription(`${description}`)
                 .addFields({ name: "-----", value: 'Meta' })
                 .setTimestamp()
-                .setFooter({ text: `Embed created by ${config.general.name}` });
+                .setFooter({ text: `Embed created by ${general.name}` });
             const embedMessage = await channel.send({ embeds: [embed] });
             await embedMessage.react('🟢');
             await embedMessage.react('🔴');
-            interaction.reply({
+            return interaction.reply({
                 content: `Message created. Check your event here: <#${channel.id}>.`,
                 ephemeral: true
             });
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

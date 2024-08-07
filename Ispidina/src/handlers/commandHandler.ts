@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { log } from '../utils/logger';
+import { logMessage } from '../utils/logger';
 import { Command } from '../types';
 import { customClient } from "..";
 
@@ -9,16 +9,14 @@ import { customClient } from "..";
  * @param client Discord Client Object
  * @returns On error, else nothing.
  */
-function initCommandHandler(client: typeof customClient) {
+export function initCommandHandler(client: typeof customClient): void {
     const commandsPath: string = path.join(__dirname, '../commands');
-    const commandFiles: string[] = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+    const commandFiles: string[] = fs.readdirSync(commandsPath).filter(file => file.endsWith(''));
     for (const file of commandFiles) {
         const filePath: string = path.join(commandsPath, file);
         const command: Command = require(filePath);
         if ('data' in command && 'execute' in command) {
             client.commands.set(command.data.name, command);
-        } else return log(`Error at ${filePath}.`, "error");
+        } else return logMessage(`Error at ${filePath}.`, "error");
     }
 }
-
-export { initCommandHandler }

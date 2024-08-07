@@ -1,18 +1,19 @@
-const modules = require('..');
-const logger = require('../utils/logger.js');
-const config = require('../config.js');
+import { Interaction } from 'discord.js';
+import { database } from '..';
+import { logError, logMessage } from '../utils/logger';
+import { general } from '../config';
 
 /**
  * Log a new purchase.
- * @param {number} cost The total cost of the purchase.
- * @param {string} product The name of the bought product.
- * @param {number} quantity The amount of products bought.
- * @param {string} type The type of purchase.
- * @param {string} interaction Discord Interaction Object
- * @param {number} remaining The remaining Bits in their wallet after purchase.
+ * @param cost The total cost of the purchase.
+ * @param product The name of the bought product.
+ * @param quantity The amount of products bought.
+ * @param type The type of purchase.
+ * @param interaction Discord Interaction Object
+ * @param remaining The remaining Bits in their wallet after purchase.
  * @returns Status
  */
-async function post(cost, product, quantity, type, interaction, remaining) {
+export async function post(cost: number, product: string, quantity: number, type: string, interaction: Interaction, remaining: number): Promise<boolean> {
     try {
         let query;
         switch (product) {
@@ -30,18 +31,13 @@ async function post(cost, product, quantity, type, interaction, remaining) {
         }
         if (!query) return false;
 
-        const response = await modules.database.query(`INSERT INTO purchase (snowflake, balance_change, product, quantity, type, date, remaining_bits, method, guild_snowflake) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, "${config.general.name} Discord Bot", ?); ${query}`, [interaction.user.id, -1 * cost, product, quantity, type, remaining, interaction.guild.id])
+        const response: any = await database.query(`INSERT INTO purchase (snowflake, balance_change, product, quantity, type, date, remaining_bits, method, guild_snowflake) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, "${general.name} Discord Bot", ?); ${query}`, [interaction.user.id, -1 * cost, product, quantity, type, remaining, interaction.guild?.id])
         if (response && response[0] && response[0].affectedRows) {
-            logger.log(`Successfully updated purchase history for '${interaction.user.username}@${interaction.user.id}' ${product}@${quantity}.`, "info");
+            logMessage(`Successfully updated purchase history for '${interaction.user.username}@${interaction.user.id}' ${product}@${quantity}.`, "info");
             return true;
-        } else {
-            return false;
-        }
-    } catch (error) {
-        logger.error(error);
+        } else return false;
+    } catch (error: any) {
+        logError(error);
+        return false;
     }
-}
-
-module.exports = {
-    "post": post
 }

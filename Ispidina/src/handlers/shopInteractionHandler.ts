@@ -1,18 +1,20 @@
-const { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } = require('discord.js');
-const modules = require('..');
-const logger = require('../utils/logger.js');
-const userIncreaseHandler = require('./userIncreaseHandler.js');
-const config = require('../config.js');
-const purchaseHistory = require('./purchaseHistory.js');
-const guildUtils = require('../utils/guild.js');
+import { ButtonInteraction, ModalSubmitInteraction, StringSelectMenuInteraction } from 'discord.js';
+
+import { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { database } from '..';
+import { logError, logMessage } from '../utils/logger';
+import { increaseXp } from './userIncreaseHandler';
+import { tier } from '../config';
+import { post } from './purchaseHistory';
+import { findGuildById } from '../utils/guild';
 
 /**
  * Handle input when user wants uses the Shop command.
- * @param {object} interaction Discord Interaction Object
+ * @param interaction Discord Interaction Object
  */
-async function shopOptions(interaction) {
+export async function shopOptions(interaction: StringSelectMenuInteraction) {
     try {
-        modules.database.query("SELECT * FROM guild_settings WHERE guild_snowflake = ?", [interaction.guild.id])
+        database.query("SELECT * FROM guild_settings WHERE guild_snowflake = ?", [interaction.guild?.id])
             .then(async (data) => {
                 // Send Purchase Options
                 const select = new StringSelectMenuBuilder()
@@ -36,24 +38,24 @@ async function shopOptions(interaction) {
                     components: [new ActionRowBuilder().addComponents(select)],
                     ephemeral: true
                 });
-            }).catch((error) => {
-                logger.error(error);
+            }).catch((error: any) => {
+                logError(error);
                 return interaction.update({
                     content: "Something went wrong while retrieving the required information. Please try again later.",
                     ephemeral: true
                 });
             });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logError(error);
     }
 }
 
 /**
  * Handle input when user wants to buy something.
- * @param {object} interaction Discord Interaction Object
- * @param {string} purchaseOption The selected product.
+ * @param interaction Discord Interaction Object
+ * @param purchaseOption The selected product.
  */
-async function purchaseOptions(interaction, purchaseOption) {
+export async function purchaseOptions(interaction: StringSelectMenuInteraction, purchaseOption: string) {
     // Buy Amount
     const button = new ButtonBuilder()
         .setCustomId('openShopBuyModal')
@@ -69,10 +71,10 @@ async function purchaseOptions(interaction, purchaseOption) {
 
 /**
  * Show input for quantity.
- * @param {object} interaction Discord Interaction Object
- * @param {string} product The selected product.
+ * @param interaction Discord Interaction Object
+ * @param product The selected product.
  */
-async function modal(interaction, product) {
+export async function modal(interaction: ButtonInteraction, product: string) {
     const modal = new ModalBuilder()
         .setCustomId('shopBuyModal')
         .setTitle(`Shop Purchase - ${product}`);
@@ -95,17 +97,16 @@ async function modal(interaction, product) {
 
 /**
  * Handle modal input when user wants to buy something.
- * @param {object} interaction Discord Interaction Object
+ * @param interaction Discord Interaction Object
  */
-async function modalInputHandler(interaction) {
+export async function modalInputHandler(interaction: ModalSubmitInteraction) {
     try {
-        let amount = interaction.fields.getTextInputValue('shopModalAmount');
+        const amount: number = parseInt(interaction.fields.getTextInputValue('shopModalAmount'));
         const product = interaction.message.components[0].components[0].label.split(" ")[1];
         if (isNaN(amount)) return interaction.update({ content: 'The amount of items you would like to buy should be a number. Please try again.', ephemeral: true });
-        amount = parseInt(amount);
         if (amount < 1) return interaction.update({ content: 'You must buy atleast one item. Please try again.', ephemeral: true });
 
-        modules.database.query("SELECT xp15, xp50, role_cosmetic_price, wallet, bank, (wallet + bank) AS total FROM guild_settings LEFT JOIN economy ON 1 = 1 WHERE guild_settings.guild_snowflake = ? AND economy.snowflake = ?;", [interaction.guild.id, interaction.user.id])
+        database.query("SELECT xp15, xp50, role_cosmetic_price, wallet, bank, (wallet + bank) AS total FROM guild_settings LEFT JOIN economy ON 1 = 1 WHERE guild_settings.guild_snowflake = ? AND economy.snowflake = ?;", [interaction.guild.id, interaction.user.id])
             .then((pricingData) => {
                 if (pricingData.length === 0) return interaction.reply({
                     content: "This command requires you to have an account. Create an account with the `/register` command.",
@@ -124,7 +125,7 @@ async function modalInputHandler(interaction) {
                         ephemeral: true
                     });
                 } else {
-                    modules.database.query("UPDATE economy SET wallet = wallet - ? WHERE snowflake = ?;", [total, interaction.user.id])
+                    database.query("UPDATE economy SET wallet = wallet - ? WHERE snowflake = ?;", [total, interaction.user.id])
                         .then(async (data) => {
                             // Validation
                             if (!data.affectedRows) return interaction.reply({
@@ -133,48 +134,42 @@ async function modalInputHandler(interaction) {
                             });
 
                             const remaining = pricingData[0].wallet - total;
-                            logger.log(`'${interaction.user.username}@${interaction.user.id}' has purchased ${amount} ${product}${amount > 1 ? "'s" : ""} for a total price of ${total} Bits in guild '${interaction.guild.name}@${interaction.guild.id}'. Bits remaining: ${remaining}.`, "info");
+                            logMessage(`'${interaction.user.username}@${interaction.user.id}' has purchased ${amount} ${product}${amount > 1 ? "'s" : ""} for a total price of ${total} Bits in guild '${interaction.guild?.name}@${interaction.guild?.id}'. Bits remaining: ${remaining}.`, "info");
 
                             // Experience Increase
-                            const targetGuild = guildUtils.findGuildById(interaction.guild.id);
-                            let xpReward = config.tier.purchase;
+                            if (!interaction.guild) return;
+                            const targetGuild = findGuildById(interaction.guild.id);
+                            let xpReward = tier.purchase;
                             if (targetGuild && targetGuild.xp_increase_purchase) xpReward = targetGuild.xp_increase_purchase;
-                            userIncreaseHandler.increaseXp(interaction, xpReward);
+                            increaseXp(interaction, xpReward);
 
                             // History
-                            const historyResponse = await purchaseHistory.post(total, product, amount, "Shop Command Purchase", interaction, remaining, interaction);
+                            const historyResponse = await post(total, product, amount, "Shop Command Purchase", interaction, remaining);
                             if (historyResponse) {
-                                interaction.reply({
+                                return interaction.reply({
                                     content: `All set! Thank you so much for your purchase! Your new Wallet balance is \`${remaining}\` Bits.${product.indexOf("xp") >= 0 ? " Remember that you have to activate XP-Boosters for them to work. You can do this by using the \`/inventory activate\` command." : ""}`,
                                     ephemeral: true
                                 });
-                            } else interaction.reply({
+                            } else return interaction.reply({
                                 content: "Something went wrong while updating your shopping history. You have not been charged. Please try again later.",
                                 ephemeral: true
                             });
-                        }).catch((error) => {
-                            logger.error(error);
+                        }).catch((error: any) => {
+                            logError(error);
                             return interaction.reply({
                                 content: "Something went wrong while updating your information. You have not been charged. Please try again later.",
                                 ephemeral: true
                             });
                         });
                 }
-            }).catch((error) => {
-                logger.error(error);
+            }).catch((error: any) => {
+                logError(error);
                 return interaction.reply({
                     content: "Something went wrong while retrieving the required information. Please try again later.",
                     ephemeral: true
                 })
             });
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logError(error);
     }
-}
-
-module.exports = {
-    "shopOptions": shopOptions,
-    "purchaseOptions": purchaseOptions,
-    "modalInputHandler": modalInputHandler,
-    "modal": modal
 }

@@ -1,11 +1,11 @@
 const { Events } = require('discord.js');
-const modules = require('../index.js');
-const config = require('../config.js');
-const userIncreaseHandler = require('../handlers/userIncreaseHandler.js');
-const guildUtils = require('../utils/guild.js');
-const { handleAcknowledge } = require('../handlers/dmCommandHandler.js');
+const modules = require('../index');
+const config = require('../config');
+const userIncreaseHandler = require('../handlers/userIncreaseHandler');
+const guildUtils = require('../utils/guild');
+const { handleAcknowledge } = require('../handlers/dmCommandHandler');
 
-module.exports = {
+export default {
     name: Events.MessageCreate,
     execute(message) {
         // Validation
@@ -13,12 +13,12 @@ module.exports = {
 
         // Message inside Server/Guild
         if (message.guildId) {
-            const targetGuild = guildUtils.findGuildById(message.guild.id);
-            let xpReward = config.tier.message;
+            const targetGuild = findGuildById(message.guild.id);
+            let xpReward = tier.message;
             if (targetGuild && targetGuild.xp_increase_message) xpReward = targetGuild.xp_increase_message;
             userIncreaseHandler.increaseXp({
                 "user": message.author,
-                "client": modules.client,
+                "client": customClient,
                 "channelId": message.channelId,
                 "guild": {
                     "id": message.guild.id

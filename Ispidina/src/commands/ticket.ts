@@ -1,11 +1,11 @@
 const { SlashCommandBuilder, ChannelType, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const config = require('../config.js');
-const logger = require('../utils/logger.js');
-const ticket = require('../utils/ticket.js');
-const guildUtils = require('../utils/guild.js');
+const config = require('../config');
+const logger = require('../utils/logger');
+const ticket = require('../utils/ticket');
+const guildUtils = require('../utils/guild');
 
-module.exports = {
-    cooldown: config.cooldowns.D,
+export default {
+    cooldown: cooldowns.D,
     data: new SlashCommandBuilder()
         .setName('ticket')
         .setNameLocalizations({
@@ -16,15 +16,15 @@ module.exports = {
             nl: "Open een privé kanaal voor 1 op 1 hulp."
         })
         .setDMPermission(false),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
-            const targetGuild = guildUtils.findGuildById(interaction.guild.id);
+            const targetGuild = findGuildById(interaction.guild.id);
             if (!targetGuild || !targetGuild.channel_ticket || !targetGuild.role_support) return interaction.reply({
                 content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
                 ephemeral: true
             });
 
-            await interaction.reply({
+            await return interaction.reply({
                 content: `Hey there, thanks for contacting support. I am on it, give me one second.`,
                 ephemeral: true
             });
@@ -65,15 +65,15 @@ module.exports = {
                     content: `Successfully created your support channel. Check it out here <#${data.id}>. A support agent should be right with you.`,
                     ephemeral: true
                 });
-            }).catch((error) => {
-                logger.error(error);
+            }).catch((error: any) => {
+                logError(error);
                 return interaction.editReply({
                     content: "Something went wrong while creating your channel. Please try again later.",
                     ephemeral: true
                 });
             });
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

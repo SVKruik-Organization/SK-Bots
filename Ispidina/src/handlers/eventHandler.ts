@@ -7,7 +7,7 @@ import path from 'node:path';
  * @param client Discord Client Object
  * @returns On error, else nothing.
  */
-function initEventHandler(client: Client) {
+export function initEventHandler(client: Client): void {
     const eventsPath: string = path.join(__dirname, '../events');
     const eventFiles: string[] = fs.readdirSync(eventsPath).filter(file => file.endsWith('.ts'));
 
@@ -19,5 +19,3 @@ function initEventHandler(client: Client) {
         } else client.on(event.name, (...args) => event.execute(...args));
     }
 }
-
-export { initEventHandler }

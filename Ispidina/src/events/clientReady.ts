@@ -1,13 +1,13 @@
 import { Events } from 'discord.js';
-import * as config from "../config"
-import { log } from '../utils/logger';
+import { general } from "../config"
+import { logMessage } from '../utils/logger';
 import { getDate } from '../utils/date';
 
-module.exports = {
+export default {
     name: Events.ClientReady,
     once: true,
     execute() {
         const date = getDate(null, null);
-        setTimeout(() => log(`\n\nSession started on ${date.time}, ${date.date}.\n${config.general.name} is now online!\n\n\t------\n`, "info"), 1000);
+        setTimeout(() => logMessage(`\n\nSession started on ${date.time}, ${date.date}.\n${general.name} is now online!\n\n\t------\n`, "info"), 1000);
     },
 };

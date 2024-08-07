@@ -271,7 +271,7 @@ async function handleModifyMenu(interaction) {
                                 { name: "Instructions", value: "-----" },
                                 { name: 'Accept', value: `If you decide to join them, you can click on this [link](${registerLink}). It will direct you to my website, where you can create an Operator account if you don't have one yet, and finalize registration..` },
                                 { name: 'Decline', value: `If you do not want to join their team, please send me \`/operatorDecline\`, and I will remove your record & notify <@${interaction.user.id}>.` },
-                                { name: 'Safety', value: `If I have spammed you with invites and/or you do not know about any of this, please contact <@${config.general.userSnowflake}> to get this fixed!` },
+                                { name: 'Safety', value: `If I have spammed you with invites and/or you do not know about any of this, please contact <@${config.general.authorId}> to get this fixed!` },
                                 { name: 'Information', value: `If you want to know more about this whole 'Operator' thing, you can read more about it [here](${config.urls.website}).` },
                                 { name: 'Meta', value: "-----" })
                             .addFields(

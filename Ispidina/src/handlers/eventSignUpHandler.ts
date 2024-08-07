@@ -1,24 +1,25 @@
-const modules = require('..');
+import { ChatInputCommandInteraction, InteractionResponse, Message } from 'discord.js';
+import { database } from '..';
 
 /**
  * Registers a user for an event.
- * @param {object} interaction Discord Interaction Object
+ * @param interaction Discord Interaction Object
  */
-function signUp(interaction) {
+export function signUp(interaction: ChatInputCommandInteraction): Promise<Message> | Promise<InteractionResponse> | undefined {
     // Ticket
-    const eventTicket = interaction.customId.split("_")[1];
+    const eventTicket: string = interaction.customId.split("_")[1];
     if (eventTicket.length !== 8) return interaction.reply({
         content: "Something went wrong while registering you for this event. Please try again later.",
         ephemeral: true
     });
 
-    modules.database.query("INSERT INTO event_attendee (snowflake, event_ticket) VALUES (?, ?);", [interaction.user.id, eventTicket])
+    database.query("INSERT INTO event_attendee (snowflake, event_ticket) VALUES (?, ?);", [interaction.user.id, eventTicket])
         .then(() => {
             return interaction.reply({
                 content: "Successfully registered for this event. I will notify you when it's due!",
                 ephemeral: true
             });
-        }).catch((error) => {
+        }).catch((error: any) => {
             if (error.code === "ER_DUP_ENTRY") {
                 return interaction.reply({
                     content: "You have already registered for this event. I will notify you when it's due!",
@@ -34,8 +35,4 @@ function signUp(interaction) {
                 ephemeral: true
             });
         });
-}
-
-module.exports = {
-    "signUp": signUp
 }

@@ -1,11 +1,11 @@
 const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config.js');
-const guildUtils = require('../utils/guild.js');
-const embedConstructor = require('../utils/embed.js');
-const logger = require('../utils/logger.js');
+const config = require('../config');
+const guildUtils = require('../utils/guild');
+const embedConstructor = require('../utils/embed');
+const logger = require('../utils/logger');
 
-module.exports = {
-    cooldown: config.cooldowns.C,
+export default {
+    cooldown: cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('server')
         .setNameLocalizations({
@@ -16,15 +16,15 @@ module.exports = {
             nl: "Laat wat server statistieken zien."
         })
         .setDMPermission(false),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Setup
-            const targetGuild = guildUtils.findGuildById(interaction.guild.id);
+            const targetGuild = findGuildById(interaction.guild.id);
             if (!targetGuild) return interaction.reply({
                 content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
                 ephemeral: true
             });
-            const rawDate = targetGuild.guildObject.createdAt;
+            const rawDate = targetGuild.guild_object.createdAt;
             const date = `${rawDate.getDate()}/${rawDate.getMonth() + 1}/${rawDate.getFullYear()}`;
             const embed = embedConstructor.create("Server Statistics", interaction.guild.name, interaction.user,
                 [
@@ -45,9 +45,9 @@ module.exports = {
                         value: targetGuild.channel_rules ? `<#${targetGuild.channel_rules.id}>` : "Not Configured"
                     }
                 ], ["statistics"]);
-            interaction.reply({ embeds: [embed] });
-        } catch (error) {
-            logger.error(error);
+            return interaction.reply({ embeds: [embed] });
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

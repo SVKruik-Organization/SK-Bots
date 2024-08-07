@@ -1,13 +1,13 @@
 import { Command } from "./types";
 import "dotenv/config";
-import { REST, Routes } from "discord.js";
-import { GuildBase } from "./types";
+import { REST, Routes } from 'discord.js';
+import { GuildUnfetchedBase } from "./types";
 import { general } from "./config";
 import mariadb from "mariadb";
 import { readdirSync } from "node:fs"
-const commandFiles: Array<string> = readdirSync(`${__dirname}/commands`).filter((file: string) => file.endsWith('.js'));
+const commandFiles: Array<string> = readdirSync(`${__dirname}/commands`).filter((file: string) => file.endsWith(''));
 const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN as string);
-import * as logger from "./utils/logger";
+import { logError } from "./utils/logger";
 
 const commands: Array<Command> = [];
 for (const file of commandFiles) {
@@ -15,8 +15,8 @@ for (const file of commandFiles) {
         const command = require(`./commands/${file}`).default;
         console.log(command);
         commands.push(command.data.toJSON());
-    } catch (error) {
-        logger.error(error);
+    } catch (error: any) {
+        logError(error);
     }
 }
 
@@ -33,7 +33,7 @@ const database = mariadb.createPool({
 // Deploy
 try {
     database.query("SELECT * FROM guild WHERE disabled = 0 AND production = 0;")
-        .then(async (queryData: Array<GuildBase>) => {
+        .then(async (queryData: Array<GuildUnfetchedBase>) => {
             console.log("\n");
             for (let i = 0; i < queryData.length; i++) {
                 const data: Array<any> = await rest.put(
@@ -44,9 +44,9 @@ try {
             }
             console.log("\n");
             process.exit(0);
-        }).catch((error) => {
-            logger.error(error);
+        }).catch((error: any) => {
+            logError(error);
         });
-} catch (error) {
-    logger.error(error);
+} catch (error: any) {
+    logError(error);
 }

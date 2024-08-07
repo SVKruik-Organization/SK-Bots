@@ -2,7 +2,7 @@
  * Generates a random 8 character string.
  * @returns A random string.
  */
-function createTicket() {
+export function createTicket(): string {
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let ticket = "";
 
@@ -12,8 +12,4 @@ function createTicket() {
     }
 
     return ticket;
-}
-
-module.exports = {
-    "createTicket": createTicket
 }

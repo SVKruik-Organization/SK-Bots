@@ -1,11 +1,11 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const config = require('../config.js');
+const config = require('../config');
 const { REST, Routes } = require('discord.js');
 const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
-const logger = require('../utils/logger.js');
+const logger = require('../utils/logger');
 
-module.exports = {
-    cooldown: config.cooldowns.A,
+export default {
+    cooldown: cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('delete')
         .setNameLocalizations({
@@ -46,11 +46,11 @@ module.exports = {
                 })
                 .setRequired(true)
             )),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
-            if (interaction.user.id !== config.general.authorId) return interaction.reply({
-                content: `This command is reserved for my developer, <@${config.general.authorId}>, only. If you are experiencing problems with (one of) the commands, please contact him.`,
+            if (interaction.user.id !== general.authorId) return interaction.reply({
+                content: `This command is reserved for my developer, <@${general.authorId}>, only. If you are experiencing problems with (one of) the commands, please contact him.`,
                 ephemeral: true
             });
 
@@ -61,7 +61,7 @@ module.exports = {
             if (option === "all") {
                 await rest.put(Routes.applicationGuildCommands(interaction.applicationId, interaction.guild.id), { body: [] })
                     .then(() => {
-                        interaction.reply({
+                        return interaction.reply({
                             content: "Deleted all Guild commands.",
                             ephemeral: true
                         });
@@ -74,24 +74,24 @@ module.exports = {
             } else if (option === "single") {
                 await rest.delete(Routes.applicationGuildCommand(interaction.applicationId, interaction.guild.id, commandId))
                     .then(() => {
-                        interaction.reply({
+                        return interaction.reply({
                             content: "Guild command deleted successfully.",
                             ephemeral: true
                         });
-                    }).catch((error) => {
+                    }).catch((error: any) => {
                         if (error.status === 404) {
-                            interaction.reply({
+                            return interaction.reply({
                                 content: "This Guild command does not exist. It might have been deleted already.",
                                 ephemeral: true
                             });
-                        } else interaction.reply({
+                        } else return interaction.reply({
                             content: "Something went wrong while deleting this Guild command. Please try again later.",
                             ephemeral: true
                         });
                     });
             }
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

@@ -1,11 +1,11 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const config = require('../config.js');
-const modules = require('..');
-const logger = require('../utils/logger.js');
-const userUtils = require('../utils/user.js');
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
+import config from '../config';
+import modules from '..';
+import logger from '../utils/logger';
+import userUtils from '../utils/user';
 
-module.exports = {
-    cooldown: config.cooldowns.A,
+export default {
+    cooldown: cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('block')
         .setNameLocalizations({
@@ -22,9 +22,9 @@ module.exports = {
             .setNameLocalizations({
                 nl: "toevoegen"
             })
-            .setDescription(`Block someone from using ${config.general.name}.`)
+            .setDescription(`Block someone from using ${general.name}.`)
             .setDescriptionLocalizations({
-                nl: `Blokkeer iemand voor het gebruik van ${config.general.name}.`
+                nl: `Blokkeer iemand voor het gebruik van ${general.name}.`
             })
             .addUserOption(option => option
                 .setName('target')
@@ -41,9 +41,9 @@ module.exports = {
             .setNameLocalizations({
                 nl: "verwijderen"
             })
-            .setDescription(`Unblock someone from using ${config.general.name}.`)
+            .setDescription(`Unblock someone from using ${general.name}.`)
             .setDescriptionLocalizations({
-                nl: `Deblokkeer iemand voor het gebruik van ${config.general.name}.`
+                nl: `Deblokkeer iemand voor het gebruik van ${general.name}.`
             })
             .addUserOption(option => option
                 .setName('target')
@@ -74,10 +74,10 @@ module.exports = {
                     nl: "De betreffende gebruiker."
                 })
                 .setRequired(true))),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
-            if (!(await userUtils.checkAdmin(interaction))) return interaction.reply({
+            if (!(await checkAdmin(interaction))) return interaction.reply({
                 content: `You do not have the required permissions to perform this elevated command. Please try again later, or contact moderation to receive elevated permissions.`,
                 ephemeral: true
             });
@@ -89,14 +89,14 @@ module.exports = {
 
             // Handle
             if (actionType === "add") {
-                modules.database.query("INSERT INTO user_blocked (user_snowflake, user_username, guild_snowflake) VALUES (?, ?, ?);", [targetSnowflake, targetUsername, interaction.guild.id])
+                database.query("INSERT INTO user_blocked (user_snowflake, user_username, guild_snowflake) VALUES (?, ?, ?);", [targetSnowflake, targetUsername, interaction.guild.id])
                     .then(() => {
-                        logger.log(`${targetUsername} was blocked by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "warning");
+                        logMessage(`${targetUsername} was blocked by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "warning");
                         return interaction.reply({
                             content: `Successfully blocked user <@${targetSnowflake}>. They can no longer use any of my commands.`,
                             ephemeral: true
                         });
-                    }).catch((error) => {
+                    }).catch((error: any) => {
                         if (error.code === "ER_DUP_ENTRY") {
                             return interaction.reply({
                                 content: `User <@${targetSnowflake}> has been blocked already.`,
@@ -108,37 +108,37 @@ module.exports = {
                         });
                     });
             } else if (actionType === "remove") {
-                modules.database.query("DELETE FROM user_blocked WHERE user_snowflake = ? AND guild_snowflake = ?;", [targetSnowflake, interaction.guild.id])
+                database.query("DELETE FROM user_blocked WHERE user_snowflake = ? AND guild_snowflake = ?;", [targetSnowflake, interaction.guild.id])
                     .then(() => {
-                        logger.log(`${targetUsername} was unblocked by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "warning");
+                        logMessage(`${targetUsername} was unblocked by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "warning");
                         return interaction.reply({
                             content: `Successfully unblocked user <@${targetSnowflake}>. They can now use all of my commands again.`,
                             ephemeral: true
                         });
-                    }).catch((error) => {
-                        logger.error(error);
+                    }).catch((error: any) => {
+                        logError(error);
                         return interaction.reply({
                             content: "Something went wrong while unblocking this user. Please try again later.",
                             ephemeral: true
                         });
                     });
             } else if (actionType === "check") {
-                modules.database.query("SELECT user_snowflake FROM user_blocked WHERE user_snowflake = ?;", [targetSnowflake])
+                database.query("SELECT user_snowflake FROM user_blocked WHERE user_snowflake = ?;", [targetSnowflake])
                     .then((data) => {
                         return interaction.reply({
                             content: `Blocked status of user <@${targetSnowflake}>: \`${data.length === 0 ? "false" : "true"}\``,
                             ephemeral: true
                         });
-                    }).catch((error) => {
-                        logger.error(error);
+                    }).catch((error: any) => {
+                        logError(error);
                         return interaction.reply({
                             content: "Something went wrong while checking the block status of this user. Please try again later.",
                             ephemeral: true
                         });
                     });
             }
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

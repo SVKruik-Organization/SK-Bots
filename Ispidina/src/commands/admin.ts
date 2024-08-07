@@ -1,11 +1,11 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const config = require('../config.js');
-const modules = require('..');
-const logger = require('../utils/logger.js');
-const userUtils = require('../utils/user.js');
+import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction, Role, InteractionResponse } from 'discord.js';
+import { cooldowns, general } from '../config';
+import { database } from '..';
+import { logMessage, logError } from '../utils/logger';
+import { checkAdmin } from '../utils/user';
 
-module.exports = {
-    cooldown: config.cooldowns.A,
+export default {
+    cooldown: cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('admin')
         .setNameLocalizations({
@@ -74,10 +74,11 @@ module.exports = {
                     nl: "De betreffende gebruiker."
                 })
                 .setRequired(true))),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
-            if (!(await userUtils.checkAdmin(interaction))) return interaction.reply({
+            if (!interaction.guild) return;
+            if (!(await checkAdmin(interaction))) return interaction.reply({
                 content: `You do not have the required permissions to perform this elevated command. Please try again later, or contact moderation to receive elevated permissions.`,
                 ephemeral: true
             });
@@ -87,13 +88,13 @@ module.exports = {
             const actionType = interaction.options.getSubcommand();
 
             // Admin Role
-            let adminRole = interaction.guild.roles.cache.find(role => role.name === `${config.general.name} Administrator`);
+            let adminRole: Role | InteractionResponse<boolean> | undefined = interaction.guild.roles.cache.find(role => role.name === `${general.name} Administrator`);
             if (!adminRole) {
                 const newRole = await interaction.guild.roles.create({
-                    name: `${config.general.name} Administrator`,
+                    name: `${general.name} Administrator`,
                     permissions: [PermissionFlagsBits.ManageGuild],
-                }).catch((error) => {
-                    logger.error(error);
+                }).catch((error: any) => {
+                    logError(error);
                     return interaction.reply({
                         content: `Something went wrong while creating the Administrator role. Please try again later.`,
                         ephemeral: true
@@ -116,22 +117,22 @@ module.exports = {
 
             // Handle
             if (actionType === "add") {
-                modules.database.query("INSERT INTO user_administrator (user_snowflake, user_username, guild_snowflake) VALUES (?, ?, ?);", [targetUser.id, targetUser.username, interaction.guild.id])
+                database.query("INSERT INTO user_administrator (user_snowflake, user_username, guild_snowflake) VALUES (?, ?, ?);", [targetUser.id, targetUser.username, interaction.guild.id])
                     .then(() => {
                         fetchedTargetUser.roles.add(adminRole);
-                        logger.log(`${targetUser.username} has been granted Administrator privileges by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "info");
+                        logMessage(`${targetUser.username} has been granted Administrator privileges by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "info");
                         return interaction.reply({
                             content: `Successfully added user <@${targetUser.id}> to the Administrators of this server. They can now use commands that require elevated permissions.`,
                             ephemeral: true
                         });
-                    }).catch((error) => {
+                    }).catch((error: any) => {
                         if (error.code === "ER_DUP_ENTRY") {
                             return interaction.reply({
                                 content: `User <@${targetUser.id}> is an Administrator already.`,
                                 ephemeral: true
                             });
                         } else {
-                            logger.error(error);
+                            logError(error);
                             return interaction.reply({
                                 content: "Something went wrong while giving this user elevated permissions. Please try again later.",
                                 ephemeral: true
@@ -139,38 +140,38 @@ module.exports = {
                         }
                     });
             } else if (actionType === "remove") {
-                modules.database.query("DELETE FROM user_administrator WHERE user_snowflake = ? AND guild_snowflake = ?;", [targetUser.id, interaction.guild.id])
+                database.query("DELETE FROM user_administrator WHERE user_snowflake = ? AND guild_snowflake = ?;", [targetUser.id, interaction.guild.id])
                     .then(() => {
-                        logger.log(`${targetUser.username}'s Administrator privileges were removed by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "info");
+                        logMessage(`${targetUser.username}'s Administrator privileges were removed by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "info");
                         fetchedTargetUser.roles.remove(adminRole);
                         return interaction.reply({
                             content: `Successfully removed user <@${targetUser.id}> from the Administrators of this server. They can no longer use commands that require elevated permissions.`,
                             ephemeral: true
                         });
-                    }).catch((error) => {
-                        logger.error(error);
+                    }).catch((error: any) => {
+                        logError(error);
                         return interaction.reply({
                             content: "Something went wrong while removing elevated permissions of this user. Please try again later.",
                             ephemeral: true
                         });
                     });
             } else if (actionType === "check") {
-                modules.database.query("SELECT user_snowflake FROM user_administrator WHERE user_snowflake = ?;", [targetUser.id])
+                database.query("SELECT user_snowflake FROM user_administrator WHERE user_snowflake = ?;", [targetUser.id])
                     .then((data) => {
                         return interaction.reply({
                             content: `Administrator status of user <@${targetUser.id}>: \`${data.length === 0 ? "false" : "true"}\``,
                             ephemeral: true
                         });
-                    }).catch((error) => {
-                        logger.error(error);
+                    }).catch((error: any) => {
+                        logError(error);
                         return interaction.reply({
                             content: "Something went wrong while checking the Administrator status of this user. Please try again later.",
                             ephemeral: true
                         });
                     });
             }
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

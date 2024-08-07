@@ -1,23 +1,23 @@
-const modules = require('..');
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const logger = require('../utils/logger.js');
+import { ButtonInteraction, ChatInputCommandInteraction, Message } from 'discord.js';
+import { database } from '..';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { logError } from '../utils/logger';
 
 /**
  * Send a pair of confirmation buttons.
- * @param {object} interaction Discord Interaction Object
+ * @param interaction Discord Interaction Object
  */
-function sendConfirmButtons(interaction) {
-    const cancel = new ButtonBuilder()
+export function sendConfirmButtons(interaction: ChatInputCommandInteraction): Promise<Message> {
+    const cancel: ButtonBuilder = new ButtonBuilder()
         .setCustomId('cancelAccountClose')
         .setLabel("Cancel")
         .setStyle(ButtonStyle.Secondary);
-
-    const confirm = new ButtonBuilder()
+    const confirm: ButtonBuilder = new ButtonBuilder()
         .setCustomId('confirmAccountClose')
         .setLabel("Close Account")
         .setStyle(ButtonStyle.Danger);
 
-    interaction.reply({
+    return interaction.reply({
         content: 'Everything is ready. Are you sure you want to close your account? You will lose all your data (purchase history, Bits, Level, etcetera).',
         components: [new ActionRowBuilder().addComponents(cancel, confirm)],
         ephemeral: true
@@ -26,10 +26,10 @@ function sendConfirmButtons(interaction) {
 
 /**
  * Confirm account deletion.
- * @param {object} interaction Discord Interaction Object
+ * @param interaction Discord Interaction Object
  */
-function confirmAccountClose(interaction) {
-    modules.database.query("DELETE FROM user_general WHERE snowflake = ?;", [interaction.user.id])
+export function confirmAccountClose(interaction: ButtonInteraction): void {
+    database.query("DELETE FROM user_general WHERE snowflake = ?;", [interaction.user.id])
         .then((data) => {
             if (!data.affectedRows) return interaction.update({
                 content: "This command requires you to have an account. Create an account with the `/register` command.",
@@ -42,8 +42,8 @@ function confirmAccountClose(interaction) {
                 components: [],
                 ephemeral: true
             });
-        }).catch((error) => {
-            logger.error(error);
+        }).catch((error: any) => {
+            logError(error);
             return interaction.update({
                 content: "Something went wrong while closing your account. Please try again later.",
                 components: [],
@@ -54,18 +54,12 @@ function confirmAccountClose(interaction) {
 
 /**
  * Cancel account deletion.
- * @param {object} interaction Discord Interaction Object
+ * @param interaction Discord Interaction Object
  */
-function cancelAccountClose(interaction) {
-    interaction.update({
+export function cancelAccountClose(interaction: ButtonInteraction): void {
+    return interaction.update({
         content: `Phew! Almost thought I lost you there. If you have questions or concerns, don't hesitate to contact moderation.`,
         components: [],
         ephemeral: true
     });
-}
-
-module.exports = {
-    "confirmAccountClose": confirmAccountClose,
-    "cancelAccountClose": cancelAccountClose,
-    "sendConfirmButtons": sendConfirmButtons
 }

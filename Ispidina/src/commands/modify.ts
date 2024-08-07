@@ -1,11 +1,11 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const modules = require('..');
-const config = require('../config.js');
-const userUtils = require('../utils/user.js');
-const logger = require('../utils/logger.js');
+const config = require('../config');
+const userUtils = require('../utils/user');
+const logger = require('../utils/logger');
 
-module.exports = {
-    cooldown: config.cooldowns.A,
+export default {
+    cooldown: cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('modify')
         .setNameLocalizations({
@@ -69,10 +69,10 @@ module.exports = {
             })
             .setRequired(true)
             .setMinValue(0)),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
-            if (!(await userUtils.checkAdmin(interaction))) return interaction.reply({
+            if (!(await checkAdmin(interaction))) return interaction.reply({
                 content: `You do not have the required permissions to perform this elevated command. Please try again later, or contact moderation to receive elevated permissions.`,
                 ephemeral: true
             });
@@ -113,7 +113,7 @@ module.exports = {
                 action = ` ${row} / ${amount}`;
             }
 
-            modules.database.query(`UPDATE ${table}${action}${where}`)
+            database.query(`UPDATE ${table}${action}${where}`)
                 .then((data) => {
                     // Validation
                     if (!data.affectedRows) return interaction.reply({
@@ -121,19 +121,19 @@ module.exports = {
                         ephemeral: true
                     });
 
-                    interaction.reply({
+                    return interaction.reply({
                         content: "Account data has been successfully changed.",
                         ephemeral: true
                     });
-                }).catch((error) => {
-                    logger.error(error);
+                }).catch((error: any) => {
+                    logError(error);
                     return interaction.reply({
                         content: "Something went wrong while trying to update their information. Please try again later.",
                         ephemeral: true
                     });
                 });
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

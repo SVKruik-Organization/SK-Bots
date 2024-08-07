@@ -1,97 +1,99 @@
-const modules = require('..');
-const logger = require('./logger.js');
+import { CategoryChannel, Channel, Role, TextBasedChannel } from 'discord.js';
+import { database, customClient } from '..';
+import { GuildFull, GuildUnfetchedFull } from '../types';
+import { logMessage, logError } from '../utils/logger';
+export let guilds: Array<GuildFull> = [];
 
 // Indexing Guilds & Settings
 try {
-    modules.database.query("SELECT * FROM guild LEFT JOIN guild_settings ON guild_settings.guild_snowflake = guild.snowflake WHERE disabled = 0 AND production = 0;")
+    database.query("SELECT * FROM guild LEFT JOIN guild_settings ON guild_settings.guild_snowflake = guild.snowflake WHERE disabled = 0 AND production = 0;")
         .then(async (data) => {
             const guilds = [];
             for (let i = 0; i <= data.length; i++) {
                 if (i === data.length) {
-                    logger.log("Fetched all guilds.", "info");
+                    logMessage("Fetched all guilds.", "info");
                     module.exports.guilds = guilds;
                 } else {
-                    const guildObject = await guildConstructor(data[i]);
-                    if (guildObject) guilds.push(guildObject);
+                    const guild_object = await guildConstructor(data[i]);
+                    if (guild_object) guilds.push(guild_object);
                 }
             }
-        }).catch((error) => {
-            logger.error(error);
-            return logger.log("Loading Guild settings went wrong. Aborting.", "fatal");
+        }).catch((error: any) => {
+            logError(error);
+            return logMessage("Loading Guild settings went wrong. Aborting.", "fatal");
         });
-} catch (error) {
-    logger.error(error);
+} catch (error: any) {
+    logError(error);
 }
 
 /**
  * Process raw data from the database to a refined object for further reading from.
  * Instead of raw channel snowflakes, it puts the entire Discord Channel object.
- * @param {object} guild A Guild object from the database.
+ * @param guild A joined Guild object from the database.
  * @returns
  */
-async function guildConstructor(guild) {
+async function guildConstructor(guild: GuildUnfetchedFull): Promise<GuildFull | undefined> {
     try {
         // Guild Fetching
-        const fetchedGuild = await modules.client.guilds.fetch(guild.snowflake);
-        if (!fetchedGuild) {
-            logger.log(`Guild '${guild.name}'@'${guild.snowflake}' not found.`, "warning");
-            return;
-        }
-
-        // Channel Fetching Prepare
+        const fetchedGuild = await customClient.guilds.fetch(guild.snowflake);
         const errorMessage = "is configured, but not found. Corresponding command disabled for this run.";
+        if (!fetchedGuild) {
+            logMessage(`Guild '${guild.name}'@'${guild.snowflake}' not found.`, "warning");
+            return undefined;
+        }
 
         /**
          * Fetch a Discord Channel. Only works when the target channel is indexed/cached.
-         * @param {string} channelId The ID of the channel.
-         * @param {string} name The name of the channel.
+         * @param channelId The ID of the channel.
+         * @param name The name of the channel.
          * @returns Channel
          */
-        async function channelFetch(channelId, name) {
-            let target = null;
+        async function channelFetch(channelId: string, name: string) {
+            let target: Channel | null = null;
             if (!channelId) return target;
             try {
-                const fetchedChannel = await modules.client.channels.fetch(channelId);
+                const fetchedChannel = await customClient.channels.fetch(channelId) as Channel | null;
                 if (fetchedChannel) {
                     target = fetchedChannel;
-                } else logger.log(`Guild '${guild.name}' ${name} Channel ${errorMessage}`, "warning");
-            } catch (error) {
-                return target;
+                } else logMessage(`Guild '${guild.name}' ${name} Channel ${errorMessage}`, "warning");
+            } catch (error: any) {
+                return null;
             }
             return target;
         }
 
         // Channel Fetching
-        const channel_admin = await channelFetch(guild.channel_admin, "Admin");
-        const channel_event = await channelFetch(guild.channel_event, "Event");
-        const channel_suggestion = await channelFetch(guild.channel_suggestion, "Suggestion");
-        const channel_snippet = await channelFetch(guild.channel_snippet, "Snippet");
-        const channel_broadcast = await channelFetch(guild.channel_broadcast, "Broadcast");
-        const channel_rules = await channelFetch(guild.channel_rules, "Rules") || modules.client.channels.cache.get(fetchedGuild.rulesChannelId) || null;
-        const channel_ticket = await channelFetch(guild.channel_ticket, "Ticket");
+        const channel_admin: TextBasedChannel | null = await channelFetch(guild.channel_admin, "Admin") as TextBasedChannel | null;
+        const channel_event: TextBasedChannel | null = await channelFetch(guild.channel_event, "Event") as TextBasedChannel | null;
+        const channel_suggestion: TextBasedChannel | null = await channelFetch(guild.channel_suggestion, "Suggestion") as TextBasedChannel | null;
+        const channel_snippet: TextBasedChannel | null = await channelFetch(guild.channel_snippet, "Snippet") as TextBasedChannel | null;
+        const channel_broadcast: TextBasedChannel | null = await channelFetch(guild.channel_broadcast, "Broadcast") as TextBasedChannel | null;
+        let channel_rules = await channelFetch(guild.channel_rules, "Rules") as TextBasedChannel | null;
+        if (!channel_rules && fetchedGuild.rulesChannelId) channel_rules = customClient.channels.cache.get(fetchedGuild.rulesChannelId) as TextBasedChannel | null;
+        const channel_ticket: CategoryChannel | null = await channelFetch(guild.channel_ticket, "Ticket") as CategoryChannel | null;
 
         // Role Fetching - Blinded
         let role_blinded = null;
         if (guild.role_blinded && guild.role_blinded.length === 19) {
-            const fetchedRole = fetchedGuild.roles.cache.find(role => role.id === guild.role_blinded);
+            const fetchedRole: Role | undefined = fetchedGuild.roles.cache.find(role => role.id === guild.role_blinded);
             if (fetchedRole) {
                 role_blinded = fetchedRole;
-            } else logger.log(`Guild '${guild.name}' Blinded Role ${errorMessage}`, "warning");
+            } else logMessage(`Guild '${guild.name}' Blinded Role ${errorMessage}`, "warning");
         }
 
         // Role Fetching - Support
         let role_support = null;
         if (guild.role_support && guild.role_support.length === 19) {
-            const fetchedRole = fetchedGuild.roles.cache.find(role => role.id === guild.role_support);
+            const fetchedRole: Role | undefined = fetchedGuild.roles.cache.find(role => role.id === guild.role_support);
             if (fetchedRole) {
                 role_support = fetchedRole;
-            } else logger.log(`Guild '${guild.name}' Support Role ${errorMessage}`, "warning");
+            } else logMessage(`Guild '${guild.name}' Support Role ${errorMessage}`, "warning");
         }
 
         // Completed Guild Object
         return {
             // Guild
-            "guildObject": fetchedGuild,
+            "guild_object": fetchedGuild,
             "team_tag": guild.team_tag,
             "name": guild.name,
             "channel_admin": channel_admin,
@@ -103,7 +105,6 @@ async function guildConstructor(guild) {
             "channel_ticket": channel_ticket,
             "role_blinded": role_blinded,
             "role_support": role_support,
-            "locale": guild.locale,
             "disabled": guild.disabled,
 
             // Settings
@@ -119,31 +120,43 @@ async function guildConstructor(guild) {
             "jackpot": guild.jackpot,
             "welcome": guild.welcome,
             "xp_increase_reaction": guild.xp_increase_reaction,
-            "xp_increase_pole": guild.xp_increase_pole,
+            "xp_increase_poll": guild.xp_increase_poll,
             "xp_increase_message": guild.xp_increase_message,
             "xp_increase_slash": guild.xp_increase_slash,
             "xp_increase_purchase": guild.xp_increase_purchase,
-            "xp_formula": guild.xp_formula
+            "xp_formula": guild.xp_formula,
+            "guild_date_creation": guild.guild_date_creation,
+            "guild_date_update": guild.guild_date_update
         }
-    } catch (error) {
+    } catch (error: any) {
         if (error.status !== 404) {
-            logger.error(error);
-            return {};
+            logError(error);
+            return undefined;
         }
     }
 }
 
 /**
  *
- * @param {string} guildId Find a specific indexed Guild by snowflake (id).
+ * @param guildId Find a specific indexed Guild by snowflake (id).
  * @returns Discord Guild Object
  */
-function findGuildById(guildId) {
-    return module.exports.guilds.find(guild => guild.guildObject.id === guildId);
+export function findGuildById(guildId: string) {
+    return guilds.find((guild) => guild.guild_object.id === guildId);
 }
 
-module.exports = {
-    "guildConstructor": guildConstructor,
-    "findGuildById": findGuildById,
-    "guilds": [],
+/**
+ * Add a new guild to the in-memory storage.
+ * @param guild The new guild to add.
+ */
+export function addGuild(guild: GuildFull): void {
+    guilds.push(guild);
+}
+
+/**
+ * Completely sets the array of current guilds to a new array.
+ * @param newGuilds The new guilds to set to.
+ */
+export function setGuilds(newGuilds: Array<GuildFull>): void {
+    guilds = newGuilds;
 }

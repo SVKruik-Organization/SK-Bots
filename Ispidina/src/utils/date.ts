@@ -1,4 +1,4 @@
-import * as config from "../config";
+import { general } from "../config";
 
 /**
  * Timestamp Calculation
@@ -12,7 +12,7 @@ function getDate(datetime: Date | null, preferredLocale: string | null): { date:
     let locale: string = "en-US";
     if (preferredLocale) locale = preferredLocale;
     const today: Date = new Date(targetDate.toLocaleString(locale, {
-        timeZone: config.general.timezone
+        timeZone: general.timezone
     }));
 
     const hh: string = formatTime(today.getHours());
@@ -75,7 +75,7 @@ function datetimeParser(rawDate: string, rawTime: string): Date | boolean {
     try {
         fullDate = new Date(year, month - 1, day, hour, minute);
         if (isNaN(fullDate.getTime()) || fullDate < getDate(null, null).today) return false;
-    } catch (error) {
+    } catch (error: any) {
         return false
     }
 

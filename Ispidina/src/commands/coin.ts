@@ -1,9 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config.js');
-const logger = require('../utils/logger.js');
+const config = require('../config');
+const logger = require('../utils/logger');
 
-module.exports = {
-    cooldown: config.cooldowns.B,
+export default {
+    cooldown: cooldowns.B,
     data: new SlashCommandBuilder()
         .setName('coin')
         .setNameLocalizations({
@@ -28,7 +28,7 @@ module.exports = {
                 { name: 'Heads', value: 'heads' },
                 { name: 'Tails', value: 'tails' }
             )),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             const winningSide = interaction.options.getString('side');
             const list = ["heads", "tails"];
@@ -42,21 +42,21 @@ module.exports = {
 
             /**
              * Response when user wins.
-             * @param {string} side The side that has been chosen.
+             * @param side The side that has been chosen.
              */
-            function win(side) {
-                interaction.reply({ content: `:coin: ${side}! -- You win. :green_circle:` });
+            function win(side: string) {
+                return interaction.reply({ content: `:coin: ${side}! -- You win. :green_circle:` });
             }
 
             /**
              * Response when user loses.
-             * @param {string} side The side that has been chosen.
+             * @param side The side that has been chosen.
              */
-            function lose(side) {
-                interaction.reply({ content: `:coin: ${side}! -- You lose. :red_circle:` });
+            function lose(side: string) {
+                return interaction.reply({ content: `:coin: ${side}! -- You lose. :red_circle:` });
             }
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };

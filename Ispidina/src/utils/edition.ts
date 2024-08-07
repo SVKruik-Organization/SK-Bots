@@ -1,37 +1,33 @@
-const config = require('../config.js');
+import { edition } from '../config';
 
 /**
  * Get the statistics & features for a specific subscription edition.
- * @param {string} edition The edition to get the statistics for.
+ * @param edition The edition to get the statistics for.
  * @returns The edition object with the statistics.
  */
-function getStatitistics(edition) {
+export function getStatitistics(targetEdition: string) {
     let editionObject;
-    switch (edition) {
+    switch (targetEdition) {
         case "Basic":
             editionObject = {
-                seats: config.edition.basicSeats,
-                servers: config.edition.basicServers
+                seats: edition.basicSeats,
+                servers: edition.basicServers
             }
             break;
         case "Professional":
             editionObject = {
-                seats: config.edition.professionalSeats,
-                servers: config.edition.professionalServers
+                seats: edition.professionalSeats,
+                servers: edition.professionalServers
             }
             break;
         case "Enterprise":
             editionObject = {
-                seats: config.edition.enterpriseSeats,
-                servers: config.edition.enterpriseServers
+                seats: edition.enterpriseSeats,
+                servers: edition.enterpriseServers
             }
             break;
         default:
             editionObject = undefined;
     }
     return editionObject;
-}
-
-module.exports = {
-    "getStatitistics": getStatitistics
 }

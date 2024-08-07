@@ -1,45 +1,45 @@
-const { Events, PermissionFlagsBits, ChannelType } = require('discord.js');
-const config = require('../config.js');
-const logger = require('../utils/logger.js');
-const modules = require('..');
-const guildUtils = require('../utils/guild.js');
-const { findUserById } = require('../utils/user.js');
+import { Events, PermissionFlagsBits, ChannelType, Guild, Role } from 'discord.js';
+import { general, colors } from '../config';
+import { logError, logMessage } from '../utils/logger';
+import { customClient, database } from '..';
+import { guilds } from '../utils/guild';
+import { findUserById } from '../utils/user';
 
-module.exports = {
+export default {
     name: Events.GuildCreate,
-    async execute(guild) {
+    async execute(guild: Guild) {
         try {
-            const fetchedGuild = await modules.client.guilds.fetch(guild.id);
-            if (!fetchedGuild) return logger.log(`Could not fetch guild '${guild.name}'@'${guild.id}'. Aborted integration.`, "warning");
+            const fetchedGuild = await customClient.guilds.fetch(guild.id);
+            if (!fetchedGuild) return logMessage(`Could not fetch guild '${guild.name}'@'${guild.id}'. Aborted integration.`, "warning");
 
             // Administrator Role
-            let administratorRole = fetchedGuild.roles.cache.find(role => role.name === `${config.general.name} Administrator`);
+            let administratorRole = fetchedGuild.roles.cache.find(role => role.name === `${general.name} Administrator`);
             if (!administratorRole) {
                 await guild.roles.create({
-                    name: `${config.general.name} Administrator`,
+                    name: `${general.name} Administrator`,
                     permissions: [PermissionFlagsBits.ManageGuild],
                     position: fetchedGuild.roles.cache.size + 1
                 });
             } else await administratorRole.setPosition(fetchedGuild.roles.cache.size + 1);
 
             // Bot Color Role
-            let botColorRole = fetchedGuild.roles.cache.find(role => role.name === `${config.general.name} Accent`);
+            let botColorRole = fetchedGuild.roles.cache.find(role => role.name === `${general.name} Accent`);
             if (!botColorRole) {
                 botColorRole = await guild.roles.create({
-                    name: `${config.general.name} Accent`,
-                    color: parseInt(config.colors.bot.substring(1), 16),
+                    name: `${general.name} Accent`,
+                    color: parseInt(colors.bot.substring(1), 16),
                     permissions: [],
                     position: fetchedGuild.roles.cache.size + 1
                 });
             } else await botColorRole.setPosition(fetchedGuild.roles.cache.size + 1);
-            guild.members.fetch(config.general.clientId)
+            guild.members.fetch(general.clientId)
                 .then((user) => user.roles.add(botColorRole))
                 .catch((error) => {
-                    if (error.status !== 403) logger.log(error);
+                    if (error.status !== 403) logError(error);
                 });
 
             // Blinded Role Creation
-            let blindedRole = fetchedGuild.roles.cache.find(role => role.name === "Blinded");
+            let blindedRole: Role | undefined = fetchedGuild.roles.cache.find(role => role.name === "Blinded");
             if (!blindedRole) {
                 blindedRole = await guild.roles.create({
                     name: "Blinded",
@@ -50,7 +50,7 @@ module.exports = {
             } else await blindedRole.setPosition(fetchedGuild.roles.cache.size + 1);
 
             // Blinded Channel
-            if ((await guild.channels.fetch()).filter((channel) => channel.name === "blinded").length === 0) await fetchedGuild.channels.create({
+            if ((await guild.channels.fetch()).filter((channel) => channel?.name === "blinded").size === 0) await fetchedGuild.channels.create({
                 name: "blinded",
                 type: ChannelType.GuildText,
                 permissionOverwrites: [
@@ -62,13 +62,14 @@ module.exports = {
             });
 
             // Blinded Channel Permissions
-            (await guild.channels.fetch()).filter((channel) => channel.type !== ChannelType.GuildCategory).forEach(channel => {
-                if (channel.name !== "blinded") channel.permissionOverwrites.edit(blindedRole, { ViewChannel: false });
+            (await guild.channels.fetch()).filter((channel) => channel?.type !== ChannelType.GuildCategory).forEach((channel) => {
+                if (channel?.name !== "blinded") channel?.permissionOverwrites.edit(blindedRole, { ViewChannel: false });
             });
 
             // Support Channel Category
-            let channel_ticket = (await guild.channels.fetch()).filter((channel) => channel.name === "tickets")[0];
-            if (!channel_ticket) channel_ticket = await fetchedGuild.channels.create({
+            const channels = (await guild.channels.fetch()).filter((channel) => channel?.name === "tickets");
+            if (channels.size === 0) return;
+            const channel_ticket = await fetchedGuild.channels.create({
                 name: "tickets",
                 type: ChannelType.GuildCategory,
                 permissionOverwrites: [
@@ -91,21 +92,21 @@ module.exports = {
             } else await supportRole.setPosition(fetchedGuild.roles.cache.size + 1);
 
             // New Data
-            modules.database.query("INSERT INTO guild (snowflake, name, role_blinded, role_support, channel_ticket) VALUES (?, ?, ?, ?); INSERT INTO guild_settings (guild_snowflake) VALUES (?); UPDATE bot SET guild_created = guild_created + 1 WHERE name = ?;", [guild.id, guild.name, blindedRole.id, supportRole.id, channel_ticket.id, guild.id, config.general.name])
-                .then(() => logger.log(`${config.general.name} just joined a new Guild: '${guild.name}@${guild.id}'. Successfully generated data.`, "info"))
+            database.query("INSERT INTO guild (snowflake, name, role_blinded, role_support, channel_ticket) VALUES (?, ?, ?, ?); INSERT INTO guild_settings (guild_snowflake) VALUES (?); UPDATE bot SET guild_created = guild_created + 1 WHERE name = ?;", [guild.id, guild.name, blindedRole.id, supportRole.id, channel_ticket.id, guild.id, general.name])
+                .then(() => logMessage(`${general.name} just joined a new Guild: '${guild.name}@${guild.id}'. Successfully generated data.`, "info"))
                 .catch((error) => {
                     if (error.code === "ER_DUP_ENTRY") {
-                        logger.log(`Database data for Guild '${guild.name}@${guild.id}' was already present, but (re)generated roles.`, "info");
+                        logMessage(`Database data for Guild '${guild.name}@${guild.id}' was already present, but (re)generated roles.`, "info");
                     } else {
-                        logger.error(error);
-                        logger.log(`Generating data for Guild '${guild.name}@${guild.id}' was not successful.`, "warning");
+                        logError(error);
+                        logMessage(`Generating data for Guild '${guild.name}@${guild.id}' was not successful.`, "warning");
                     }
                 });
 
             // Index New Guild
-            guildUtils.guilds.push({
+            guilds.push({
                 // Guild
-                "guildObject": guild,
+                "guild_object": guild,
                 "team_tag": null,
                 "name": guild.name,
                 "channel_admin": null,
@@ -117,7 +118,6 @@ module.exports = {
                 "channel_ticket": channel_ticket,
                 "role_blinded": blindedRole,
                 "role_support": supportRole,
-                "locale": guild.locale,
                 "disabled": false,
 
                 // Settings
@@ -137,15 +137,17 @@ module.exports = {
                 "xp_increase_message": 5,
                 "xp_increase_slash": 15,
                 "xp_increase_purchase": 25,
-                "xp_formula": "20,300"
+                "xp_formula": "20,300",
+                "guild_date_creation": new Date(),
+                "guild_date_update": null
             });
 
-            (await findUserById(config.general.authorId)).send({
+            (await findUserById(general.authorId)).send({
                 content: `I have been added to a new server: '${guild.name}@${guild.id}'. Check console for any errors during this process.`
             });
-        } catch (error) {
-            logger.error(error);
-            (await findUserById(config.general.authorId)).send({
+        } catch (error: any) {
+            logError(error);
+            (await findUserById(general.authorId)).send({
                 content: `I have been added to a new server: '${guild.name}@${guild.id}'. Something unfortunately went wrong though, so check the console.`
             });
         }

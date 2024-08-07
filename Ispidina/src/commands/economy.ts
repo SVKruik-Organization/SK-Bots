@@ -1,11 +1,11 @@
 const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config.js');
+const config = require('../config');
 const modules = require('..');
-const embedConstructor = require('../utils/embed.js');
-const logger = require('../utils/logger.js');
+const embedConstructor = require('../utils/embed');
+const logger = require('../utils/logger');
 
-module.exports = {
-    cooldown: config.cooldowns.C,
+export default {
+    cooldown: cooldowns.C,
     data: new SlashCommandBuilder()
         .setName('economy')
         .setNameLocalizations({
@@ -65,12 +65,12 @@ module.exports = {
             .setDescriptionLocalizations({
                 nl: "Bekijk uw saldo."
             })),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         try {
             const snowflake = interaction.user.id;
             const amount = interaction.options.getInteger('amount');
             const actionType = interaction.options.getSubcommand();
-            const userData = await modules.database.query("SELECT wallet, bank FROM economy WHERE snowflake = ?;", [snowflake]);
+            const userData = await database.query("SELECT wallet, bank FROM economy WHERE snowflake = ?;", [snowflake]);
             if (userData.length === 0) return interaction.reply({
                 content: "This command requires you to have an account. Create an account with the `/register` command.",
                 ephemeral: true
@@ -81,15 +81,15 @@ module.exports = {
                     content: `You do not have enough Bits to perform this command. You have \`${userData[0].bank}\` Bits saved inside your Bank account, but you tried to withdraw \`${amount}\` Bits.`,
                     ephemeral: true
                 });
-                modules.database.query("UPDATE economy SET wallet = wallet + ?, bank = bank - ? WHERE snowflake = ?; INSERT INTO purchase (snowflake, balance_change, product, quantity, type, remaining_bits, method, guild_snowflake) VALUES (?, ?, 'withdraw', 1, 'Economy Command Withdraw', ?, ?, ?);",
-                    [amount, amount, snowflake, snowflake, amount, userData[0].wallet + amount, `${config.general.name} Discord Bot`, interaction.guild ? interaction.guild.id : "DM_COMMAND"])
+                database.query("UPDATE economy SET wallet = wallet + ?, bank = bank - ? WHERE snowflake = ?; INSERT INTO purchase (snowflake, balance_change, product, quantity, type, remaining_bits, method, guild_snowflake) VALUES (?, ?, 'withdraw', 1, 'Economy Command Withdraw', ?, ?, ?);",
+                    [amount, amount, snowflake, snowflake, amount, userData[0].wallet + amount, `${general.name} Discord Bot`, interaction.guild ? interaction.guild.id : "DM_COMMAND"])
                     .then(() => {
-                        interaction.reply({
+                        return interaction.reply({
                             content: `Successfully withdrew \`${amount}\` Bits.`,
                             ephemeral: true
                         });
-                    }).catch((error) => {
-                        logger.error(error);
+                    }).catch((error: any) => {
+                        logError(error);
                         return interaction.reply({
                             content: "Something went wrong while updating your information. Please try again later.",
                             ephemeral: true
@@ -100,22 +100,22 @@ module.exports = {
                     content: `You do not have enough Bits to perform this command. You have \`${userData[0].wallet}\` Bits saved inside your Wallet account, but you tried to withdraw \`${amount}\` Bits.`,
                     ephemeral: true
                 });
-                modules.database.query("UPDATE economy SET wallet = wallet - ?, bank = bank + ? WHERE snowflake = ?; INSERT INTO purchase (snowflake, balance_change, product, quantity, type, remaining_bits, method, guild_snowflake) VALUES (?, ?, 'deposit', 1, 'Economy Command Deposit', ?, ?, ?);",
-                    [amount, amount, snowflake, snowflake, -1 * amount, userData[0].wallet - amount, `${config.general.name} Discord Bot`, interaction.guild ? interaction.guild.id : "DM_COMMAND"])
+                database.query("UPDATE economy SET wallet = wallet - ?, bank = bank + ? WHERE snowflake = ?; INSERT INTO purchase (snowflake, balance_change, product, quantity, type, remaining_bits, method, guild_snowflake) VALUES (?, ?, 'deposit', 1, 'Economy Command Deposit', ?, ?, ?);",
+                    [amount, amount, snowflake, snowflake, -1 * amount, userData[0].wallet - amount, `${general.name} Discord Bot`, interaction.guild ? interaction.guild.id : "DM_COMMAND"])
                     .then(() => {
-                        interaction.reply({
+                        return interaction.reply({
                             content: `Successfully deposited \`${amount}\` Bits.`,
                             ephemeral: true
                         });
-                    }).catch((error) => {
-                        logger.error(error);
+                    }).catch((error: any) => {
+                        logError(error);
                         return interaction.reply({
                             content: "Something went wrong while trying to update your information. Please try again later.",
                             ephemeral: true
                         });
                     });
             } else if (actionType === "balance") {
-                modules.database.query("SELECT wallet, bank, (wallet + bank) AS 'total' FROM economy WHERE snowflake = ?;", [snowflake])
+                database.query("SELECT wallet, bank, (wallet + bank) AS 'total' FROM economy WHERE snowflake = ?;", [snowflake])
                     .then((data) => {
                         if (data.length === 0) return interaction.reply({
                             content: "This command requires you to have an account. Create an account with the `/register` command.",
@@ -128,17 +128,17 @@ module.exports = {
                                 { name: "-----", value: `Summary` },
                                 { name: 'Combined', value: `\`${data[0].total}\`` }
                             ], ["shop"]);
-                        interaction.reply({ embeds: [embed], ephemeral: true });
-                    }).catch((error) => {
-                        logger.error(error);
+                        return interaction.reply({ embeds: [embed], ephemeral: true });
+                    }).catch((error: any) => {
+                        logError(error);
                         return interaction.reply({
                             content: "Something went wrong while retrieving the required information. Please try again later.",
                             ephemeral: true
                         });
                     });
             }
-        } catch (error) {
-            logger.error(error);
+        } catch (error: any) {
+            logError(error);
         }
     }
 };
