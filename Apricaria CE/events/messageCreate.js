@@ -1,6 +1,6 @@
 const { Events } = require('discord.js');
 const modules = require('../index.js');
-const config = require('../assets/config.js');
+const config = require('../config.js');
 const userIncreaseHandler = require('../handlers/userIncreaseHandler.js');
 const guildUtils = require('../utils/guild.js');
 const { handleAcknowledge } = require('../handlers/dmCommandHandler.js');

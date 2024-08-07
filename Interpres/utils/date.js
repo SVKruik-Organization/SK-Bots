@@ -1,4 +1,4 @@
-const config = require('../assets/config.js');
+const config = require('../config.js');
 const { CommandInteraction } = require('discord.js');
 
 /**

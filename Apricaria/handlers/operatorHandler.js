@@ -1,6 +1,6 @@
 const { ButtonBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, EmbedBuilder, ButtonStyle } = require('discord.js');
 const { time } = require('@discordjs/formatters');
-const config = require('../assets/config.js');
+const config = require('../config.js');
 const modules = require('..');
 const userUtils = require('../utils/user.js');
 const logger = require('../utils/logger.js');

@@ -2,7 +2,7 @@ exports.general = {
     name: "Apricaria CE",
     color: "#898266",
     clientId: "1263190089614495878",
-    imageURL: "https://i.imgur.com/6OeWaIW.jpg", // TODO #105
+    imageURL: "https://files.stefankruik.com/Bots/Apricaria.png",
     authorId: "422704748488163332",
     timezone: "Europe/Amsterdam"
 };

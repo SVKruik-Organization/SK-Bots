@@ -1,7 +1,7 @@
 const modules = require('../index.js');
 const logger = require('../utils/logger.js');
 const guildUtils = require('../utils/guild.js');
-const config = require('../assets/config.js');
+const config = require('../config.js');
 
 /**
  * Increase the XP of a user.

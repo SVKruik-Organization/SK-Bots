@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const config = require('../assets/config.js');
+const config = require('../config.js');
 const guildUtils = require('../utils/guild.js');
 const userUtils = require('../utils/user.js');
 const logger = require('../utils/logger.js');

@@ -1,6 +1,6 @@
 require('dotenv').config();
 const { REST, Routes } = require('discord.js');
-const { general } = require('./assets/config.js');
+const { general } = require('./config.js');
 const mariadb = require('mariadb');
 const fs = require('node:fs');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));

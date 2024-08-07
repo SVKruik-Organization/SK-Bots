@@ -1,6 +1,6 @@
 const express = require("express");
 const logger = require('./utils/logger.js');
-const config = require('./assets/config.js');
+const config = require('./config.js');
 
 // Express Settings
 const manualPort = process.argv.slice(2)[0];

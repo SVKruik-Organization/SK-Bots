@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const math = require('mathjs');
-const config = require('../assets/config.js');
+const config = require('../config.js');
 
 module.exports = {
     cooldown: config.cooldowns.B,

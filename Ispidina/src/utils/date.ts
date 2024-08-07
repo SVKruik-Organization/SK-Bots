@@ -1,4 +1,4 @@
-import * as config from "../assets/config";
+import * as config from "../config";
 
 /**
  * Timestamp Calculation

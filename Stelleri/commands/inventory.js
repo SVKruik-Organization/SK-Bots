@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, StringSelectMenuOptionBuilder, StringSelectMenuBuilder, ActionRowBuilder } = require('discord.js');
-const config = require('../assets/config.js');
+const config = require('../config.js');
 const modules = require('..');
 const dateUtils = require('../utils/date.js');
 const embedConstructor = require('../utils/embed.js');

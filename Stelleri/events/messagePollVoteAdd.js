@@ -1,7 +1,7 @@
 const { Events } = require('discord.js');
 const logger = require('../utils/logger.js');
 const modules = require('..');
-const config = require('../assets/config.js');
+const config = require('../config.js');
 const guildUtils = require('../utils/guild.js');
 const userIncreaseHandler = require('../handlers/userIncreaseHandler.js');
 

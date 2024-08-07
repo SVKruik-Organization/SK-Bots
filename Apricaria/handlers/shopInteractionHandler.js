@@ -2,7 +2,7 @@ const { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder
 const modules = require('..');
 const logger = require('../utils/logger.js');
 const userIncreaseHandler = require('./userIncreaseHandler.js');
-const config = require('../assets/config.js');
+const config = require('../config.js');
 const purchaseHistory = require('./purchaseHistory.js');
 const guildUtils = require('../utils/guild.js');
 

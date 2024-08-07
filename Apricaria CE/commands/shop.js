@@ -1,5 +1,5 @@
 const { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, SlashCommandBuilder } = require('discord.js');
-const config = require('../assets/config.js');
+const config = require('../config.js');
 const logger = require('../utils/logger.js');
 
 module.exports = {

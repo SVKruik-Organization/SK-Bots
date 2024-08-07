@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const config = require('../assets/config.js');
+const config = require('../config.js');
 const { REST, Routes } = require('discord.js');
 const fs = require('node:fs');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));

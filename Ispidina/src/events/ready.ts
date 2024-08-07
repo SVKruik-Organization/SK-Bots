@@ -1,5 +1,5 @@
 import { Events } from 'discord.js';
-import * as config from "../assets/config"
+import * as config from "../config"
 import { log } from '../utils/logger';
 import { getDate } from '../utils/date';
 

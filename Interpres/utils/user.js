@@ -1,6 +1,6 @@
 const modules = require('..');
 const logger = require('./logger.js');
-const config = require('../assets/config.js');
+const config = require('../config.js');
 
 /**
  *

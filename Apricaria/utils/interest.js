@@ -1,5 +1,5 @@
 const modules = require('..');
-const config = require('../assets/config.js');
+const config = require('../config.js');
 const logger = require('./logger.js');
 
 function init() {

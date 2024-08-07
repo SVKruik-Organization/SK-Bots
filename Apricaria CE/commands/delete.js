@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const config = require('../assets/config.js');
+const config = require('../config.js');
 const { REST, Routes } = require('discord.js');
 const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
 const logger = require('../utils/logger.js');

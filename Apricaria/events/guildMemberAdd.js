@@ -1,5 +1,5 @@
 const { Events } = require('discord.js');
-const config = require('../assets/config.js');
+const config = require('../config.js');
 const embedConstructor = require('../utils/embed.js');
 const userUtils = require('../utils/user.js');
 const modules = require('..');

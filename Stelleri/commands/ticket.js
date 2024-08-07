@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, ChannelType, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const config = require('../assets/config.js');
+const config = require('../config.js');
 const logger = require('../utils/logger.js');
 const ticket = require('../utils/ticket.js');
 const guildUtils = require('../utils/guild.js');

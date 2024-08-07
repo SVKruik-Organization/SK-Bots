@@ -2,7 +2,7 @@ const general = {
     name: "Ispidina",
     color: "#2B8DFF",
     clientId: "1252669921242910831",
-    imageURL: "https://i.imgur.com/KsXYfv4.jpeg", // TODO #105
+    imageURL: "https://files.stefankruik.com/Bots/Ispidina.png",
     authorId: "422704748488163332",
     timezone: "Europe/Amsterdam",
 };

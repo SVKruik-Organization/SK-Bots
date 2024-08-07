@@ -1,6 +1,6 @@
 const modules = require('..');
 const logger = require('../utils/logger.js');
-const config = require('../assets/config.js');
+const config = require('../config.js');
 
 /**
  * Log a new purchase.

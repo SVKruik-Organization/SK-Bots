@@ -1,4 +1,4 @@
-const config = require('../assets/config.js');
+const config = require('../config.js');
 
 /**
  * Get the statistics & features for a specific subscription edition.

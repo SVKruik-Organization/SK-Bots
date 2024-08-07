@@ -6,7 +6,7 @@ const jwtSecret = process.env.SERVER_SECRET;
 const CryptoJS = require("crypto-js");
 const jwt = require('jsonwebtoken');
 const jwtUtils = require('./utils/jwt.js');
-const config = require('./assets/config.js');
+const config = require('./config.js');
 
 // Express Settings
 const manualPort = process.argv.slice(2)[0];
