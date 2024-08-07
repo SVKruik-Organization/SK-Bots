@@ -1,6 +1,7 @@
 node_modules
-.env
-logs
 package-lock.json
+.env
+.DS_Store
 .idea
+logs
 settings

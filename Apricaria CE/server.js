@@ -13,7 +13,7 @@ app.use(logger.apiMiddleware);
 
 // CORS Config
 const corsOptions = {
-    origin: ["https://bots.stefankruik.com"],
+    origin: ["https://platform.stefankruik.com"],
     optionsSuccessStatus: 200
 }
 app.use(cors(corsOptions));

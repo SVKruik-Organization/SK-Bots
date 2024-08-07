@@ -1,15 +1,21 @@
 {
     "name": "interpres",
+    "description": "SK Bots - Interpres",
     "version": "2.9.0",
-    "description": "GitHub REST API Bot",
-    "main": "index.js",
+    "author": "Stefan Kruik",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/SVKruik-Organization/SK-Bots.git"
+    },
+    "bugs": {
+        "url": "https://github.com/SVKruik-Organization/SK-Bots/issues"
+    },
+    "homepage": "https://github.com/SVKruik-Organization/SK-Bots#readme",
     "scripts": {
         "update": "node deployGuildCommands.js",
         "start": "nodemon index.js",
         "smee": "smee --target http://localhost:9080/v1/github/webhook"
     },
-    "author": "SVKruik",
-    "license": "ISC",
     "dependencies": {
         "@discordjs/formatters": "^0.3.3",
         "@vscode/vscode-languagedetection": "^1.0.22",

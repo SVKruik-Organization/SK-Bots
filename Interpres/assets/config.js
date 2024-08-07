@@ -8,8 +8,8 @@ exports.general = {
 };
 
 exports.urls = {
-    website: "https://bots.stefankruik.com",
-    botRepository: "https://github.com/SVKruik-Organization/Discord-Bots",
-    botCommanderRepository: "https://github.com/SVKruik-Organization/Bot-Commander",
-    botCommanderWebsite: "https://bots.stefankruik.com"
+    website: "https://platform.stefankruik.com",
+    botRepository: "https://github.com/SVKruik-Organization/SK-Bots",
+    skPlatformRepository: "https://github.com/SVKruik-Organization/SK-Commander",
+    skPlatformWebsite: "https://platform.stefankruik.com"
 }

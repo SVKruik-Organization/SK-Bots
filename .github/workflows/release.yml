@@ -1,4 +1,4 @@
-name: Release Bots
+name: Release SK Bots
 on:
   release:
     types: [created]

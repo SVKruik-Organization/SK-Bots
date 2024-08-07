@@ -4,7 +4,7 @@ exports.general = {
     clientId: "1071428183003500544", // Snowflake ID of the bot itself.
     imageURL: "https://i.imgur.com/9X7PIG0.png", // URL of the profile picture.
     creatorId: "422704748488163332", // Snowflake ID of the author Complex/Stefan Kruik.
-    repository: "https://github.com/SVKruik-Organization/Discord-Bots", // URL of the code repository.
+    repository: "https://github.com/SVKruik-Organization/SK-Bots", // URL of the code repository.
     timezone: "Europe/Amsterdam" // The timezone the bot should use for date calculations.
 };
 

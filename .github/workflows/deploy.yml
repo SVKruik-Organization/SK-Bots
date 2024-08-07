@@ -1,4 +1,4 @@
-name: Deploy Bots
+name: Deploy SK Bots
 on:
   push
 

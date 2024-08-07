@@ -31,8 +31,8 @@ async function processCpuTemperature() {
         })).createChannel();
         channel.assertExchange("bot-exchange", "direct", { durable: false });
         channel.publish("bot-exchange", "Apricaria", Buffer.from(JSON.stringify({
-            sender: "Discord-Bots/Monitor",
-            recipient: "Discord-Bots/Apricaria",
+            sender: "SK-Bots/Monitor",
+            recipient: "SK-Bots/Apricaria",
             trigger_source: "Temperature Sensor",
             reason: "High Tide CPU Temperature",
             task: "Temperature",

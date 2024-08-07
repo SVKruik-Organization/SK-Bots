@@ -58,4 +58,4 @@ Total: `2`
 
 ---
 
-¹ This is for basic settings only. For advanced configuration (custom pricing, settings, and more) the [Bot Commander](https://github.com/SVKruik-Organization/Bot-Commander) application is required.
+¹ This is for basic settings only. For advanced configuration (custom pricing, settings, and more) the [SK Commander](https://github.com/SVKruik-Organization/SK-Commander) application is required.

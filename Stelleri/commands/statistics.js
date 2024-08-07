@@ -32,7 +32,7 @@ module.exports = {
                     { name: 'Uptime', value: uptime },
                     { name: 'Ping', value: `\`${Math.abs(interaction.client.ws.ping)}\`ms` },
                     { name: 'Commands', value: `\`${commands}\` Total` },
-                    { name: 'Docs', value: `[bots.stefankruik.com/documentation](${config.urls.docs})` },
+                    { name: 'Docs', value: `[platform.stefankruik.com/documentation](${config.urls.docs})` },
                     { name: 'Version', value: `\`${version}\`` }
                 ], ["server"]);
             interaction.reply({ embeds: [embed] });

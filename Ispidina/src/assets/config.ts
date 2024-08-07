@@ -18,9 +18,9 @@ export enum cooldowns {
 
 // Website Links
 const urls = {
-    website: "https://bots.stefankruik.com",
-    docs: "https://bots.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Ispidina",
-    botCommanderWebsite: "https://bots.stefankruik.com" // TODO .com/products/commander
+    website: "https://platform.stefankruik.com",
+    docs: "https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Ispidina",
+    skPlatformWebsite: "https://platform.stefankruik.com" // TODO .com/products/commander
 }
 
 // Economy Settings

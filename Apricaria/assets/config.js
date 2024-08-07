@@ -23,9 +23,9 @@ exports.colors = {
 
 // Website Links
 exports.urls = {
-    website: "https://bots.stefankruik.com",
-    docs: "https://bots.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Apricaria",
-    botCommanderWebsite: "https://bots.stefankruik.com" // TODO .com/products/commander
+    website: "https://platform.stefankruik.com",
+    docs: "https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Apricaria",
+    skPlatformWebsite: "https://platform.stefankruik.com" // TODO .com/products/commander
 }
 
 // Economy Settings

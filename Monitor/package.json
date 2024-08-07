@@ -1,27 +1,26 @@
 {
-  "name": "tide-monitor",
-  "version": "1.0.0",
-  "description": "Monitor statistics of hosting computers.",
-  "main": "index.js",
-  "scripts": {
-    "start": "nodemon index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/SVKruik-Organization/Discord-Bots.git"
-  },
-  "author": "Stefan Kruik",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/SVKruik-Organization/Discord-Bots/issues"
-  },
-  "homepage": "https://github.com/SVKruik-Organization/Discord-Bots#readme",
-  "dependencies": {
-    "dotenv": "^16.4.5",
-    "systeminformation": "^5.22.11",
-    "amqplib": "^0.10.4"
-  },
-  "optionalDependencies": {
-    "osx-temperature-sensor": "^1.0.8"
-  }
+    "name": "sk-monitor",
+    "description": "SK Monitor",
+    "version": "2.9.0",
+    "author": "Stefan Kruik",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/SVKruik-Organization/SK-Bots.git"
+    },
+    "bugs": {
+        "url": "https://github.com/SVKruik-Organization/SK-Bots/issues"
+    },
+    "homepage": "https://github.com/SVKruik-Organization/SK-Bots#readme",
+    "scripts": {
+        "update": "node deployGlobalCommands.js",
+        "start": "nodemon index.js"
+    },
+    "dependencies": {
+        "dotenv": "^16.4.5",
+        "systeminformation": "^5.22.11",
+        "amqplib": "^0.10.4"
+    },
+    "optionalDependencies": {
+        "osx-temperature-sensor": "^1.0.8"
+    }
 }

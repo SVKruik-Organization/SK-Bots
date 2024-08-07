@@ -4,19 +4,19 @@ export PATH=/root/.nvm/versions/node/v20.15.1/bin:$PATH
 
 # Git
 cd ..
-git config --global --add safe.directory /home/SVKruik/Documents/GitHub/Discord-Bots
+git config --global --add safe.directory /home/SVKruik/Documents/GitHub/SK-Bots
 git reset --hard
 git pull
 echo "Git setup complete"
 
-# Apricaria - api.stefankruik.com/apricaria
+# Apricaria - bots.stefankruik.com/apricaria
 cd Apricaria
 npm install --omit=dev
 npm run update 9087
 [ -d logs ] || mkdir logs
 echo "Apricaria update complete"
 
-# Stelleri - api.stefankruik.com/stelleri
+# Stelleri - bots.stefankruik.com/stelleri
 cd ../Stelleri
 npm install --omit=dev
 [ -d logs ] || mkdir logs
