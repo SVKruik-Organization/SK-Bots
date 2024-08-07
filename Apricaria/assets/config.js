@@ -1,8 +1,8 @@
 exports.general = {
     name: "Apricaria",
     clientId: "1150713787784110110",
-    imageURL: "https://i.imgur.com/6OeWaIW.jpg",
-    authorSnowflake: "422704748488163332",
+    imageURL: "https://i.imgur.com/6OeWaIW.jpg", // TODO #105
+    authorId: "422704748488163332",
     timezone: "Europe/Amsterdam"
 };
 
@@ -25,7 +25,7 @@ exports.colors = {
 exports.urls = {
     website: "https://platform.stefankruik.com",
     docs: "https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Apricaria",
-    skPlatformWebsite: "https://platform.stefankruik.com" // TODO .com/products/commander
+    skCommander: "https://platform.stefankruik.com" // TODO .com/products/commander
 }
 
 // Economy Settings

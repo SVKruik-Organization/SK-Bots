@@ -1,5 +1,4 @@
 const config = require('../assets/config.js');
-const { CommandInteraction } = require('discord.js');
 
 /**
  * Timestamp Calculation
@@ -61,7 +60,6 @@ function difference(dateFuture, datePast) {
  * Parse seperate date and time input to one Date object.
  * @param {string} rawDate The day/month/year input.
  * @param {string} rawTime The hour:minute input.
- * @param {CommandInteraction} interaction Then active Discord interaction.
  * @returns False n error or the parsed date.
  */
 function datetimeParser(rawDate, rawTime) {

@@ -2,8 +2,8 @@ const general = {
     name: "Ispidina",
     color: "#2B8DFF",
     clientId: "1252669921242910831",
-    imageURL: "https://i.imgur.com/KsXYfv4.jpeg",
-    authorSnowflake: "422704748488163332",
+    imageURL: "https://i.imgur.com/KsXYfv4.jpeg", // TODO #105
+    authorId: "422704748488163332",
     timezone: "Europe/Amsterdam",
 };
 
@@ -20,7 +20,7 @@ export enum cooldowns {
 const urls = {
     website: "https://platform.stefankruik.com",
     docs: "https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Ispidina",
-    skPlatformWebsite: "https://platform.stefankruik.com" // TODO .com/products/commander
+    skCommander: "https://platform.stefankruik.com" // TODO .com/products/commander
 }
 
 // Economy Settings

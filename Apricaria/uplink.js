@@ -95,7 +95,7 @@ async function broadcastHandler(data) {
             .setURL(release.release_url)
             .addFields(
                 { name: 'Description', value: format(release.release_description) },
-                { name: 'Note', value: `While it does not happen often, there might be some downtime while I update everything. I strive for a smooth transition, but if any problems do arise, don't hesitate to reach out to <@${config.general.authorSnowflake}>.` })
+                { name: 'Note', value: `While it does not happen often, there might be some downtime while I update everything. I strive for a smooth transition, but if any problems do arise, don't hesitate to reach out to <@${config.general.authorId}>.` })
             .addFields(
                 { name: 'Version', value: `\`${release.release_version}\``, inline: true },
                 { name: 'Published On', value: time(release.release_date), inline: true },
@@ -125,7 +125,7 @@ async function temperatureHandler(data) {
         if (!data || !("cpuData" in data) || !("temperatureData" in data)) return;
         const sensorSettings = JSON.parse(fs.readFileSync(__dirname + '/settings/sensors.json', "utf-8"));
         if (data.temperatureData.main > 45 && sensorSettings.acknowledgeHighTemperature === false) {
-            const author = await findUserById(config.general.authorSnowflake);
+            const author = await findUserById(config.general.authorId);
 
             const embed = new EmbedBuilder()
                 .setColor(config.colors.warning)

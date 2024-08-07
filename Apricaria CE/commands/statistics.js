@@ -28,7 +28,7 @@ module.exports = {
                 [
                     { name: 'Name', value: `**${config.general.name}**` },
                     { name: 'Servers', value: `\`${interaction.client.guilds.cache.size}\` Total` },
-                    { name: 'Creator', value: `<@${config.general.authorSnowflake}>` },
+                    { name: 'Creator', value: `<@${config.general.authorId}>` },
                     { name: 'Uptime', value: uptime },
                     { name: 'Ping', value: `\`${Math.abs(interaction.client.ws.ping)}\`ms` },
                     { name: 'Commands', value: `\`${commands}\` Total` },

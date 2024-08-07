@@ -17,8 +17,8 @@ module.exports = {
     async execute(interaction) {
         try {
             // Permission Validation
-            if (interaction.user.id !== config.general.authorSnowflake) return interaction.reply({
-                content: `This command is reserved for my developer, <@${config.general.authorSnowflake}>, only. If you are experiencing problems with (one of) the commands, please contact him.`,
+            if (interaction.user.id !== config.general.authorId) return interaction.reply({
+                content: `This command is reserved for my developer, <@${config.general.authorId}>, only. If you are experiencing problems with (one of) the commands, please contact him.`,
                 ephemeral: true
             });
 

@@ -1,8 +1,8 @@
 exports.general = {
     name: "Stelleri",
     clientId: "1071428183003500544",
-    imageURL: "https://i.imgur.com/9X7PIG0.png",
-    authorSnowflake: "422704748488163332",
+    imageURL: "https://i.imgur.com/9X7PIG0.png", // TODO #105
+    authorId: "422704748488163332",
     timezone: "Europe/Amsterdam",
 };
 
@@ -25,7 +25,7 @@ exports.colors = {
 exports.urls = {
     website: "https://platform.stefankruik.com",
     docs: "https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Stelleri",
-    skPlatformWebsite: "https://platform.stefankruik.com" // TODO .com/products/commander
+    skCommander: "https://platform.stefankruik.com" // TODO .com/products/commander
 }
 
 // Economy Settings

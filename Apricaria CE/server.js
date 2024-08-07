@@ -1,14 +1,13 @@
-// Dependencies
 const express = require("express");
 const logger = require('./utils/logger.js');
 const config = require('./assets/config.js');
 
 // Express Settings
-const port = process.env.SERVER_PORT;
+const manualPort = process.argv.slice(2)[0];
+const port = (manualPort && manualPort.length !== 4 ? process.env.SERVER_PORT : parseInt(manualPort)) || process.env.SERVER_PORT;
 const app = express();
 const cors = require("cors");
 app.use(express.json());
-const prefix = process.env.SERVER_PREFIX;
 app.use(logger.apiMiddleware);
 
 // CORS Config
@@ -18,18 +17,12 @@ const corsOptions = {
 }
 app.use(cors(corsOptions));
 
-// Init
-app.listen(port, () => {
-    logger.log(`Update server listening on port ${port}.`, "info");
+// Default
+app.get("/", (_req, res) => {
+    res.json({ message: `Default ${config.general.name} Endpoint` });
 });
 
-// Import Other Routes
-const guildRoutes = require('./routes/guildRoutes.js');
-app.use(`${prefix}/guilds`, guildRoutes);
-const broadcastRoutes = require('./routes/broadcastRoutes.js');
-app.use(`${prefix}/broadcasts`, broadcastRoutes);
-
-// Default
-app.get(prefix, (req, res) => {
-    res.json({ message: `Default ${config.general.name} Endpoint` });
+// Init
+app.listen(port, () => {
+    logger.log(`${config.general.name} API server listening on port ${port}.`, "info");
 });

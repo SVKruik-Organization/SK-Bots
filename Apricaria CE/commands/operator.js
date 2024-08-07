@@ -54,7 +54,7 @@ module.exports = {
             const actionType = interaction.options.getSubcommand();
             const targetMember = interaction.options.getUser("target");
             if (targetMember && targetMember.id === interaction.user.id) return interaction.reply({
-                content: `You cannot ${actionType} yourself ${actionType === "add" ? "to" : "from"} a team that you are already a member of via commands. To transfer ownership and use other advanced operations, please use the [SK Commander](${config.urls.skPlatformWebsite}) application or the [website](${config.urls.website}).`,
+                content: `You cannot ${actionType} yourself ${actionType === "add" ? "to" : "from"} a team that you are already a member of via commands. To transfer ownership and use other advanced operations, please use the [SK Commander](${config.urls.skCommander}) application or the [website](${config.urls.website}).`,
                 ephemeral: true
             });
 

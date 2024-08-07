@@ -136,12 +136,12 @@ module.exports = {
                 "xp_increase_purchase": 25
             });
 
-            (await findUserById(config.general.authorSnowflake)).send({
+            (await findUserById(config.general.authorId)).send({
                 content: `I have been added to a new server: '${guild.name}@${guild.id}'. Check console for any errors during this process.`
             });
         } catch (error) {
             logger.error(error);
-            (await findUserById(config.general.authorSnowflake)).send({
+            (await findUserById(config.general.authorId)).send({
                 content: `I have been added to a new server: '${guild.name}@${guild.id}'. Something unfortunately went wrong though, so check the console.`
             });
         }

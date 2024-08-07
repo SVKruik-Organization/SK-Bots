@@ -7,7 +7,7 @@ Welcome to SK Bots, a line of advanced Discord bots from the SK Platform project
 | Name | Purpose | Meaning | Public | CI/CD |
 | - | - | - | - |-|
 | [Apricaria](https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Apricaria) | General Purpose | [European Golden Plover](https://en.wikipedia.org/wiki/European_golden_plover) | From version v2.10.0 | Yes |
-| [Apricaria CE](https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Apricaria_CE) | Concise General Purpose | [European Golden Plover](https://en.wikipedia.org/wiki/European_golden_plover) | From version v2.10.0 | No |
+| [Apricaria CE](https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Apricaria_CE) | Concise General Purpose | [European Golden Plover](https://en.wikipedia.org/wiki/European_golden_plover) | From version v2.10.0 | WIP |
 | [Stelleri](https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Stelleri) | Early-Access Features | [Steller's Eider](https://en.wikipedia.org/wiki/Steller%27s_eider) | From version v2.10.0 | Yes |
 | [Ispidina](https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Ispidina) | TypeScript | [African Pygmy Kingfisher](https://en.wikipedia.org/wiki/Ispidina) | No | No |
 | [Interpres](https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Interpres) | GitHub API | [Ruddy Turnstone](https://en.wikipedia.org/wiki/Ruddy_turnstone) | No | No |
@@ -16,7 +16,6 @@ Read the [docs](https://platform.stefankruik.com/documentation/read/Doc/Products
 
 #### Links
 
-- Available [Commands](https://github.com/SVKruik-Organization/SK-Bots/blob/main/Documentation/Commands.md)
 - Documentation [Page](https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots)
 - Active [Tasks](https://github.com/orgs/SVKruik-Organization/projects/1)
 - Server [Integration](https://platform.stefankruik.com/documentation/read/Guide/Technical/Integrating_Bots)

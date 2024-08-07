@@ -190,7 +190,7 @@ module.exports = {
                         });
 
                         interaction.reply({
-                            content: `Setup update successful. Additional commands reloaded and ready for action. For other settings like welcome messages and other parameters, please use the [SK Commander](${config.urls.skPlatformWebsite}) application or the [website](${config.urls.website}).`,
+                            content: `Setup update successful. Additional commands reloaded and ready for action. For other settings like welcome messages and other parameters, please use the [SK Commander](${config.urls.skCommander}) application or the [website](${config.urls.website}).`,
                             ephemeral: true
                         });
                     }).catch((error) => {

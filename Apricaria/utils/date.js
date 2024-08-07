@@ -1,5 +1,4 @@
 const config = require('../assets/config.js');
-const { CommandInteraction } = require('discord.js');
 
 /**
  * Timestamp Calculation

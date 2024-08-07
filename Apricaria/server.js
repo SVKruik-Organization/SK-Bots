@@ -14,7 +14,6 @@ const port = (manualPort && manualPort.length !== 4 ? process.env.SERVER_PORT : 
 const app = express();
 const cors = require("cors");
 app.use(express.json());
-const prefix = process.env.SERVER_PREFIX;
 app.use(logger.apiMiddleware);
 
 // CORS Config
@@ -24,22 +23,17 @@ const corsOptions = {
 }
 app.use(cors(corsOptions));
 
-// Init
-app.listen(port, () => {
-    logger.log(`Apricaria API server listening on port ${port}.`, "info");
-});
-
 // Import Other Routes
 const guildRoutes = require('./routes/guildRoutes.js');
-app.use(`${prefix}/guilds`, guildRoutes);
+app.use("/guilds", guildRoutes);
 
 // Default
-app.get(prefix, jwtUtils.authenticateJWT, (req, res) => {
-    res.json({ message: `Authenticated Default ${config.general.name} Endpoint` });
+app.get("/", jwtUtils.authenticateJWT, (req, res) => {
+    res.json({ message: `Default ${config.general.name} Endpoint` });
 });
 
 // JWT Login
-app.post(`${prefix}/login`, (req, res) => {
+app.post("/login", (req, res) => {
     const { username, password } = req.body;
 
     modules.database.query("SELECT operator.id, operator.snowflake, operator.username AS 'operator_username', user_general.username AS 'user_username', email, password, service_tag, operator.date_creation, operator.date_update FROM operator LEFT JOIN user_general ON operator.snowflake = user_general.snowflake WHERE operator.username = ?;", [username])
@@ -70,4 +64,9 @@ app.post(`${prefix}/login`, (req, res) => {
             logger.error(error);
             return res.sendStatus(500)
         });
+});
+
+// Init
+app.listen(port, () => {
+    logger.log(`${config.general.name} API server listening on port ${port}.`, "info");
 });

@@ -12,7 +12,7 @@ app.use(logger.apiMiddleware);
 
 // CORS Config
 const corsOptions = {
-    origin: ["http://localhost:3002"],
+    origin: ["https://platform.stefankruik.com"],
     optionsSuccessStatus: 200
 }
 app.use(cors(corsOptions));
@@ -24,5 +24,5 @@ app.get("/", (_req, res) => {
 
 // Init
 app.listen(port, () => {
-    logger.log(`Stelleri API server listening on port ${port}.`, "info");
+    logger.log(`${config.general.name} API server listening on port ${port}.`, "info");
 });

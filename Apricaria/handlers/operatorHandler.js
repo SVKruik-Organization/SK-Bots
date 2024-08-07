@@ -200,7 +200,7 @@ async function handleSelectionMenu(interaction) {
                         { name: 'Edition', value: `\`${data[0].edition}\``, inline: true },
                         { name: 'Creation Date', value: time(data[0].date_creation), inline: true },
                         { name: 'Update Date', value: time(data[0].date_update), inline: true },
-                        { name: 'Note', value: `Changing your subscription details and advanced settings can be done with the [SK Commander](${config.urls.skPlatformWebsite}) application or the [website](${config.urls.website}). If you have any questions or concerns, don't hesitate to reach out to <@${config.general.authorSnowflake}>.` })
+                        { name: 'Note', value: `Changing your subscription details and advanced settings can be done with the [SK Commander](${config.urls.skCommander}) application or the [website](${config.urls.website}). If you have any questions or concerns, don't hesitate to reach out to <@${config.general.authorId}>.` })
                     .setTimestamp()
                     .setFooter({ text: `Embed created by ${config.general.name}` });
                 return interaction.update({

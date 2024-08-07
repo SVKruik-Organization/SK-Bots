@@ -129,7 +129,7 @@ module.exports = {
 
             // Administrator User Cooldown Exception
             const adminUsers = await modules.database.query("SELECT user_snowflake FROM user_administrator WHERE user_snowflake = ? AND guild_snowflake = ?;", [interaction.user.id, interaction.guild.id]);
-            if (adminUsers.length === 0 || interaction.user.id !== config.general.authorSnowflake) {
+            if (adminUsers.length === 0 || interaction.user.id !== config.general.authorId) {
 
                 // Cooldown Logic
                 const { cooldowns } = interaction.client;

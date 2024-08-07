@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const config = require('../assets/config.js');
 const modules = require('..');
 const logger = require('../utils/logger.js');
@@ -7,14 +7,63 @@ module.exports = {
     cooldown: config.cooldowns.A,
     data: new SlashCommandBuilder()
         .setName('template')
-        .setDescription('Template command.')
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+        .setNameLocalizations({
+            nl: "template"
+        })
+        .setDescription('Template.')
+        .setDescriptionLocalizations({
+            nl: "Template."
+        })
+        .setDMPermission(false)
+        .addSubcommand(option => option
+            .setName('A')
+            .setNameLocalizations({
+                nl: "A"
+            })
+            .setDescription("A.")
+            .setDescriptionLocalizations({
+                nl: "A."
+            })
+            .addStringOption(option => option
+                .setName('A')
+                .setNameLocalizations({
+                    nl: "A"
+                })
+                .setDescription('A.')
+                .setDescriptionLocalizations({
+                    nl: "A."
+                })
+                .setRequired(true)))
+        .addSubcommand(option => option
+            .setName('B')
+            .setNameLocalizations({
+                nl: "B"
+            })
+            .setDescription("B.")
+            .setDescriptionLocalizations({
+                nl: "B."
+            })
+            .addStringOption(option => option
+                .setName('B')
+                .setNameLocalizations({
+                    nl: "B"
+                })
+                .setDescription('B.')
+                .setDescriptionLocalizations({
+                    nl: "B."
+                })
+                .setRequired(true))),
     async execute(interaction) {
         try {
-            const targetUsername = interaction.options.getUser('target').username;
-            const targetSnowflake = interaction.options.getUser('target').id;
+            // Setup
+            const targetUser = interaction.options.getString('B');
+            const actionType = interaction.options.getSubcommand();
+
+            // Handle
+            if (actionType === "A") {
+            } else if (actionType === "B");
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     }
 };
