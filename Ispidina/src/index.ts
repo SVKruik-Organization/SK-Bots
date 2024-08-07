@@ -1,11 +1,18 @@
-require('dotenv').config();
+import "dotenv/config";
 import mariadb, { Pool } from 'mariadb';
-import { Client, Collection, GatewayIntentBits, Partials } from 'discord.js';
 import { initEventHandler } from './handlers/eventHandler';
 import { initCommandHandler } from './handlers/commandHandler';
-import { Command } from './assets/types';
+import { Command } from './types';
+import { Collection, Client as DiscordClient, GatewayIntentBits, Partials } from 'discord.js';
 
-const client = new Client({
+interface CustomClientProperties {
+    commands: Collection<string, Command>;
+    cooldowns: Collection<string, Collection<string, Date>>;
+}
+interface CustomClient extends DiscordClient, CustomClientProperties { }
+
+// Create a client instance using the extended interface
+const customClient = new DiscordClient({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
@@ -13,16 +20,17 @@ const client = new Client({
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessageReactions,
         GatewayIntentBits.DirectMessages,
-        GatewayIntentBits.GuildScheduledEvents
+        GatewayIntentBits.GuildScheduledEvents,
+        GatewayIntentBits.GuildMessagePolls
     ],
     partials: [
         Partials.Channel,
         Partials.Message,
         Partials.Reaction
     ]
-});
-client.commands = new Collection<string, Command>();
-client.cooldowns = new Collection<string, Collection<string, Date>>();
+}) as CustomClient;
+customClient.commands = new Collection<string, Command>();
+customClient.cooldowns = new Collection<string, Collection<string, Date>>();
 
 // Database Connection
 if (!process.env.HOST || !process.env.PORT) throw new Error("Missing database credentials.");
@@ -36,9 +44,9 @@ const database: Pool = mariadb.createPool({
 });
 
 // Handlers
-initEventHandler(client);
-initCommandHandler(client);
+initEventHandler(customClient);
+initCommandHandler(customClient);
 
 // Exporting Values & Boot
-export { client, database }
-client.login(process.env.BOT_TOKEN);
+export { customClient, database }
+customClient.login(process.env.BOT_TOKEN);

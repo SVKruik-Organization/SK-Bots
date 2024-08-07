@@ -1,19 +1,16 @@
 {
     "compilerOptions": {
-        "target": "es2016",
-        "module": "CommonJS",
-        "rootDir": "./src",
-        "resolveJsonModule": true,
-        "outDir": "./build",
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "strict": true,
-        "useUnknownInCatchVariables": false,
-        "skipLibCheck": true
+        "typeRoots": [
+            "src/@types",
+            "node_modules/@types"
+        ],
+        "outDir": "dist"
     },
     "include": [
-        "./src/**/*",
-        "./src/assets/@types/discord.d.ts"
-    ]
+        "src"
+    ],
+    "exclude": [
+        "node_modules"
+    ],
+    "extends": "@tsconfig/node18/tsconfig.json"
 }

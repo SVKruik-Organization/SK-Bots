@@ -32,7 +32,7 @@ function log(data: string, rawType: string): boolean {
  * Log error messages to the log file.
  * @param data The error to write to the file.
  */
-function error(data: Error): void {
+function error(data: any): void {
     const logData: string = `${getDate(null, null).time} [ERROR] ${data.stack}\n\n`;
     write(logData);
     console.error(logData);
