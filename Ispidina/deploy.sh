@@ -11,7 +11,7 @@ echo "Git setup complete"
 
 # Ispidina - bots.stefankruik.com/ispidina
 cd Ispidina
-npm install --omit=dev
+npm install
 npm run update 9085
 [ -d logs ] || mkdir logs
 echo "Ispidina update complete"
