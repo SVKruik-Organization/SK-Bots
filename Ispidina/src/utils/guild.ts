@@ -18,7 +18,7 @@ try {
                     if (guild_object) guilds.push(guild_object);
                 }
             }
-        }).catch((error: any) => {
+        }).catch(async (error: any) => {
             logError(error);
             return logMessage("Loading Guild settings went wrong. Aborting.", "fatal");
         });
@@ -141,7 +141,8 @@ async function guildConstructor(guild: GuildUnfetchedFull): Promise<GuildFull | 
  * @param guildId Find a specific indexed Guild by snowflake (id).
  * @returns Discord Guild Object
  */
-export function findGuildById(guildId: string) {
+export function findGuildById(guildId: string | null): GuildFull | undefined {
+    if (!guildId) return undefined;
     return guilds.find((guild) => guild.guild_object.id === guildId);
 }
 

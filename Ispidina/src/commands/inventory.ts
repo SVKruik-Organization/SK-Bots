@@ -1,9 +1,10 @@
-const { SlashCommandBuilder, StringSelectMenuOptionBuilder, StringSelectMenuBuilder, ActionRowBuilder } = require('discord.js');
-const config = require('../config');
-const modules = require('..');
-const dateUtils = require('../utils/date');
-const embedConstructor = require('../utils/embed');
-const logger = require('../utils/logger');
+import { SlashCommandBuilder, StringSelectMenuOptionBuilder, StringSelectMenuBuilder, ActionRowBuilder, ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
+import { cooldowns } from '../config';
+import { database } from '..';
+import { Difference, difference, getDate } from '../utils/date';
+import { create } from '../utils/embed';
+import { logError } from '../utils/logger';
+import { Command } from '../types';
 
 export default {
     cooldown: cooldowns.C,
@@ -46,24 +47,24 @@ export default {
             })),
     async execute(interaction: ChatInputCommandInteraction) {
         try {
-            const actionType = interaction.options.getSubcommand();
+            const actionType: string = interaction.options.getSubcommand();
 
             if (actionType === "activate") {
                 database.query("SELECT xp15, xp50, xp_active, xp_active_expiry AS expiry FROM user_inventory WHERE snowflake = ?", [interaction.user.id])
                     .then(async (data) => {
                         if (data.length === 0) {
-                            return interaction.reply({
+                            return await interaction.reply({
                                 content: "You do not have an account yet. Create an account with the `/register` command.",
                                 ephemeral: true
                             });
                         } else if (data[0].xp_active !== "None") {
-                            const dateDifference = difference(data[0].expiry, getDate(null, null).today);
-                            return interaction.reply({
+                            const dateDifference: Difference = difference(data[0].expiry, getDate(null, null).today);
+                            return await interaction.reply({
                                 content: `You have already activated a XP-Booster (\`${data[0].xp_active}\`), and it expires in approximately \`${dateDifference.remainingHours}\` hours and \`${dateDifference.remainingMinutes}\` minutes.`,
                                 ephemeral: true
                             });
                         }
-                        const select = new StringSelectMenuBuilder()
+                        const select: StringSelectMenuBuilder = new StringSelectMenuBuilder()
                             .setCustomId('activateBoosterMenu')
                             .setPlaceholder('Make a selection.')
                             .addOptions(
@@ -79,54 +80,53 @@ export default {
                         await interaction.deferReply({ ephemeral: true });
                         await interaction.editReply({
                             content: 'Choose what XP-Booster to activate.',
-                            components: [new ActionRowBuilder().addComponents(select)],
-                            ephemeral: true
+                            components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select)]
                         });
-                    }).catch((error: any) => {
+                    }).catch(async (error: any) => {
                         logError(error);
-                        return interaction.reply({
+                        return await interaction.reply({
                             content: 'Something went wrong while retrieving the required information. Please try again later.',
                             ephemeral: true
                         });
                     });
             } else if (actionType === "disable") {
                 database.query("UPDATE user_inventory SET xp_active = 'None', xp_active_expiry = NULL WHERE snowflake = ?", [interaction.user.id])
-                    .then((data) => {
+                    .then(async (data) => {
                         // Validation
-                        if (!data.affectedRows) return interaction.reply({
+                        if (!data.affectedRows) return await interaction.reply({
                             content: "You do not have an account yet. Create an account with the `/register` command.",
                             ephemeral: true
                         });
 
-                        return interaction.reply({
+                        return await interaction.reply({
                             content: "Successfully removed the active XP-Booster, if there was any. To activate a XP-Booster use the \`/inventory active\` command.",
                             ephemeral: true
                         });
-                    }).catch((error: any) => {
+                    }).catch(async (error: any) => {
                         logError(error);
-                        return interaction.reply({
+                        return await interaction.reply({
                             content: 'Something went wrong while retrieving the required information. Please try again later.',
                             ephemeral: true
                         });
                     });
             } else if (actionType === "overview") {
                 database.query("SELECT * FROM user_inventory WHERE snowflake = ?;", [interaction.user.id])
-                    .then((data) => {
-                        if (data.length === 0) return interaction.reply({
+                    .then(async (data) => {
+                        if (data.length === 0) return await interaction.reply({
                             content: "This command requires you to have an account. Create an account with the `/register` command.",
                             ephemeral: true
                         });
 
-                        const embed = embedConstructor.create("Inventory Overview", "Your XP-Boosters and other items.", interaction.user,
+                        const embed: EmbedBuilder = create("Inventory Overview", "Your XP-Boosters and other items.", interaction.user,
                             [
-                                { name: 'Role Colors', value: `\`${data[0].role_cosmetic}\`` },
-                                { name: 'XP +15%', value: `\`${data[0].xp15}\`` },
-                                { name: 'XP +50%', value: `\`${data[0].xp50}\`` }
+                                { name: 'Role Colors', value: `\`${data[0].role_cosmetic}\``, inline: false },
+                                { name: 'XP +15%', value: `\`${data[0].xp15}\``, inline: false },
+                                { name: 'XP +50%', value: `\`${data[0].xp50}\``, inline: false }
                             ], ["shop", "economy", "tier"]);
-                        return interaction.reply({ embeds: [embed], ephemeral: true });
-                    }).catch((error: any) => {
+                        return await interaction.reply({ embeds: [embed], ephemeral: true });
+                    }).catch(async (error: any) => {
                         logError(error);
-                        return interaction.reply({
+                        return await interaction.reply({
                             content: 'Something went wrong while retrieving the required information. Please try again later.',
                             ephemeral: true
                         });
@@ -135,5 +135,6 @@ export default {
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

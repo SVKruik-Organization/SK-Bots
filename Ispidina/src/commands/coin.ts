@@ -1,6 +1,7 @@
-const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config');
-const logger = require('../utils/logger');
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { cooldowns } from '../config';
+import { logError } from '../utils/logger';
+import { Command } from '../types';
 
 export default {
     cooldown: cooldowns.B,
@@ -30,33 +31,32 @@ export default {
             )),
     async execute(interaction: ChatInputCommandInteraction) {
         try {
-            const winningSide = interaction.options.getString('side');
-            const list = ["heads", "tails"];
-            const random = list[Math.floor(Math.random() * list.length)];
+            const winningSide: string = interaction.options.getString("side") as string;
+            const list: Array<string> = ["heads", "tails"];
+            const random: string = list[Math.floor(Math.random() * list.length)];
 
             if (random === "heads") {
-                winningSide === "heads" ? win("Heads") : lose("Heads");
-            } else if (random === "tails") {
-                winningSide === "tails" ? win("Tails") : lose("Tails");
-            }
+                winningSide === "heads" ? await win("Heads") : await lose("Heads");
+            } else if (random === "tails") winningSide === "tails" ? await win("Tails") : await lose("Tails");
 
             /**
              * Response when user wins.
              * @param side The side that has been chosen.
              */
-            function win(side: string) {
-                return interaction.reply({ content: `:coin: ${side}! -- You win. :green_circle:` });
+            async function win(side: string) {
+                return await interaction.reply({ content: `:coin: ${side}! -- You win. :green_circle:` });
             }
 
             /**
              * Response when user loses.
              * @param side The side that has been chosen.
              */
-            function lose(side: string) {
-                return interaction.reply({ content: `:coin: ${side}! -- You lose. :red_circle:` });
+            async function lose(side: string) {
+                return await interaction.reply({ content: `:coin: ${side}! -- You lose. :red_circle:` });
             }
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

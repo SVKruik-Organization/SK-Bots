@@ -1,8 +1,9 @@
-const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config');
-const prettier = require('prettier');
-const guildUtils = require('../utils/guild');
-const logger = require('../utils/logger');
+import { SlashCommandBuilder, ChatInputCommandInteraction, TextBasedChannel } from 'discord.js';
+import { cooldowns } from '../config';
+import prettier from 'prettier';
+import { findGuildById } from '../utils/guild';
+import { logError } from '../utils/logger';
+import { Command } from "../types";
 
 export default {
     cooldown: cooldowns.B,
@@ -61,21 +62,22 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Init
+            if (!interaction.guild) return;
             const targetGuild = findGuildById(interaction.guild.id);
-            if (!targetGuild || !targetGuild.channel_snippet) return interaction.reply({
+            if (!targetGuild || !targetGuild.channel_snippet) return await interaction.reply({
                 content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
                 ephemeral: true
             });
 
             // Setup
-            const channel = targetGuild.channel_snippet;
-            const snowflake = interaction.user.id;
-            const language = interaction.options.getString('language');
-            let code = interaction.options.getString('code');
-            let title = interaction.options.getString('title');
+            const channel: TextBasedChannel = targetGuild.channel_snippet;
+            const snowflake: string = interaction.user.id;
+            const language: string = interaction.options.getString("language") as string;
+            let code: string = interaction.options.getString("code") as string;
+            let title: string = interaction.options.getString("title") as string;
             if (title === undefined || title === null) title = "- Unnamed Snippet";
 
-            let errorStatus = false;
+            let errorStatus: boolean = false;
             if (language === "html" && code.includes("<!--")) {
                 errorStatus = true;
             } else if (language === "html" && code.includes("<!--")) {
@@ -89,7 +91,7 @@ export default {
                 errorStatus = true;
             } else if (language === "sql" && code.includes("--")) errorStatus = true;
 
-            if (errorStatus) return interaction.reply({
+            if (errorStatus) return await interaction.reply({
                 content: `I tried formatting your \`${language}\` code but noticed comments being present. The Prettier formatting API messes up code snippets with inline comments because it cannot see line-breaks.\n\nPlease remove them before sending them. Sorry for this inconvenience. You can also send the code manually with a [Markdown code block](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#code). That's what I do under the hood.`,
                 ephemeral: true
             })
@@ -101,24 +103,25 @@ export default {
                     code = await prettier.format(code, { parser: "sql", plugins: ["prettier-plugin-sql"] })
                 } else code = await prettier.format(code, { semi: false, parser: language });
             } catch (error: any) {
-                return interaction.reply({
+                return await interaction.reply({
                     content: "Something went wrong while parsing your code. Check for syntax errors, and try again.",
                     ephemeral: true
                 });
             }
 
-            let highlight = language;
+            let highlight: string = language;
             if (language === "scss") {
                 highlight = "css";
             } else if (language === "vue") highlight === "html";
 
             await channel.send({ content: `<@${snowflake}> ${title} \`${highlight}\`\n\n\`\`\`${language}\n${code}\n\`\`\`` });
-            return interaction.reply({
+            return await interaction.reply({
                 content: `Message created. Check your code-snippet here: <#${channel.id}>.`,
                 ephemeral: true
             });
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

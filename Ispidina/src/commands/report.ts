@@ -1,8 +1,9 @@
-const { SlashCommandBuilder } = require('discord.js');
-const modules = require('..');
-const config = require('../config');
-const logger = require('../utils/logger');
-const guildUtils = require('../utils/guild');
+import { SlashCommandBuilder, ChatInputCommandInteraction, User } from 'discord.js';
+import { database } from '..';
+import { cooldowns } from '../config';
+import { logError, logMessage } from '../utils/logger';
+import { findGuildById } from '../utils/guild';
+import { Command, GuildFull } from '../types';
 
 export default {
     cooldown: cooldowns.D,
@@ -58,26 +59,28 @@ export default {
             .setMaxLength(1000)),
     async execute(interaction: ChatInputCommandInteraction) {
         try {
-            const snowflake = interaction.user.id;
-            const username = interaction.user.username;
-            const target = interaction.options.getUser('target');
-            const reason = interaction.options.getString('reason');
-            const category = interaction.options.getString('category');
+            if (!interaction.guild) return;
+            const snowflake: string = interaction.user.id;
+            const username: string = interaction.user.username;
+            const target: User = interaction.options.getUser("target") as User;
+            const reason: string = interaction.options.getString("reason") as string;
+            const category: string = interaction.options.getString("category") as string;
 
             database.query("INSERT INTO report (snowflake, snowflake_recv, reason, date, category, guild_snowflake) VALUES (?, ?, ?, CURRENT_TIMESTAMP(), ?, ?);",
                 [snowflake, target.id, reason, category, interaction.guild.id])
-                .then(() => {
-                    const targetGuild = findGuildById(interaction.guild.id);
+                .then(async () => {
+                    if (!interaction.guild) return;
+                    const targetGuild: GuildFull | undefined = findGuildById(interaction.guild.id);
                     if (targetGuild && targetGuild.channel_admin) targetGuild.channel_admin.send({ content: `User <@${interaction.user.id}> has **reported** <@${target.id}> for: \`${reason}\`` });
                     logMessage(`'${username}@${snowflake}' has reported '${target.username}@${target.id}' for ${category}.`, "warning");
 
-                    return interaction.reply({
+                    return await interaction.reply({
                         content: "Thank you for your report. We will have a look at it ASAP.",
                         ephemeral: true
                     });
-                }).catch((error: any) => {
+                }).catch(async (error: any) => {
                     logError(error);
-                    return interaction.reply({
+                    return await interaction.reply({
                         content: "Something went wrong while reporting this user. Please try again later.",
                         ephemeral: true
                     });
@@ -85,5 +88,6 @@ export default {
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

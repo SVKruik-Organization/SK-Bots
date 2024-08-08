@@ -1,6 +1,7 @@
-const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config');
-const logger = require('../utils/logger');
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { cooldowns } from '../config';
+import { logError } from '../utils/logger';
+import { Command } from '../types';
 
 export default {
     cooldown: cooldowns.B,
@@ -27,12 +28,11 @@ export default {
             .setMinValue(2)),
     async execute(interaction: ChatInputCommandInteraction) {
         try {
-            const bound = interaction.options.getInteger('maximum');
-            const random = Math.floor(Math.random() * bound) + 1;
-
-            return interaction.reply({ content: `Random number: \`${random}\`.` });
+            const bound: number = interaction.options.getInteger("maximum") as number;
+            return await interaction.reply({ content: `Random number: \`${Math.floor(Math.random() * bound) + 1}\`.` });
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

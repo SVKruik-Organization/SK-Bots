@@ -1,6 +1,7 @@
-const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config');
-const logger = require('../utils/logger');
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { cooldowns } from '../config';
+import { logError } from '../utils/logger';
+import { Command } from '../types';
 
 export default {
     cooldown: cooldowns.B,
@@ -32,14 +33,14 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Setup
-            const userChoice = interaction.options.getString('type');
-            let reply = "I chose: ";
-            const choicesString = ["rock", "paper", "scissors"];
-            const choicesEmoji = ["🪨", "📃", "✂️"];
-            const botChoice = Math.floor(Math.random() * choicesString.length);
+            const userChoice: string = interaction.options.getString("type") as string;
+            let reply: string = "I chose: ";
+            const choicesString: Array<string> = ["rock", "paper", "scissors"];
+            const choicesEmoji: Array<string> = ["🪨", "📃", "✂️"];
+            const botChoice: number = Math.floor(Math.random() * choicesString.length);
 
             // Tie
-            if (userChoice === choicesString[botChoice]) return interaction.reply({ content: `I chose: ${choicesEmoji[botChoice]} - It's a tie!` });
+            if (userChoice === choicesString[botChoice]) return await interaction.reply({ content: `I chose: ${choicesEmoji[botChoice]} - It's a tie!` });
 
             // Rock
             if (choicesString[botChoice] === "rock") {
@@ -63,9 +64,10 @@ export default {
                 } else if (userChoice === "rock") reply += "- You win!";
             }
 
-            return interaction.reply({ content: reply });
+            return await interaction.reply({ content: reply });
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

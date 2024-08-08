@@ -1,12 +1,13 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, ButtonStyle } = require('discord.js');
-const config = require('../config');
-const { EmbedBuilder } = require('discord.js');
-const guildUtils = require('../utils/guild');
-const modules = require('..');
-const ticket = require('../utils/ticket');
-const logger = require('../utils/logger');
-const { time } = require('@discordjs/formatters');
-const { datetimeParser } = require('../utils/date');
+import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, ButtonStyle, ChatInputCommandInteraction, TextBasedChannel } from 'discord.js';
+import { cooldowns, colors, general } from '../config';
+import { EmbedBuilder } from 'discord.js';
+import { findGuildById } from '../utils/guild';
+import { database } from '..';
+import { createTicket } from '../utils/ticket';
+import { logError } from '../utils/logger';
+import { time } from '@discordjs/formatters';
+import { datetimeParser } from '../utils/date';
+import { Command, GuildFull } from '../types';
 
 export default {
     cooldown: cooldowns.D,
@@ -155,39 +156,41 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Init
-            const targetGuild = findGuildById(interaction.guild.id);
-            const eventType = interaction.options.getSubcommand();
-            if (!targetGuild || !targetGuild.channel_event) return interaction.reply({
+            if (!interaction.guild) return;
+            const targetGuild: GuildFull | undefined = findGuildById(interaction.guild.id);
+            if (!targetGuild || !targetGuild.channel_event) return await interaction.reply({
                 content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
                 ephemeral: true
             });
+            const eventType: string = interaction.options.getSubcommand();
+
 
             // Inputs
-            const title = interaction.options.getString('title');
-            const description = interaction.options.getString('description');
-            const channel = targetGuild.channel_event;
-            const username = interaction.user.username;
-            const pfp = interaction.user.avatarURL();
-            const newTicket = ticket.createTicket();
+            const title: string = interaction.options.getString("title") as string;
+            const description: string = interaction.options.getString("description") as string;
+            const channel: TextBasedChannel = targetGuild.channel_event;
+            const username: string = interaction.user.username;
+            const pfp: string = interaction.user.avatarURL() as string;
+            const newTicket: string = createTicket();
 
             // Date Processing & Validation
-            const rawDate = interaction.options.getString('date');
-            const rawTime = interaction.options.getString('time');
-            const fullDate = datetimeParser(rawDate, rawTime);
-            if (typeof fullDate === "boolean") return interaction.reply({ content: "Your date or time input is invalid. Please check your inputs try again. Also note that the event date must be into the future.", ephemeral: true });
+            const rawDate: string = interaction.options.getString("date") as string;
+            const rawTime: string = interaction.options.getString("time") as string;
+            const fullDate: Date | boolean = datetimeParser(rawDate, rawTime);
+            if (typeof fullDate === "boolean") return await interaction.reply({ content: "Your date or time input is invalid. Please check your inputs try again. Also note that the event date must be into the future.", ephemeral: true });
 
             const onlineBoolean = eventType === "online";
-            const location = eventType === "online" ? interaction.options.getChannel("location").id : interaction.options.getString("location");
+            const location: string = (eventType === "online" ? interaction.options.getChannel("location")?.id : interaction.options.getString("location")) as string;
             database.query("INSERT INTO event (ticket, guild_snowflake, creator_snowflake, title, description, location, date_start, online, scheduled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0);", [newTicket, interaction.guild.id, interaction.user.id, title, description, location, fullDate, onlineBoolean])
-                .then(() => {
+                .then(async () => {
                     // Sign Up Button
-                    const signUpButton = new ButtonBuilder()
+                    const signUpButton: ButtonBuilder = new ButtonBuilder()
                         .setCustomId(`eventSignUp_${newTicket}`)
                         .setLabel(`Sign Up`)
                         .setStyle(ButtonStyle.Primary);
 
                     // Success Confirmation
-                    const embed = new EmbedBuilder()
+                    const embed: EmbedBuilder = new EmbedBuilder()
                         .setColor(colors.bot)
                         .setTitle(title)
                         .setAuthor({ name: username, iconURL: pfp })
@@ -198,14 +201,14 @@ export default {
                         .addFields({ name: "-----", value: 'Meta' })
                         .setTimestamp()
                         .setFooter({ text: `Embed created by ${general.name}` });
-                    channel.send({ embeds: [embed], components: [new ActionRowBuilder().addComponents(signUpButton)] });
-                    return interaction.reply({
+                    channel.send({ embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents(signUpButton)] });
+                    return await interaction.reply({
                         content: `Event created. Check your event here: <#${channel.id}>.`,
                         ephemeral: true
                     });
-                }).catch((error: any) => {
+                }).catch(async (error: any) => {
                     logError(error);
-                    return interaction.reply({
+                    return await interaction.reply({
                         content: "Something went wrong while creating your event. Please try again later.",
                         ephemeral: true
                     });
@@ -213,5 +216,6 @@ export default {
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

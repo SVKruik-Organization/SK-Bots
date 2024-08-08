@@ -142,7 +142,7 @@ async function modalInputHandler(interaction) {
                             userIncreaseHandler.increaseXp(interaction, xpReward);
 
                             // History
-                            const historyResponse = await purchaseHistory.post(total, product, amount, "Shop Command Purchase", interaction, remaining, interaction);
+                            const historyResponse = await purchaseHistory.post(total, product, amount, "Shop Command Purchase", interaction, remaining);
                             if (historyResponse) {
                                 interaction.reply({
                                     content: `All set! Thank you so much for your purchase! Your new Wallet balance is \`${remaining}\` Bits.${product.indexOf("xp") >= 0 ? " Remember that you have to activate XP-Boosters for them to work. You can do this by using the \`/inventory activate\` command." : ""}`,

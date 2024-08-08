@@ -4,6 +4,7 @@ import { initEventHandler } from './handlers/eventHandler';
 import { initCommandHandler } from './handlers/commandHandler';
 import { Command } from './types';
 import { Collection, Client as DiscordClient, GatewayIntentBits, Partials } from 'discord.js';
+require('events').EventEmitter.prototype._maxListeners = 20;
 
 interface CustomClientProperties {
     commands: Collection<string, Command>;

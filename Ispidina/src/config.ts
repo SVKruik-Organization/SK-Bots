@@ -36,7 +36,9 @@ export enum economy {
 
 // Interaction Experience Rewards
 export enum tier {
-    normalMessage = 5,
+    react = 1,
+    poll = 3,
+    message = 5,
     slashCommand = 15,
     purchase = 25
 };

@@ -1,8 +1,9 @@
-const { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, SlashCommandBuilder } = require('discord.js');
-const config = require('../config');
-const userUtils = require('../utils/user');
-const logger = require('../utils/logger');
-const modules = require('..');
+import { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, SlashCommandBuilder, ChatInputCommandInteraction, User } from 'discord.js';
+import { cooldowns, urls } from '../config';
+import { checkOperator } from '../utils/user';
+import { logError } from '../utils/logger';
+import { database } from '..';
+import { Command, OperatorCheck } from '../types';
 
 export default {
     cooldown: cooldowns.C,
@@ -47,25 +48,25 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
-            const operatorData = await userUtils.checkOperator(interaction);
+            const operatorData: OperatorCheck = await checkOperator(interaction);
             if (!operatorData.hasPermissions) return;
 
             // Setup
-            const actionType = interaction.options.getSubcommand();
-            const targetMember = interaction.options.getUser("target");
-            if (targetMember && targetMember.id === interaction.user.id) return interaction.reply({
+            const actionType: string = interaction.options.getSubcommand();
+            const targetMember: User = interaction.options.getUser("target", true);
+            if (targetMember && targetMember.id === interaction.user.id) return await interaction.reply({
                 content: `You cannot ${actionType} yourself ${actionType === "add" ? "to" : "from"} a team that you are already a member of via commands. To transfer ownership and use other advanced operations, please use the [SK Commander](${urls.skCommander}) application or the [website](${urls.website}).`,
                 ephemeral: true
             });
 
             database.query("SELECT et.team_tag, et.edition, username FROM operator_team et LEFT JOIN operator_member em ON et.team_tag = em.team_tag LEFT JOIN operator_member em2 ON em.team_tag = em2.team_tag LEFT JOIN operator ON em2.snowflake = operator.snowflake WHERE em.snowflake = ? AND em2.team_owner = 1;", interaction.user.id)
                 .then(async (data) => {
-                    if (!data.length) return interaction.reply({
+                    if (!data.length) return await interaction.reply({
                         content: `You are not in any teams right now. You can join a team when you get invited, or create a new one yourself on the [website](${urls.website}).`,
                         ephemeral: true
                     });
 
-                    const stringOptions = [];
+                    const stringOptions: Array<StringSelectMenuOptionBuilder> = [];
                     for (let i = 0; i < data.length; i++) {
                         stringOptions.push(new StringSelectMenuOptionBuilder()
                             .setLabel(`Team ${data[i].team_tag}`)
@@ -73,21 +74,20 @@ export default {
                             .setValue(`operatorTeamSelect-${data[i].team_tag}-${actionType}-${targetMember ? targetMember.id : null}`));
                     }
 
-                    const select = new StringSelectMenuBuilder()
+                    const select: StringSelectMenuBuilder = new StringSelectMenuBuilder()
                         .setCustomId('operatorSelectMenu')
                         .setPlaceholder('Make a selection.')
                         .addOptions(stringOptions);
 
-                    const replyContent = (actionType === "overview" ? "Select which team you want to view the overview of." : `Select for which team you want to manage <@${targetMember.id}>.`);
+                    const replyContent: string = (actionType === "overview" ? "Select which team you want to view the overview of." : `Select for which team you want to manage <@${targetMember.id}>.`);
                     await interaction.deferReply({ ephemeral: true });
                     await interaction.editReply({
                         content: `${replyContent} Note that you have to be the owner of the team in order to perform this action.`,
-                        components: [new ActionRowBuilder().addComponents(select)],
-                        ephemeral: true
+                        components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select)]
                     });
-                }).catch((error: any) => {
+                }).catch(async (error: any) => {
                     logError(error);
-                    return interaction.reply({
+                    return await interaction.reply({
                         content: "Something went wrong while retrieving your teams. Please try again later.",
                         ephemeral: true
                     });
@@ -95,5 +95,6 @@ export default {
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

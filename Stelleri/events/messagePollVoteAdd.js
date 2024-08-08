@@ -20,7 +20,6 @@ module.exports = {
                     "id": event.message.guildId
                 }
             }, xpReward);
-            console.log(user.username, xpReward);
         } catch (error) {
             logger.error(error);
         }

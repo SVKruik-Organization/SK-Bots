@@ -1,4 +1,4 @@
-import { ButtonInteraction, ModalSubmitInteraction, StringSelectMenuInteraction } from 'discord.js';
+import { ActionRow, ButtonInteraction, ComponentType, MessageActionRowComponent, ModalSubmitInteraction, StringSelectMenuInteraction } from 'discord.js';
 
 import { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { database } from '..';
@@ -14,10 +14,11 @@ import { findGuildById } from '../utils/guild';
  */
 export async function shopOptions(interaction: StringSelectMenuInteraction) {
     try {
-        database.query("SELECT * FROM guild_settings WHERE guild_snowflake = ?", [interaction.guild?.id])
+        if (!interaction.guild) return;
+        database.query("SELECT * FROM guild_settings WHERE guild_snowflake = ?", [interaction.guild.id])
             .then(async (data) => {
                 // Send Purchase Options
-                const select = new StringSelectMenuBuilder()
+                const select: StringSelectMenuBuilder = new StringSelectMenuBuilder()
                     .setCustomId('shopBuyMenu')
                     .setPlaceholder('Make a selection.')
                     .addOptions(new StringSelectMenuOptionBuilder()
@@ -33,16 +34,14 @@ export async function shopOptions(interaction: StringSelectMenuInteraction) {
                         .setDescription(`Temporary XP-boost on all gained Experience. Cost: ${data[0].xp50} Bits`)
                         .setValue('xp50'));
 
-                await interaction.update({
+                return await interaction.update({
                     content: 'Sure! What would you like to purchase?',
-                    components: [new ActionRowBuilder().addComponents(select)],
-                    ephemeral: true
+                    components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select)]
                 });
-            }).catch((error: any) => {
+            }).catch(async (error: any) => {
                 logError(error);
-                return interaction.update({
-                    content: "Something went wrong while retrieving the required information. Please try again later.",
-                    ephemeral: true
+                return await interaction.update({
+                    content: "Something went wrong while retrieving the required information. Please try again later."
                 });
             });
     } catch (error: any) {
@@ -62,10 +61,9 @@ export async function purchaseOptions(interaction: StringSelectMenuInteraction, 
         .setLabel(`Buy ${purchaseOption}`)
         .setStyle(ButtonStyle.Success);
 
-    await interaction.update({
+    return await interaction.update({
         content: 'Thank you for your selection. Click this button to fill in the quantity.',
-        components: [new ActionRowBuilder().addComponents(button)],
-        ephemeral: true
+        components: [new ActionRowBuilder<ButtonBuilder>().addComponents(button)]
     });
 }
 
@@ -75,7 +73,7 @@ export async function purchaseOptions(interaction: StringSelectMenuInteraction, 
  * @param product The selected product.
  */
 export async function modal(interaction: ButtonInteraction, product: string) {
-    const modal = new ModalBuilder()
+    const modal: ModalBuilder = new ModalBuilder()
         .setCustomId('shopBuyModal')
         .setTitle(`Shop Purchase - ${product}`);
 
@@ -88,7 +86,7 @@ export async function modal(interaction: ButtonInteraction, product: string) {
         .setRequired(true)
         .setStyle(TextInputStyle.Short)
         .setPlaceholder("Amount of items you would like to purchase.");
-    const firstActionRow = new ActionRowBuilder().addComponents(amountInput);
+    const firstActionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(amountInput);
 
     // Show
     modal.addComponents(firstActionRow);
@@ -102,13 +100,19 @@ export async function modal(interaction: ButtonInteraction, product: string) {
 export async function modalInputHandler(interaction: ModalSubmitInteraction) {
     try {
         const amount: number = parseInt(interaction.fields.getTextInputValue('shopModalAmount'));
-        const product = interaction.message.components[0].components[0].label.split(" ")[1];
-        if (isNaN(amount)) return interaction.update({ content: 'The amount of items you would like to buy should be a number. Please try again.', ephemeral: true });
-        if (amount < 1) return interaction.update({ content: 'You must buy atleast one item. Please try again.', ephemeral: true });
+        if (!interaction.message || !interaction.guild) return;
+
+        const actionRow: ActionRow<MessageActionRowComponent> = interaction.message.components[0];
+        const button: MessageActionRowComponent = actionRow.components[0];
+        const label: string | null = button.type === ComponentType.Button ? button.label : null;
+        if (!label) return;
+        const product = label.split(" ")[1];
+        if (isNaN(amount)) return await interaction.editReply({ content: 'The amount of items you would like to buy should be a number. Please try again.' });
+        if (amount < 1) return await interaction.editReply({ content: 'You must buy atleast one item. Please try again.' });
 
         database.query("SELECT xp15, xp50, role_cosmetic_price, wallet, bank, (wallet + bank) AS total FROM guild_settings LEFT JOIN economy ON 1 = 1 WHERE guild_settings.guild_snowflake = ? AND economy.snowflake = ?;", [interaction.guild.id, interaction.user.id])
-            .then((pricingData) => {
-                if (pricingData.length === 0) return interaction.reply({
+            .then(async (pricingData) => {
+                if (pricingData.length === 0) return await interaction.reply({
                     content: "This command requires you to have an account. Create an account with the `/register` command.",
                     ephemeral: true
                 });
@@ -120,7 +124,7 @@ export async function modalInputHandler(interaction: ModalSubmitInteraction) {
                 if (total > pricingData[0].wallet) {
                     let additionalMessage = "";
                     if (total < pricingData[0].total) additionalMessage = ` I did have look at your Bank account, and turns out you do have enough if you would withdraw some Bits. You have \`${pricingData[0].wallet}\` Bits inside your Wallet, and \`${pricingData[0].bank}\` Bits inside your bank account. If you would like to do this, use the \`/economy withdraw\` command, and transfer atleast \`${total - pricingData[0].wallet}\` Bits.`;
-                    return interaction.reply({
+                    return await interaction.reply({
                         content: `You do not have enough Bits in your Wallet account (\`${pricingData[0].wallet}\`) to complete this purchase with a total cost of \`${total}\` Bits.${additionalMessage}`,
                         ephemeral: true
                     });
@@ -128,7 +132,7 @@ export async function modalInputHandler(interaction: ModalSubmitInteraction) {
                     database.query("UPDATE economy SET wallet = wallet - ? WHERE snowflake = ?;", [total, interaction.user.id])
                         .then(async (data) => {
                             // Validation
-                            if (!data.affectedRows) return interaction.reply({
+                            if (!data.affectedRows) return await interaction.reply({
                                 content: "This command requires you to have an account. Create an account with the `/register` command.",
                                 ephemeral: true
                             });
@@ -146,25 +150,25 @@ export async function modalInputHandler(interaction: ModalSubmitInteraction) {
                             // History
                             const historyResponse = await post(total, product, amount, "Shop Command Purchase", interaction, remaining);
                             if (historyResponse) {
-                                return interaction.reply({
+                                return await interaction.reply({
                                     content: `All set! Thank you so much for your purchase! Your new Wallet balance is \`${remaining}\` Bits.${product.indexOf("xp") >= 0 ? " Remember that you have to activate XP-Boosters for them to work. You can do this by using the \`/inventory activate\` command." : ""}`,
                                     ephemeral: true
                                 });
-                            } else return interaction.reply({
+                            } else return await interaction.reply({
                                 content: "Something went wrong while updating your shopping history. You have not been charged. Please try again later.",
                                 ephemeral: true
                             });
-                        }).catch((error: any) => {
+                        }).catch(async (error: any) => {
                             logError(error);
-                            return interaction.reply({
+                            return await interaction.reply({
                                 content: "Something went wrong while updating your information. You have not been charged. Please try again later.",
                                 ephemeral: true
                             });
                         });
                 }
-            }).catch((error: any) => {
+            }).catch(async (error: any) => {
                 logError(error);
-                return interaction.reply({
+                return await interaction.reply({
                     content: "Something went wrong while retrieving the required information. Please try again later.",
                     ephemeral: true
                 })

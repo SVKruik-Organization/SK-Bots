@@ -1,29 +1,31 @@
-const { Events } = require('discord.js');
-const modules = require('../index');
-const config = require('../config');
-const userIncreaseHandler = require('../handlers/userIncreaseHandler');
-const guildUtils = require('../utils/guild');
-const { handleAcknowledge } = require('../handlers/dmCommandHandler');
+import { Client, Events, Guild, Interaction, Message } from 'discord.js';
+import { customClient } from '..';
+import { tier } from '../config';
+import { increaseXp } from '../handlers/userIncreaseHandler';
+import { findGuildById } from '../utils/guild';
+import { handleAcknowledge } from '../handlers/dmCommandHandler';
+import { BotEvent } from '../types';
 
 export default {
     name: Events.MessageCreate,
-    execute(message) {
+    once: false,
+    async execute(message: Message) {
         // Validation
         if (message.author.bot) return;
 
         // Message inside Server/Guild
-        if (message.guildId) {
+        if (message.guild) {
             const targetGuild = findGuildById(message.guild.id);
             let xpReward = tier.message;
             if (targetGuild && targetGuild.xp_increase_message) xpReward = targetGuild.xp_increase_message;
-            userIncreaseHandler.increaseXp({
+            const guild: Guild = { "id": message.guild.id } as Guild;
+            const interaction: Interaction = {
                 "user": message.author,
-                "client": customClient,
+                "client": customClient as Client<true>,
                 "channelId": message.channelId,
-                "guild": {
-                    "id": message.guild.id
-                }
-            }, xpReward);
+                "guild": guild
+            } as Interaction
+            increaseXp(interaction, xpReward);
 
             // Message inside DM
         } else {
@@ -33,8 +35,8 @@ export default {
                     handleAcknowledge(message);
                     break;
                 default:
-                    return message.reply({ content: `Hello there <@${message.author.id}>, \`${message.content}\` is not a valid DM command.` });
+                    return await message.reply({ content: `Hello there <@${message.author.id}>, \`${message.content}\` is not a valid DM command.` });
             }
         }
     }
-};
+} satisfies BotEvent;

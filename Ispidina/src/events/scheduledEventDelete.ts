@@ -1,13 +1,15 @@
-const { Events } = require('discord.js');
-const modules = require('../index');
-const logger = require('../utils/logger');
+import { Events, GuildScheduledEvent } from "discord.js";
+import { database } from '..';
+import { logError, logMessage } from '../utils/logger';
+import { BotEvent } from '../types';
 
 export default {
     name: Events.GuildScheduledEventDelete,
-    async execute(event) {
+    once: false,
+    async execute(event: GuildScheduledEvent) {
         database.query("DELETE FROM event WHERE payload = ?;", event.id)
-            .then(() => {
+            .then(async () => {
                 logMessage(`Deleted scheduled event '${event.name}'@'${event.id}' for Guild '${event.guildId}'.`, "info")
-            }).catch((error) => logError(error));
+            }).catch(async (error) => logError(error));
     }
-};
+} satisfies BotEvent;

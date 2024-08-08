@@ -1,7 +1,8 @@
-const { SlashCommandBuilder } = require('discord.js');
-const modules = require('..');
-const config = require('../config');
-const logger = require('../utils/logger');
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { database } from '..';
+import { cooldowns } from '../config';
+import { logError } from '../utils/logger';
+import { Command } from '../types';
 
 export default {
     cooldown: cooldowns.D,
@@ -29,26 +30,26 @@ export default {
             .setMinLength(4)),
     async execute(interaction: ChatInputCommandInteraction) {
         try {
-            const snowflake = interaction.user.id;
-            const username = interaction.user.username;
-            const pincode = interaction.options.getString('pincode');
+            const snowflake: string = interaction.user.id;
+            const username: string = interaction.user.username;
+            const pincode: string = interaction.options.getString("pincode") as string;
 
             database.query("INSERT INTO user_general (snowflake, username, pincode) VALUES (?, ?, ?); INSERT INTO tier (snowflake) VALUES (?); INSERT INTO economy (snowflake) VALUES (?); INSERT INTO user_inventory (snowflake) VALUES (?); INSERT INTO user_commands (snowflake) VALUES (?);",
                 [snowflake, username, pincode, snowflake, snowflake, snowflake, snowflake])
-                .then(() => {
-                    return interaction.reply({
+                .then(async () => {
+                    return await interaction.reply({
                         content: "Thank you for your registration! You can now use all commands.",
                         ephemeral: true
                     });
-                }).catch((error: any) => {
+                }).catch(async (error: any) => {
                     if (error.code === "ER_DUP_ENTRY") {
-                        return interaction.reply({
+                        return await interaction.reply({
                             content: "You already have an account. Display your statistics with `/economy` and `/tier`.",
                             ephemeral: true
                         });
                     } else {
                         logError(error)
-                        return interaction.reply({
+                        return await interaction.reply({
                             content: "Something went wrong while registering your account. Please try again later.",
                             ephemeral: true
                         });
@@ -57,5 +58,6 @@ export default {
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

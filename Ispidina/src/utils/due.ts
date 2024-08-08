@@ -13,7 +13,7 @@ let dueDates: Array<DueDate> = [];
  */
 try {
     database.query("SELECT T.snowflake, T.expiry, T.description, T.data FROM (SELECT snowflake, xp_active_expiry AS expiry, xp_active AS description, NULL AS data FROM user_inventory UNION ALL SELECT snowflake, daily_expiry, 'daily', null FROM user_general UNION ALL SELECT snowflake, date_start, 'event', event_ticket FROM event LEFT JOIN event_attendee ON event_attendee.event_ticket = event.ticket WHERE date_start > NOW()) AS T WHERE T.expiry IS NOT NULL;")
-        .then((data: Array<DueDate>) => {
+        .then(async (data: Array<DueDate>) => {
             const newDueDates: Array<DueDate> = [];
             for (let i = 0; i <= data.length; i++) {
                 if (i === data.length) {
@@ -22,7 +22,7 @@ try {
                     enableWatcher();
                 } else dueDates.push(dueDateConstructor(data[i]));
             }
-        }).catch((error: any) => {
+        }).catch(async (error: any) => {
             logError(error);
             logMessage("Loading due dates went wrong. Aborting.", "fatal");
         });
@@ -52,7 +52,7 @@ function dueAdd(interaction: ChatInputCommandInteraction | ButtonInteraction, ty
         // Daily Reward Collection
         if (type === "daily") {
             database.query("UPDATE user_general SET daily_expiry = DATE_ADD(NOW(), INTERVAL 1 DAY) WHERE snowflake = ?;", [interaction.user.id])
-                .then((data) => {
+                .then(async (data) => {
                     // Validation
                     if (!data.affectedRows) return logMessage(`Could not update due date, as user '${interaction.user.id}' does not have an account yet.`, "warning");
 
@@ -64,7 +64,7 @@ function dueAdd(interaction: ChatInputCommandInteraction | ButtonInteraction, ty
                         "description": type,
                         "data": data
                     });
-                }).catch((error: any) => {
+                }).catch(async (error: any) => {
                     logError(error);
                     return logMessage("Something went wrong while updating due dates.", "warning");
                 });

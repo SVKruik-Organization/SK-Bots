@@ -4,9 +4,11 @@ import { logError, logMessage } from '../utils/logger';
 import { customClient, database } from '..';
 import { guilds } from '../utils/guild';
 import { findUserById } from '../utils/user';
+import { BotEvent } from '../types';
 
 export default {
     name: Events.GuildCreate,
+    once: false,
     async execute(guild: Guild) {
         try {
             const fetchedGuild = await customClient.guilds.fetch(guild.id);
@@ -33,7 +35,7 @@ export default {
                 });
             } else await botColorRole.setPosition(fetchedGuild.roles.cache.size + 1);
             guild.members.fetch(general.clientId)
-                .then((user) => user.roles.add(botColorRole))
+                .then(async (user) => user.roles.add(botColorRole))
                 .catch((error) => {
                     if (error.status !== 403) logError(error);
                 });
@@ -93,7 +95,7 @@ export default {
 
             // New Data
             database.query("INSERT INTO guild (snowflake, name, role_blinded, role_support, channel_ticket) VALUES (?, ?, ?, ?); INSERT INTO guild_settings (guild_snowflake) VALUES (?); UPDATE bot SET guild_created = guild_created + 1 WHERE name = ?;", [guild.id, guild.name, blindedRole.id, supportRole.id, channel_ticket.id, guild.id, general.name])
-                .then(() => logMessage(`${general.name} just joined a new Guild: '${guild.name}@${guild.id}'. Successfully generated data.`, "info"))
+                .then(async () => logMessage(`${general.name} just joined a new Guild: '${guild.name}@${guild.id}'. Successfully generated data.`, "info"))
                 .catch((error) => {
                     if (error.code === "ER_DUP_ENTRY") {
                         logMessage(`Database data for Guild '${guild.name}@${guild.id}' was already present, but (re)generated roles.`, "info");
@@ -152,4 +154,4 @@ export default {
             });
         }
     }
-};
+} satisfies BotEvent;

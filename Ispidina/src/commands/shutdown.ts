@@ -1,7 +1,8 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const config = require('../config');
-const modules = require('..');
-const logger = require('../utils/logger');
+import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction } from 'discord.js';
+import { cooldowns, general } from '../config';
+import { database } from '..';
+import { logError, logMessage } from '../utils/logger';
+import { Command } from "../types";
 
 export default {
     cooldown: cooldowns.A,
@@ -19,7 +20,7 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
-            if (interaction.user.id !== general.authorId) return interaction.reply({
+            if (interaction.user.id !== general.authorId) return await interaction.reply({
                 content: `This command is reserved for my developer, <@${general.authorId}>, only. If you are experiencing problems with (one of) the commands, please contact him.`,
                 ephemeral: true
             });
@@ -28,10 +29,11 @@ export default {
             await database.end();
             logMessage("Terminated database connection. Shutting down.", "alert");
 
-            await return interaction.reply({ content: `${general.name} is logging off. Bye!` });
+            await interaction.reply({ content: `${general.name} is logging off. Bye!` });
             setTimeout(() => process.exit(0), 1000);
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

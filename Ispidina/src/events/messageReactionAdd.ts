@@ -1,28 +1,29 @@
-const { Events } = require('discord.js');
-const logger = require('../utils/logger');
-const modules = require('..');
-const config = require('../config');
-const guildUtils = require('../utils/guild');
-const userIncreaseHandler = require('../handlers/userIncreaseHandler');
+import { Client, Events, Guild, Interaction, MessageReaction, User } from 'discord.js';
+import { logError } from '../utils/logger';
+import { customClient } from '..';
+import { tier } from '../config';
+import { findGuildById } from '../utils/guild';
+import { increaseXp } from '../handlers/userIncreaseHandler';
+import { BotEvent } from '../types';
 
 export default {
     name: Events.MessageReactionAdd,
-    execute(event, user) {
+    once: false,
+    execute(event: MessageReaction, user: User) {
         try {
             const targetGuild = findGuildById(event.message.guildId);
             let xpReward = tier.react;
             if (targetGuild && targetGuild.xp_increase_reaction) xpReward = targetGuild.xp_increase_reaction;
-            userIncreaseHandler.increaseXp({
+            const guild: Guild = { "id": event.message.guildId } as Guild;
+            const interaction: Interaction = {
                 "user": user,
-                "client": customClient,
+                "client": customClient as Client<true>,
                 "channelId": event.message.channelId,
-                "guild": {
-                    "id": event.message.guildId
-                }
-            }, xpReward);
-            console.log(user.username, xpReward);
+                "guild": guild
+            } as Interaction
+            increaseXp(interaction, xpReward);
         } catch (error: any) {
             logError(error);
         }
     }
-};
+} satisfies BotEvent;

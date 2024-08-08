@@ -1,8 +1,9 @@
-const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config');
-const { EmbedBuilder } = require('discord.js');
-const guildUtils = require('../utils/guild');
-const logger = require('../utils/logger');
+import { SlashCommandBuilder, ChatInputCommandInteraction, TextBasedChannel, Message } from 'discord.js';
+import { cooldowns, colors, general } from '../config';
+import { EmbedBuilder } from 'discord.js';
+import { findGuildById } from '../utils/guild';
+import { logError } from '../utils/logger';
+import { Command, GuildFull } from "../types";
 
 export default {
     cooldown: cooldowns.C,
@@ -41,20 +42,21 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Init
-            const targetGuild = findGuildById(interaction.guild.id);
-            if (!targetGuild || !targetGuild.channel_suggestion) return interaction.reply({
+            if (!interaction.guild) return;
+            const targetGuild: GuildFull | undefined = findGuildById(interaction.guild.id);
+            if (!targetGuild || !targetGuild.channel_suggestion) return await interaction.reply({
                 content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
                 ephemeral: true
             });
 
             // Setup
-            const channel = targetGuild.channel_suggestion;
-            const title = interaction.options.getString('title');
-            const description = interaction.options.getString('description');
-            const username = interaction.user.username;
-            const pfp = interaction.user.avatarURL();
+            const channel: TextBasedChannel = targetGuild.channel_suggestion;
+            const title: string = interaction.options.getString("title") as string;
+            const description: string = interaction.options.getString("description") as string;
+            const username: string = interaction.user.username;
+            const pfp: string = interaction.user.avatarURL() as string;
 
-            const embed = new EmbedBuilder()
+            const embed: EmbedBuilder = new EmbedBuilder()
                 .setColor(colors.bot)
                 .setTitle(`New Suggestion: ${title}`)
                 .setAuthor({ name: username, iconURL: pfp })
@@ -62,15 +64,16 @@ export default {
                 .addFields({ name: "-----", value: 'Meta' })
                 .setTimestamp()
                 .setFooter({ text: `Embed created by ${general.name}` });
-            const embedMessage = await channel.send({ embeds: [embed] });
+            const embedMessage: Message<boolean> = await channel.send({ embeds: [embed] });
             await embedMessage.react('🟢');
             await embedMessage.react('🔴');
-            return interaction.reply({
+            return await interaction.reply({
                 content: `Message created. Check your event here: <#${channel.id}>.`,
                 ephemeral: true
             });
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

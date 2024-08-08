@@ -1,4 +1,4 @@
-import { ButtonInteraction, ChatInputCommandInteraction, Message } from 'discord.js';
+import { ButtonInteraction, ChatInputCommandInteraction, InteractionResponse } from 'discord.js';
 import { database } from '..';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { logError } from '../utils/logger';
@@ -7,7 +7,7 @@ import { logError } from '../utils/logger';
  * Send a pair of confirmation buttons.
  * @param interaction Discord Interaction Object
  */
-export function sendConfirmButtons(interaction: ChatInputCommandInteraction): Promise<Message> {
+export async function sendConfirmButtons(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
     const cancel: ButtonBuilder = new ButtonBuilder()
         .setCustomId('cancelAccountClose')
         .setLabel("Cancel")
@@ -17,9 +17,9 @@ export function sendConfirmButtons(interaction: ChatInputCommandInteraction): Pr
         .setLabel("Close Account")
         .setStyle(ButtonStyle.Danger);
 
-    return interaction.reply({
+    return await interaction.reply({
         content: 'Everything is ready. Are you sure you want to close your account? You will lose all your data (purchase history, Bits, Level, etcetera).',
-        components: [new ActionRowBuilder().addComponents(cancel, confirm)],
+        components: [new ActionRowBuilder<ButtonBuilder>().addComponents(cancel, confirm)],
         ephemeral: true
     });
 }
@@ -30,24 +30,21 @@ export function sendConfirmButtons(interaction: ChatInputCommandInteraction): Pr
  */
 export function confirmAccountClose(interaction: ButtonInteraction): void {
     database.query("DELETE FROM user_general WHERE snowflake = ?;", [interaction.user.id])
-        .then((data) => {
-            if (!data.affectedRows) return interaction.update({
+        .then(async (data) => {
+            if (!data.affectedRows) return await interaction.update({
                 content: "This command requires you to have an account. Create an account with the `/register` command.",
-                components: [],
-                ephemeral: true
+                components: []
             });
 
-            interaction.update({
+            return await interaction.update({
                 content: "Your account has been successfully closed. If you ever change your mind, you can always create a new account with the `/register` command. Cya!",
-                components: [],
-                ephemeral: true
+                components: []
             });
-        }).catch((error: any) => {
+        }).catch(async (error: any) => {
             logError(error);
-            return interaction.update({
+            return await interaction.update({
                 content: "Something went wrong while closing your account. Please try again later.",
-                components: [],
-                ephemeral: true
+                components: []
             });
         });
 }
@@ -56,10 +53,9 @@ export function confirmAccountClose(interaction: ButtonInteraction): void {
  * Cancel account deletion.
  * @param interaction Discord Interaction Object
  */
-export function cancelAccountClose(interaction: ButtonInteraction): void {
-    return interaction.update({
+export async function cancelAccountClose(interaction: ButtonInteraction): Promise<InteractionResponse> {
+    return await interaction.update({
         content: `Phew! Almost thought I lost you there. If you have questions or concerns, don't hesitate to contact moderation.`,
-        components: [],
-        ephemeral: true
+        components: []
     });
 }

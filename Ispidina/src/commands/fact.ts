@@ -1,7 +1,8 @@
-const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config');
-const { EmbedBuilder } = require('discord.js');
-const logger = require('../utils/logger');
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { cooldowns, colors, general } from '../config';
+import { EmbedBuilder } from 'discord.js';
+import { logError } from '../utils/logger';
+import { Command } from '../types';
 
 export default {
     cooldown: cooldowns.B,
@@ -18,34 +19,35 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Fetch
-            const response = await fetch("https://api.api-ninjas.com/v1/facts", {
+            const response: Response = await fetch("https://api.api-ninjas.com/v1/facts", {
                 method: "GET",
                 headers: {
-                    'X-Api-Key': process.env.API_TOKEN
+                    'X-Api-Key': process.env.API_TOKEN as string
                 }
             });
 
             // Validate
             if (!response.ok) {
-                return interaction.reply({
+                return await interaction.reply({
                     content: "Something went wrong while retrieving a fact. Please try again later.",
                     ephemeral: true
                 });
             }
 
             // Response
-            const data = (await response.json())[0].fact;
-            const embed = new EmbedBuilder()
+            const data: string = ((await response.json()) as Array<any>)[0].fact;
+            const embed: EmbedBuilder = new EmbedBuilder()
                 .setColor(colors.bot)
-                .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() })
+                .setAuthor({ name: interaction.user.username, iconURL: interaction.user.avatarURL() as string })
                 .addFields(
                     { name: 'Random Fact', value: data },
                     { name: 'Related Commands', value: "\`/rps\` \`/coin\` \`/math\` \`/dice\`" })
                 .setTimestamp()
                 .setFooter({ text: `Embed created by ${general.name}` });
-            return interaction.reply({ embeds: [embed] });
+            return await interaction.reply({ embeds: [embed] });
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

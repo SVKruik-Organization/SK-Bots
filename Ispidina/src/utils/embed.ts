@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, User } from 'discord.js';
+import { StringSelectMenuInteraction, User } from 'discord.js';
 import { EmbedField, GuildFull } from "../types";
 import { database } from "..";
 import { EmbedBuilder } from 'discord.js';
@@ -34,17 +34,17 @@ export function create(title: string, subfieldTitle: string, user: User, fields:
  * @param interaction Discord Interaction Object
  * @returns Catalog Embed
  */
-export async function customShopCatalog(interaction: ChatInputCommandInteraction) {
+export async function customShopCatalog(interaction: StringSelectMenuInteraction) {
     if (!interaction.guild) return;
     const targetGuild: GuildFull | undefined = findGuildById(interaction.guild.id);
-    if (!targetGuild) return interaction.reply({
+    if (!targetGuild) return await interaction.reply({
         content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
         ephemeral: true
     });
 
     database.query("SELECT * FROM guild_settings WHERE guild_snowflake = ?;", [targetGuild.guild_object.id])
-        .then((data) => {
-            if (data.length === 0) return interaction.reply({
+        .then(async (data) => {
+            if (data.length === 0) return await interaction.reply({
                 content: "Something went wrong while retrieving the required information. Please try again later.",
                 ephemeral: true
             });
@@ -67,10 +67,10 @@ export async function customShopCatalog(interaction: ChatInputCommandInteraction
                     { name: 'Related Commands', value: "\`/inventory\` \`/economy\`" })
                 .setTimestamp()
                 .setFooter({ text: `Embed created by ${general.name}` });
-            return interaction.reply({ embeds: [embed] });
-        }).catch((error: any) => {
+            return await interaction.reply({ embeds: [embed] });
+        }).catch(async (error: any) => {
             logError(error);
-            return interaction.reply({
+            return await interaction.reply({
                 content: "Something went wrong while retrieving the required information. Please try again later.",
                 ephemeral: true
             });

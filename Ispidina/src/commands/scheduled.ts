@@ -1,10 +1,11 @@
-const { SlashCommandBuilder, PermissionFlagsBits, GuildScheduledEventManager, GuildScheduledEventPrivacyLevel, GuildScheduledEventEntityType, ChannelType } = require('discord.js');
-const config = require('../config');
-const modules = require('..');
-const logger = require('../utils/logger');
-const userUtils = require('../utils/user');
-const { datetimeParser } = require('../utils/date');
-const { createTicket } = require('../utils/ticket');
+import { SlashCommandBuilder, PermissionFlagsBits, GuildScheduledEventManager, GuildScheduledEventPrivacyLevel, GuildScheduledEventEntityType, ChannelType, ChatInputCommandInteraction, GuildScheduledEventCreateOptions, GuildScheduledEvent } from 'discord.js';
+import { Command } from "../types";
+import { cooldowns, general } from '../config';
+import { database } from '..';
+import { logError } from '../utils/logger';
+import { checkAdmin } from '../utils/user';
+import { datetimeParser } from '../utils/date';
+import { createTicket } from '../utils/ticket';
 
 export default {
     cooldown: cooldowns.A,
@@ -232,29 +233,29 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
-            if (!(await checkAdmin(interaction))) return interaction.reply({
+            if (!interaction.guild) return;
+            if (!(await checkAdmin(interaction))) return await interaction.reply({
                 content: `You do not have the required permissions to perform this elevated command. Please try again later, or contact moderation to receive elevated permissions.`,
                 ephemeral: true
             });
 
-            await return interaction.reply({
+            await interaction.reply({
                 content: `Creating scheduled event. One moment please.`,
                 ephemeral: true
             });
 
             // Setup
-            const eventType = interaction.options.getSubcommand();
-            const title = interaction.options.getString('title');
-            const description = interaction.options.getString('description');
-            const rawDate = interaction.options.getString('date');
-            const rawTime = interaction.options.getString('time');
-            const parsedDate = datetimeParser(rawDate, rawTime);
-            if (typeof parsedDate === "boolean") return interaction.editReply({ content: "Your date or time input is invalid. Please check your inputs try again. Also note that the event date must be into the future.", ephemeral: true });
-            const eventManager = new GuildScheduledEventManager(interaction.guild);
+            const eventType: string = interaction.options.getSubcommand();
+            const title: string = interaction.options.getString("title") as string;
+            const description: string = interaction.options.getString("description") as string;
+            const rawDate: string = interaction.options.getString("date") as string;
+            const rawTime: string = interaction.options.getString("time") as string;
+            const parsedDate: Date | boolean = datetimeParser(rawDate, rawTime);
+            if (typeof parsedDate === "boolean") return interaction.editReply({ content: "Your date or time input is invalid. Please check your inputs try again. Also note that the event date must be into the future." });
             const image = interaction.options.getAttachment('cover');
 
             // Event Object
-            const eventObject = {
+            const eventObject: any = {
                 name: title,
                 scheduledStartTime: parsedDate,
                 privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly,
@@ -264,7 +265,7 @@ export default {
 
             if (image) {
                 const validExtensions = ["image/png", "image/gif", "image/jpeg", "image/webp"];
-                if (!validExtensions.includes(image.contentType)) {
+                if (!validExtensions.includes(image.contentType as string)) {
                     return interaction.followUp({
                         content: "The file you uploaded is not supported. Please choose an image and try again.",
                         ephemeral: true
@@ -274,34 +275,36 @@ export default {
 
             // Payload Loading
             if (eventType === "voice") {
-                eventObject.channel = interaction.options.getChannel('channel').id;
+                eventObject.channel = interaction.options.getChannel("channel")?.id;
                 eventObject.entityType = GuildScheduledEventEntityType.Voice;
             } else if (eventType === "stage") {
-                eventObject.channel = interaction.options.getChannel('channel').id;
+                eventObject.channel = interaction.options.getChannel("channel")?.id;
                 eventObject.entityType = GuildScheduledEventEntityType.StageInstance;
             } else if (eventType === "external") {
-                eventObject.entityMetadata = { location: interaction.options.getString('location') };
+                eventObject.entityMetadata = { location: interaction.options.getString("location") as string };
                 eventObject.entityType = GuildScheduledEventEntityType.External;
-                const endDate = datetimeParser(rawDate, interaction.options.getString('endtime'));
-                if (typeof endDate === "boolean") return interaction.editReply({ content: "Your date or time input is invalid. Please check your inputs try again. Also note that the event date must be into the future.", ephemeral: true });
+                const endDate = datetimeParser(rawDate, interaction.options.getString("endtime") as string);
+                if (typeof endDate === "boolean") return interaction.editReply({ content: "Your date or time input is invalid. Please check your inputs try again. Also note that the event date must be into the future." });
                 eventObject.scheduledEndTime = endDate;
             }
 
-            // Database Processing
+            // Database Pre-Processing
             const onlineTypes = ["voice", "stage"];
-            const processedLocation = onlineTypes.includes(eventType) ? interaction.options.getChannel('channel').id : interaction.options.getString('location');
+            const processedLocation = onlineTypes.includes(eventType) ? interaction.options.getChannel("channel")?.id : interaction.options.getString('location');
             const processedOnline = onlineTypes.includes(eventType) ? 1 : 0;
 
             // Creation
-            eventManager.create(eventObject)
-                .then((data) => {
+            const eventPayload: GuildScheduledEventCreateOptions = eventObject;
+            interaction.guild.scheduledEvents.create(eventPayload)
+                .then(async (data: GuildScheduledEvent) => {
+                    if (!interaction.guild) return;
                     interaction.followUp({
                         content: "Scheduled event successfully created. You can view it at the top-left of the screen. There, you can register for this event.",
                         ephemeral: true
                     });
                     database.query("INSERT INTO event (ticket, payload, guild_snowflake, creator_snowflake, title, description, location, online, scheduled, date_start) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", [createTicket(), data.id, interaction.guild.id, interaction.user.id, title, description, processedLocation, processedOnline, 1, parsedDate])
                         .catch((error) => logError(error));
-                }).catch((error: any) => {
+                }).catch(async (error: any) => {
                     logError(error);
                     interaction.followUp({
                         content: "Something went wrong while creating the scheduled event. Please try again later.",
@@ -311,5 +314,6 @@ export default {
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

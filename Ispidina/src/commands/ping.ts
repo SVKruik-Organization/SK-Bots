@@ -1,7 +1,8 @@
 import { ChatInputCommandInteraction } from 'discord.js';
-import * as logger from "../utils/logger";
+import { logError } from "../utils/logger";
 import { SlashCommandBuilder } from 'discord.js';
 import { general, cooldowns } from "../config";
+import { Command } from '../types';
 
 export default {
     cooldown: cooldowns.B,
@@ -19,10 +20,10 @@ export default {
         try {
             const list: Array<string> = ["Yep!", "Here!", "Ready!", "Awake!", "I'm here!", "Yes!", "Yeah!", "Sure!", "Hello!", "Hey!", "Sup!", "Hello there!", "Oi!"];
             const random: string = list[Math.floor(Math.random() * list.length)];
-
-            await return interaction.reply({ content: `👋 ${random}` });
+            return await interaction.reply({ content: `👋 ${random}` });
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

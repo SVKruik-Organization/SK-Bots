@@ -5,6 +5,7 @@ import { create } from '../utils/embed';
 import { guilds, findGuildById, setGuilds, addGuild } from '../utils/guild';
 import { checkOperator } from '../utils/user';
 import { logError } from '../utils/logger';
+import { Command } from '../types';
 
 export default {
     cooldown: cooldowns.C,
@@ -153,7 +154,7 @@ export default {
             if (actionType === "register") {
                 database.query("UPDATE guild SET channel_admin = ?, channel_broadcast = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ?, role_support = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE guild_snowflake = ?;",
                     [channel_admin ? channel_admin.id : null, channel_broadcast ? channel_broadcast.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, channel_ticket ? channel_ticket.id : null, role_blinded ? role_blinded.id : null, role_support ? role_support.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
-                    .then(() => {
+                    .then(async () => {
                         if (!interaction.guild) return;
                         const filteredGuild = guilds.filter(guild => guild.guild_object.id === interaction.guild?.id)[0];
                         setGuilds(guilds.filter(guild => guild.guild_object.id !== interaction.guild?.id));
@@ -195,14 +196,14 @@ export default {
                             "guild_date_update": filteredGuild.guild_date_update
                         });
 
-                        return interaction.reply({
+                        return await interaction.reply({
                             content: `Setup update successful. Additional commands reloaded and ready for action. For other settings like welcome messages and other parameters, please use the [SK Commander](${urls.skCommander}) application or the [website](${urls.website}).`,
                             ephemeral: true
                         });
-                    }).catch((error: any) => {
+                    }).catch(async (error: any) => {
                         logError(error);
                         setGuilds(guildSnapshot);
-                        return interaction.reply({
+                        return await interaction.reply({
                             content: "Something went wrong while updating the server configuration. Please try again later.",
                             ephemeral: true
                         });
@@ -210,7 +211,7 @@ export default {
 
                 // Check
             } else if (actionType === "check") {
-                if (!targetGuild) return interaction.reply({
+                if (!targetGuild) return await interaction.reply({
                     content: "This server is not registred yet. Please register with the other option `(Re-Register)`, and try again.",
                     ephemeral: true
                 });
@@ -228,7 +229,7 @@ export default {
                         { name: 'Blinded Role', value: `${targetGuild.role_blinded || "Not Configured"}`, inline: false },
                         { name: 'Support Role', value: `${targetGuild.role_support || "Not Configured"}`, inline: false }
                     ], ["server"]);
-                return interaction.reply({ embeds: [embed], ephemeral: true });
+                return await interaction.reply({ embeds: [embed], ephemeral: true });
             } else if (actionType === "help") {
                 const embed = create("Server Configuration", "Command Usage Help", interaction.user,
                     [
@@ -248,10 +249,11 @@ export default {
                             inline: false
                         }
                     ], ["server"]);
-                return interaction.reply({ embeds: [embed], ephemeral: true });
+                return await interaction.reply({ embeds: [embed], ephemeral: true });
             }
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

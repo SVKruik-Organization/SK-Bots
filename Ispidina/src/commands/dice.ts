@@ -1,6 +1,7 @@
-const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config');
-const logger = require('../utils/logger');
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { cooldowns } from '../config';
+import { logError } from '../utils/logger';
+import { Command } from '../types';
 
 export default {
     cooldown: cooldowns.B,
@@ -16,12 +17,10 @@ export default {
         .setDMPermission(true),
     async execute(interaction: ChatInputCommandInteraction) {
         try {
-            const list = ["1!", "2!", "3!", "4!", "5!", "6!"];
-            const random = list[Math.floor(Math.random() * list.length)];
-
-            return interaction.reply({ content: `🎲 ${random}` });
+            return await interaction.reply({ content: `🎲 ${Math.floor(Math.random() * 6) + "!"}` });
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

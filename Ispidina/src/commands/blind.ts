@@ -1,8 +1,9 @@
-import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction, GuildMember, Role } from 'discord.js';
 import { cooldowns } from '../config';
 import { logError } from '../utils/logger';
 import { checkAdmin } from '../utils/user';
 import { findGuildById } from '../utils/guild';
+import { Command, GuildFull } from '../types';
 
 export default {
     cooldown: cooldowns.A,
@@ -58,41 +59,37 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
-            if (!(await checkAdmin(interaction))) return interaction.reply({
+            if (!interaction.guild) return;
+            if (!(await checkAdmin(interaction))) return await interaction.reply({
                 content: `You do not have the required permissions to perform this elevated command. Please try again later, or contact moderation to receive elevated permissions.`,
                 ephemeral: true
             });
 
             // Guild Fetching
-            const targetGuild = findGuildById(interaction.guild.id);
-            if (!targetGuild || !targetGuild.role_blinded) return interaction.reply({
+            const targetGuild: GuildFull | undefined = findGuildById(interaction.guild.id);
+            if (!targetGuild || !targetGuild.role_blinded) return await interaction.reply({
                 content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
                 ephemeral: true
             });
 
-            const user = interaction.options.getUser('target');
-            const targetSnowflake = user.id;
-            const role = targetGuild.role_blinded;
-            const guild = interaction.client.guilds.cache.get(interaction.guildId);
-            const action = interaction.options.getSubcommand();
+            const guildMember: GuildMember = await interaction.guild.members.fetch(interaction.options.getUser("target", true).id);
+            const role: Role = targetGuild.role_blinded;
+            const action: string = interaction.options.getSubcommand();
 
             // Update Status
             if (action === "add") {
-                await guild.members.fetch(targetSnowflake).then((user) => {
-                    user.roles.add(role);
-                    return interaction.reply({
-                        content: `<@${targetSnowflake}> has been blinded. They no longer have access to the channels.`,
-                        ephemeral: true
-                    });
+                guildMember.roles.add(role);
+                return await interaction.reply({
+                    content: `<@${guildMember.user.id}> has been blinded. They no longer have access to the channels.`,
+                    ephemeral: true
                 });
             } else if (action === "remove") {
-                await guild.members.fetch(targetSnowflake).then((user) => {
-                    user.roles.remove(role);
-                    return interaction.reply({ content: `<@${targetSnowflake}> has been unblinded. Welcome back!` });
-                });
+                guildMember.roles.remove(role);
+                return await interaction.reply({ content: `<@${guildMember.user.id}> has been unblinded. Welcome back!` });
             }
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

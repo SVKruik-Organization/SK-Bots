@@ -1,20 +1,19 @@
-import { Command } from "./types";
+import { CommandWrapper } from "./types";
 import "dotenv/config";
-import { REST, Routes } from 'discord.js';
+import { REST, RESTPostAPIChatInputApplicationCommandsJSONBody, Routes } from 'discord.js';
 import { GuildUnfetchedBase } from "./types";
 import { general } from "./config";
 import mariadb from "mariadb";
 import { readdirSync } from "node:fs"
-const commandFiles: Array<string> = readdirSync(`${__dirname}/commands`).filter((file: string) => file.endsWith(''));
+const commandFiles: Array<string> = readdirSync(`${__dirname}/commands`).filter((file: string) => file.endsWith('.js'));
 const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN as string);
 import { logError } from "./utils/logger";
 
-const commands: Array<Command> = [];
+const commands: Array<RESTPostAPIChatInputApplicationCommandsJSONBody> = [];
 for (const file of commandFiles) {
     try {
-        const command = require(`./commands/${file}`).default;
-        console.log(command);
-        commands.push(command.data.toJSON());
+        const command: CommandWrapper = require(`./commands/${file}`);
+        commands.push(command.default.data.toJSON());
     } catch (error: any) {
         logError(error);
     }
@@ -44,7 +43,7 @@ try {
             }
             console.log("\n");
             process.exit(0);
-        }).catch((error: any) => {
+        }).catch(async (error: any) => {
             logError(error);
         });
 } catch (error: any) {

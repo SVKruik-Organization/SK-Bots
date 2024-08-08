@@ -1,8 +1,9 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const config = require('../config');
-const { REST, Routes } = require('discord.js');
-const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
-const logger = require('../utils/logger');
+import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction } from 'discord.js';
+import { cooldowns, general } from '../config';
+import { REST, Routes } from 'discord.js';
+const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN as string);
+import { logError } from '../utils/logger';
+import { Command } from '../types';
 
 export default {
     cooldown: cooldowns.A,
@@ -49,49 +50,51 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
-            if (interaction.user.id !== general.authorId) return interaction.reply({
+            if (!interaction.guild) return;
+            if (interaction.user.id !== general.authorId) return await interaction.reply({
                 content: `This command is reserved for my developer, <@${general.authorId}>, only. If you are experiencing problems with (one of) the commands, please contact him.`,
                 ephemeral: true
             });
 
             // Setup
-            const option = interaction.options.getSubcommand();
-            const commandId = interaction.options.getString("command");
+            const option: string = interaction.options.getSubcommand();
+            const commandId: string = interaction.options.getString("command") as string;
 
             if (option === "all") {
-                await rest.put(Routes.applicationGuildCommands(interaction.applicationId, interaction.guild.id), { body: [] })
-                    .then(() => {
-                        return interaction.reply({
-                            content: "Deleted all Guild commands.",
-                            ephemeral: true
-                        });
-                    }).catch(() => {
-                        return interaction.reply({
-                            content: "Something went wrong while deleting the Guild commands. Please try again later.",
-                            ephemeral: true
-                        });
+                try {
+                    await rest.put(Routes.applicationGuildCommands(interaction.applicationId, interaction.guild.id), { body: [] })
+                    return await interaction.reply({
+                        content: "Deleted all Guild commands.",
+                        ephemeral: true
                     });
+                } catch (error: any) {
+                    return await interaction.reply({
+                        content: "Something went wrong while deleting the Guild commands. Please try again later.",
+                        ephemeral: true
+                    });
+                }
             } else if (option === "single") {
-                await rest.delete(Routes.applicationGuildCommand(interaction.applicationId, interaction.guild.id, commandId))
-                    .then(() => {
-                        return interaction.reply({
-                            content: "Guild command deleted successfully.",
-                            ephemeral: true
-                        });
-                    }).catch((error: any) => {
-                        if (error.status === 404) {
-                            return interaction.reply({
-                                content: "This Guild command does not exist. It might have been deleted already.",
-                                ephemeral: true
-                            });
-                        } else return interaction.reply({
-                            content: "Something went wrong while deleting this Guild command. Please try again later.",
-                            ephemeral: true
-                        });
+                try {
+                    await rest.delete(Routes.applicationGuildCommand(interaction.applicationId, interaction.guild.id, commandId))
+                    return await interaction.reply({
+                        content: "Guild command deleted successfully.",
+                        ephemeral: true
                     });
+                } catch (error: any) {
+                    if (error.status === 404) {
+                        return await interaction.reply({
+                            content: "This Guild command does not exist. It might have been deleted already.",
+                            ephemeral: true
+                        });
+                    } else return await interaction.reply({
+                        content: "Something went wrong while deleting this Guild command. Please try again later.",
+                        ephemeral: true
+                    });
+                }
             }
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

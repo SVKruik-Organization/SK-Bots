@@ -1,19 +1,20 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const config = require('../config');
-const { REST, Routes } = require('discord.js');
-const fs = require('node:fs');
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith(''));
-const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
-const modules = require('..');
-const logger = require('../utils/logger');
+import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction, RESTPostAPIChatInputApplicationCommandsJSONBody } from 'discord.js';
+import { general, cooldowns } from '../config';
+import { REST, Routes } from 'discord.js';
+import fs from 'node:fs';
+const commandFiles = fs.readdirSync(`${__dirname}/../commands`).filter(file => file.endsWith('.js'));
+const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN as string);
+import { database } from '..';
+import { logError, logMessage } from '../utils/logger';
+import { Command, CommandWrapper } from '../types';
 
-const commands = [];
+const commands: Array<RESTPostAPIChatInputApplicationCommandsJSONBody> = [];
 for (const file of commandFiles) {
     try {
         if (file === "reload.js") continue;
-        const command = require(`../commands/${file}`);
-        if (command && ('data' in command)) {
-            commands.push(command.data.toJSON());
+        const command: CommandWrapper = require(`../commands/${file}`);
+        if (command && ('data' in command.default)) {
+            commands.push(command.default.data.toJSON());
         } else logMessage(`Reload error at ${file}`, "error");
     } catch (error: any) {
         logError(error);
@@ -36,7 +37,7 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
-            if (interaction.user.id !== general.authorId) return interaction.reply({
+            if (interaction.user.id !== general.authorId) return await interaction.reply({
                 content: `This command is reserved for my developer, <@${general.authorId}>, only. If you are experiencing problems with (one of) the commands, please contact him.`,
                 ephemeral: true
             });
@@ -44,19 +45,19 @@ export default {
             database.query("SELECT * FROM guild WHERE disabled = 0 AND production = 0;")
                 .then(async (queryData) => {
                     for (let i = 0; i < queryData.length; i++) {
-                        const data = await rest.put(
+                        const data: Array<any> = await rest.put(
                             Routes.applicationGuildCommands(general.clientId, queryData[i].snowflake),
                             { body: commands },
-                        );
-                        logMessage(`Successfully reloaded ${data.length} Guild commands for Guild ${queryData[i].name}.`);
+                        ) as Array<any>;
+                        logMessage(`Successfully reloaded ${data.length} Guild commands for Guild ${queryData[i].name}.`, "info");
                     }
-                    return interaction.reply({
+                    return await interaction.reply({
                         content: `Successfully reloaded all Guild commands for all servers ${general.name} is in.`,
                         ephemeral: true
                     });
-                }).catch((error: any) => {
+                }).catch(async (error: any) => {
                     logError(error);
-                    return interaction.reply({
+                    return await interaction.reply({
                         content: `Something went wrong while reloading the Guild commands.`,
                         ephemeral: true
                     });
@@ -64,5 +65,6 @@ export default {
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

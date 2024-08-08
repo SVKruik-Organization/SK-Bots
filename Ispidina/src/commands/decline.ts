@@ -1,7 +1,8 @@
-const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config');
-const logger = require('../utils/logger');
-const operatorHandler = require('../handlers/operatorHandler');
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { cooldowns } from '../config';
+import { logError } from '../utils/logger';
+import { handleDeclineInit } from '../handlers/operatorHandler';
+import { Command } from '../types';
 
 export default {
     cooldown: cooldowns.A,
@@ -17,9 +18,10 @@ export default {
         .setDMPermission(true),
     async execute(interaction: ChatInputCommandInteraction) {
         try {
-            operatorHandler.handleDeclineInit(interaction);
+            handleDeclineInit(interaction);
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

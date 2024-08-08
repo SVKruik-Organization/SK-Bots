@@ -1,8 +1,9 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const modules = require('..');
-const config = require('../config');
-const userUtils = require('../utils/user');
-const logger = require('../utils/logger');
+import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction, User } from 'discord.js';
+import { database } from '..';
+import { cooldowns } from '../config';
+import { checkAdmin } from '../utils/user';
+import { logError } from '../utils/logger';
+import { Command } from '../types';
 
 export default {
     cooldown: cooldowns.A,
@@ -72,20 +73,20 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
-            if (!(await checkAdmin(interaction))) return interaction.reply({
+            if (!(await checkAdmin(interaction))) return await interaction.reply({
                 content: `You do not have the required permissions to perform this elevated command. Please try again later, or contact moderation to receive elevated permissions.`,
                 ephemeral: true
             });
 
-            const sectionType = interaction.options.getString('section');
-            const actionType = interaction.options.getString('action');
-            const amount = interaction.options.getInteger('amount');
-            const targetSnowflake = interaction.options.getUser('target').id;
+            const sectionType: string = interaction.options.getString("section") as string;
+            const actionType: string = interaction.options.getString("action") as string;
+            const amount: number = interaction.options.getInteger("amount") as number;
+            const targetUser: User = interaction.options.getUser("target", true) as User;
 
-            let table = undefined;
-            let row = undefined;
-            let action = undefined;
-            let where = ` WHERE snowflake = ${targetSnowflake}`;
+            let table: string | undefined = undefined;
+            let row: string | undefined = undefined;
+            let action: string | undefined = undefined;
+            let where: string = ` WHERE snowflake = ${targetUser.id}`;
 
             if (sectionType === "rnk-lvl") {
                 table = "`tier` SET level = ";
@@ -109,25 +110,23 @@ export default {
                 action = ` ${row} - ${amount}`;
             } else if (actionType === "mult") {
                 action = ` ${row} * ${amount}`;
-            } else if (actionType === "div") {
-                action = ` ${row} / ${amount}`;
-            }
+            } else if (actionType === "div") action = ` ${row} / ${amount}`;
 
             database.query(`UPDATE ${table}${action}${where}`)
-                .then((data) => {
+                .then(async (data) => {
                     // Validation
-                    if (!data.affectedRows) return interaction.reply({
+                    if (!data.affectedRows) return await interaction.reply({
                         content: "This user does not have an account yet.",
                         ephemeral: true
                     });
 
-                    return interaction.reply({
+                    return await interaction.reply({
                         content: "Account data has been successfully changed.",
                         ephemeral: true
                     });
-                }).catch((error: any) => {
+                }).catch(async (error: any) => {
                     logError(error);
-                    return interaction.reply({
+                    return await interaction.reply({
                         content: "Something went wrong while trying to update their information. Please try again later.",
                         ephemeral: true
                     });
@@ -135,5 +134,6 @@ export default {
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

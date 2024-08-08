@@ -1,8 +1,9 @@
-const { SlashCommandBuilder } = require('discord.js');
-const config = require('../config');
-const guildUtils = require('../utils/guild');
-const modules = require('..');
-const logger = require('../utils/logger');
+import { SlashCommandBuilder, ChatInputCommandInteraction, Role, AutocompleteInteraction } from 'discord.js';
+import { cooldowns } from '../config';
+import { findGuildById } from '../utils/guild';
+import { database } from '..';
+import { logError } from '../utils/logger';
+import { Command } from '../types';
 
 export default {
     cooldown: cooldowns.C,
@@ -32,29 +33,30 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Init
+            if (!interaction.guild) return;
             const targetGuild = findGuildById(interaction.guild.id);
-            if (!targetGuild || !targetGuild.role_cosmetic_power) return interaction.reply({
+            if (!targetGuild || !targetGuild.role_cosmetic_power) return await interaction.reply({
                 content: "This is a server-specific command, and this server is either not configured to support it or is disabled. Please try again later.",
                 ephemeral: true
             });
 
             // Setup
-            const snowflake = interaction.user.id;
-            const color = interaction.options.getString('color');
-            const regex = "^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
-            const role = targetGuild.guild_object.roles.cache.find(role => role.name === interaction.user.username);
-            let position = targetGuild.guild_object.roles.cache.size - targetGuild.role_cosmetic_power;
+            const snowflake: string = interaction.user.id;
+            const color: string = interaction.options.getString("color") as string;
+            const regex: string = "^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
+            const role: Role | undefined = targetGuild.guild_object.roles.cache.find(role => role.name === interaction.user.username);
+            let position: number = targetGuild.guild_object.roles.cache.size - targetGuild.role_cosmetic_power;
             if (position < 2) position = 2;
 
             database.query("SELECT role_cosmetic FROM user_inventory WHERE snowflake = ?", [interaction.user.id])
-                .then((data) => {
+                .then(async (data) => {
                     if (data.length === 0) {
-                        return interaction.reply({
+                        return await interaction.reply({
                             content: "This command requires you to have an account. Create an account with the `/register` command.",
                             ephemeral: true
                         });
                     } else if (data[0].role_cosmetic < 1) {
-                        return interaction.reply({
+                        return await interaction.reply({
                             content: "You don't have any Role Color changes left. Purchase one with the `/shop` command.",
                             ephemeral: true
                         });
@@ -63,54 +65,57 @@ export default {
                     database.query("UPDATE user_inventory SET role_cosmetic = role_cosmetic - 1 WHERE snowflake = ?", [interaction.user.id])
                         .then(async (data) => {
                             // Validation
-                            if (!data.affectedRows) return interaction.reply({
+                            if (!data.affectedRows) return await interaction.reply({
                                 content: "This command requires you to have an account. Create an account with the `/register` command.",
                                 ephemeral: true
                             });
 
                             if (color.match(regex)) {
+                                if (!interaction.guild) return;
                                 if (role) await role.delete();
                                 await interaction.guild.roles.create({
                                     position: position,
                                     name: interaction.user.username,
                                     color: parseInt(color, 16),
                                     permissions: []
-                                }).then(() => {
+                                }).then(async () => {
+                                    if (!interaction.guild) return;
                                     const role = interaction.guild.roles.cache.find((role) => role.name === interaction.user.username);
-                                    targetGuild.guild_object.members.fetch(snowflake).then((user) => {
-                                        if (!user) return interaction.reply({
+                                    targetGuild.guild_object.members.fetch(snowflake).then(async (user) => {
+                                        if (!user) return await interaction.reply({
                                             content: "Something went wrong while creating your role. Please try again later.",
                                             ephemeral: true
                                         });
 
                                         // Finalize
+                                        if (!role) return;
                                         user.roles.add(role);
-                                        return interaction.reply({
+                                        return await interaction.reply({
                                             content: `\`#${color}\` -- great color! You look awesome!`,
                                             ephemeral: true
                                         });
                                     });
-                                }).catch((error: any) => {
+                                }).catch(async (error: any) => {
                                     logError(error);
-                                    return interaction.reply({
+                                    return await interaction.reply({
                                         content: "Something went wrong while creating your role. Please try again later.",
                                         ephemeral: true
                                     });
                                 });
-                            } else return interaction.reply({
+                            } else return await interaction.reply({
                                 content: "Your color is invalid. Make sure your color is in HEX format, like so: `000000`. Hashtag prefix is not needed.",
                                 ephemeral: true
                             });
-                        }).catch((error: any) => {
+                        }).catch(async (error: any) => {
                             logError(error);
-                            return interaction.reply({
+                            return await interaction.reply({
                                 content: "Something went wrong while updating your information. You have not been charged. Please try again later.",
                                 ephemeral: true
                             });
                         });
-                }).catch((error: any) => {
+                }).catch(async (error: any) => {
                     logError(error);
-                    return interaction.reply({
+                    return await interaction.reply({
                         content: "Something went wrong while retrieving the required information. Please try again later.",
                         ephemeral: true
                     });
@@ -119,10 +124,10 @@ export default {
             logError(error);
         }
     },
-    async autocomplete(interaction) {
-        const roleOptions = ["1abc9c", "0f806a", "2fcc71", "208b4c", "3498db", "206694", "9b59b6", "71368a", "e91e63", "ad1357", "f1c40f", "c27c0d", "e67e23", "e67e23", "e74b3c", "992d22"];
-        const activeInput = interaction.options.getFocused();
-        const filtered = roleOptions.filter(choice => choice.includes(activeInput));
+    async autocomplete(interaction: AutocompleteInteraction) {
+        const roleOptions: Array<string> = ["1abc9c", "0f806a", "2fcc71", "208b4c", "3498db", "206694", "9b59b6", "71368a", "e91e63", "ad1357", "f1c40f", "c27c0d", "e67e23", "e67e23", "e74b3c", "992d22"];
+        const activeInput: string = interaction.options.getFocused();
+        const filtered: Array<string> = roleOptions.filter(choice => choice.includes(activeInput));
         await interaction.respond(filtered.map(choice => ({ name: choice, value: choice })));
     }
-};
+} satisfies Command;

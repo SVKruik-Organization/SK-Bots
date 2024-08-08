@@ -1,8 +1,9 @@
-import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
-import config from '../config';
-import modules from '..';
-import logger from '../utils/logger';
-import userUtils from '../utils/user';
+import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction, GuildMember } from 'discord.js';
+import { cooldowns, general } from '../config';
+import { logError, logMessage } from '../utils/logger';
+import { checkAdmin } from '../utils/user';
+import { database } from '..';
+import { Command } from '../types';
 
 export default {
     cooldown: cooldowns.A,
@@ -77,61 +78,63 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
-            if (!(await checkAdmin(interaction))) return interaction.reply({
+            if (!interaction.guild) return;
+            if (!(await checkAdmin(interaction))) return await interaction.reply({
                 content: `You do not have the required permissions to perform this elevated command. Please try again later, or contact moderation to receive elevated permissions.`,
                 ephemeral: true
             });
 
             // Setup
-            const targetUsername = interaction.options.getUser('target').username;
-            const targetSnowflake = interaction.options.getUser('target').id;
-            const actionType = interaction.options.getSubcommand();
+            const guildMember: GuildMember = await interaction.guild.members.fetch(interaction.options.getUser("target", true).id);
+            const actionType: string = interaction.options.getSubcommand();
 
             // Handle
             if (actionType === "add") {
-                database.query("INSERT INTO user_blocked (user_snowflake, user_username, guild_snowflake) VALUES (?, ?, ?);", [targetSnowflake, targetUsername, interaction.guild.id])
-                    .then(() => {
-                        logMessage(`${targetUsername} was blocked by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "warning");
-                        return interaction.reply({
-                            content: `Successfully blocked user <@${targetSnowflake}>. They can no longer use any of my commands.`,
+                database.query("INSERT INTO user_blocked (user_snowflake, user_username, guild_snowflake) VALUES (?, ?, ?);", [guildMember.user.id, guildMember.user.username, interaction.guild.id])
+                    .then(async () => {
+                        if (!interaction.guild) return;
+                        logMessage(`${guildMember.user.username} was blocked by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "warning");
+                        return await interaction.reply({
+                            content: `Successfully blocked user <@${guildMember.user.id}>. They can no longer use any of my commands.`,
                             ephemeral: true
                         });
-                    }).catch((error: any) => {
+                    }).catch(async (error: any) => {
                         if (error.code === "ER_DUP_ENTRY") {
-                            return interaction.reply({
-                                content: `User <@${targetSnowflake}> has been blocked already.`,
+                            return await interaction.reply({
+                                content: `User <@${guildMember.user.id}> has been blocked already.`,
                                 ephemeral: true
                             });
-                        } else return interaction.reply({
+                        } else return await interaction.reply({
                             content: "Something went wrong while blocking this user. Please try again later.",
                             ephemeral: true
                         });
                     });
             } else if (actionType === "remove") {
-                database.query("DELETE FROM user_blocked WHERE user_snowflake = ? AND guild_snowflake = ?;", [targetSnowflake, interaction.guild.id])
-                    .then(() => {
-                        logMessage(`${targetUsername} was unblocked by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "warning");
-                        return interaction.reply({
-                            content: `Successfully unblocked user <@${targetSnowflake}>. They can now use all of my commands again.`,
+                database.query("DELETE FROM user_blocked WHERE user_snowflake = ? AND guild_snowflake = ?;", [guildMember.user.id, interaction.guild.id])
+                    .then(async () => {
+                        if (!interaction.guild) return;
+                        logMessage(`${guildMember.user.username} was unblocked by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "warning");
+                        return await interaction.reply({
+                            content: `Successfully unblocked user <@${guildMember.user.id}>. They can now use all of my commands again.`,
                             ephemeral: true
                         });
-                    }).catch((error: any) => {
+                    }).catch(async (error: any) => {
                         logError(error);
-                        return interaction.reply({
+                        return await interaction.reply({
                             content: "Something went wrong while unblocking this user. Please try again later.",
                             ephemeral: true
                         });
                     });
             } else if (actionType === "check") {
-                database.query("SELECT user_snowflake FROM user_blocked WHERE user_snowflake = ?;", [targetSnowflake])
-                    .then((data) => {
-                        return interaction.reply({
-                            content: `Blocked status of user <@${targetSnowflake}>: \`${data.length === 0 ? "false" : "true"}\``,
+                database.query("SELECT user_snowflake FROM user_blocked WHERE user_snowflake = ?;", [guildMember.user.id])
+                    .then(async (data) => {
+                        return await interaction.reply({
+                            content: `Blocked status of user <@${guildMember.user.id}>: \`${data.length === 0 ? "false" : "true"}\``,
                             ephemeral: true
                         });
-                    }).catch((error: any) => {
+                    }).catch(async (error: any) => {
                         logError(error);
-                        return interaction.reply({
+                        return await interaction.reply({
                             content: "Something went wrong while checking the block status of this user. Please try again later.",
                             ephemeral: true
                         });
@@ -140,5 +143,6 @@ export default {
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

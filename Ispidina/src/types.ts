@@ -1,9 +1,24 @@
-import { CategoryChannel, Guild, Role, SlashCommandBuilder, TextBasedChannel } from 'discord.js';
+import { CategoryChannel, Guild, Role, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder, TextBasedChannel } from 'discord.js';
 import { cooldowns } from "./config"
+
+export type CommandWrapper = {
+    default: Command
+}
 
 export type Command = {
     cooldown: cooldowns,
-    data: SlashCommandBuilder,
+    data: SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder,
+    execute: Function,
+    autocomplete: Function | undefined
+}
+
+export type EventWrapper = {
+    default: BotEvent
+}
+
+export type BotEvent = {
+    name: string,
+    once: boolean,
     execute: Function
 }
 

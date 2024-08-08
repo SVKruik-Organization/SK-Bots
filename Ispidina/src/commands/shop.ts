@@ -1,6 +1,7 @@
-const { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, SlashCommandBuilder } = require('discord.js');
-const config = require('../config');
-const logger = require('../utils/logger');
+import { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { cooldowns } from '../config';
+import { logError } from '../utils/logger';
+import { Command } from "../types";
 
 export default {
     cooldown: cooldowns.C,
@@ -32,11 +33,11 @@ export default {
             await interaction.deferReply({ ephemeral: true });
             await interaction.editReply({
                 content: 'View the catalog or buy something.',
-                components: [new ActionRowBuilder().addComponents(select)],
-                ephemeral: true
+                components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select)]
             });
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

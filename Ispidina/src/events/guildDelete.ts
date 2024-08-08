@@ -1,11 +1,14 @@
-const { Events } = require('discord.js');
-const config = require('../config');
-const modules = require('..');
-const logger = require('../utils/logger');
+import { Events, Guild } from 'discord.js';
+import { general } from '../config';
+import { database } from '..';
+import { logError, logMessage } from '../utils/logger';
+import { findUserById } from '../utils/user';
+import { BotEvent } from '../types';
 
 export default {
     name: Events.GuildDelete,
-    execute(guild) {
+    once: false,
+    execute(guild: Guild) {
         try {
             if (guild.available) {
                 database.query("DELETE FROM guild WHERE snowflake = ?; UPDATE bot SET guild_deleted = guild_deleted + 1 WHERE name = ?;", [guild.id, general.name])
@@ -26,4 +29,4 @@ export default {
             logError(error);
         }
     }
-};
+} satisfies BotEvent;

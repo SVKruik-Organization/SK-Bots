@@ -1,7 +1,8 @@
-const { SlashCommandBuilder } = require('discord.js');
-const modules = require('..');
-const config = require('../config');
-const logger = require('../utils/logger');
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { database } from '..';
+import { cooldowns, urls } from '../config';
+import { logError, logMessage } from '../utils/logger';
+import { Command } from '../types';
 
 export default {
     cooldown: cooldowns.D,
@@ -41,23 +42,23 @@ export default {
             .setMaxValue(9999)),
     async execute(interaction: ChatInputCommandInteraction) {
         try {
-            const snowflake = interaction.user.id;
-            const username = interaction.user.username;
-
-            const oldPincode = interaction.options.getInteger('old');
-            const newPincode = interaction.options.getInteger('new');
+            // Setup
+            const snowflake: string = interaction.user.id;
+            const username: string = interaction.user.username;
+            const oldPincode: number = interaction.options.getInteger("old") as number;
+            const newPincode: number = interaction.options.getInteger("new") as number;
 
             database.query("SELECT pincode FROM user_general WHERE snowflake = ?;", [snowflake])
-                .then((data) => {
+                .then(async (data) => {
                     // Validation
-                    if (data.length === 0) return interaction.reply({
+                    if (data.length === 0) return await interaction.reply({
                         content: "You do not have an account yet. Create an account with the `/register` command.",
                         ephemeral: true
                     });
 
                     // User Validation
                     // TODO - Pincode Web Reset
-                    if (data[0].pincode !== oldPincode) return interaction.reply({
+                    if (data[0].pincode !== oldPincode) return await interaction.reply({
                         content: `Your old pincode does not match the current one. Please try again. If you want to reset your pincode (in case you forgot your pincode), please follow this [link](${urls.website}).`,
                         ephemeral: true
                     });
@@ -66,26 +67,26 @@ export default {
                     database.query("UPDATE user_general SET pincode = ? WHERE snowflake = ?;", [newPincode, snowflake])
                         .then(async (data) => {
                             // Validation
-                            if (!data.affectedRows) return interaction.reply({
+                            if (!data.affectedRows) return await interaction.reply({
                                 content: "This command requires you to have an account. Create an account with the `/register` command.",
                                 ephemeral: true
                             });
 
-                            await return interaction.reply({
+                            await interaction.reply({
                                 content: `Your pincode has been updated successfully. New pincode: \`${newPincode}\`. Safe it save!`,
                                 ephemeral: true
                             });
                             logMessage(`${username} has changed their pincode.`, "info");
-                        }).catch((error: any) => {
+                        }).catch(async (error: any) => {
                             logError(error);
-                            return interaction.reply({
+                            return await interaction.reply({
                                 content: "Something went wrong while trying to update your information. Please try again later.",
                                 ephemeral: true
                             });
                         });
-                }).catch((error: any) => {
+                }).catch(async (error: any) => {
                     logError(error);
-                    return interaction.reply({
+                    return await interaction.reply({
                         content: "Something went wrong while trying to update your information. Please try again later.",
                         ephemeral: true
                     });
@@ -93,5 +94,6 @@ export default {
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;

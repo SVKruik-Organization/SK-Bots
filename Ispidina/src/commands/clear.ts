@@ -1,7 +1,8 @@
-import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
-import config from '../config';
-import userUtils from '../utils/user';
-import logger from '../utils/logger';
+import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction, TextChannel } from 'discord.js';
+import { cooldowns } from '../config';
+import { checkAdmin } from '../utils/user';
+import { logError } from '../utils/logger';
+import { Command } from '../types';
 
 export default {
     cooldown: cooldowns.A,
@@ -31,29 +32,35 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Permission Validation
-            if (!(await checkAdmin(interaction))) return interaction.reply({
+            if (!interaction.guild) return;
+            if (!(await checkAdmin(interaction))) return await interaction.reply({
                 content: `You do not have the required permissions to perform this elevated command. Please try again later, or contact moderation to receive elevated permissions.`,
                 ephemeral: true
             });
 
-            const amount = interaction.options.getInteger('amount');
-            await return interaction.reply({
+            // Setup
+            const amount: number = interaction.options.getInteger("amount") as number;
+            await interaction.reply({
                 content: `Deleting ${amount} messages . . .`,
                 ephemeral: true
             });
 
             // Bulk Delete
-            setTimeout(() => {
+            setTimeout(async () => {
                 interaction.deleteReply();
-                interaction.channel.bulkDelete(amount).catch(() => {
+                if (!interaction.channel) return;
+                try {
+                    const channel: TextChannel = interaction.channel as TextChannel;
+                    await channel.bulkDelete(amount);
+                } catch (error: any) {
                     interaction.editReply({
                         content: "Atleast one of the messages you are trying to delete is older than \`14\` days. Discord is not allowing me to do that, so you will have to delete them manually (or lower your clear amount to potentially exclude the erroneous message).",
-                        ephemeral: true
                     });
-                });
+                }
             }, 1000);
         } catch (error: any) {
             logError(error);
         }
-    }
-};
+    },
+    autocomplete: undefined
+} satisfies Command;
