@@ -47,6 +47,10 @@ export default {
             const username: string = interaction.user.username;
             const oldPincode: number = interaction.options.getInteger("old") as number;
             const newPincode: number = interaction.options.getInteger("new") as number;
+            if (oldPincode === newPincode) return await interaction.reply({
+                content: "Your new pincode cannot be the same as the current one. I left your pincode unchanged.",
+                ephemeral: true
+            });
 
             database.query("SELECT pincode FROM user_general WHERE snowflake = ?;", [snowflake])
                 .then(async (data) => {
@@ -58,7 +62,7 @@ export default {
 
                     // User Validation
                     // TODO - Pincode Web Reset
-                    if (data[0].pincode !== oldPincode) return await interaction.reply({
+                    if (parseInt(data[0].pincode) !== oldPincode) return await interaction.reply({
                         content: `Your old pincode does not match the current one. Please try again. If you want to reset your pincode (in case you forgot your pincode), please follow this [link](${urls.website}).`,
                         ephemeral: true
                     });

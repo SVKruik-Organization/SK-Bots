@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, PermissionFlagsBits, GuildScheduledEventManager, GuildScheduledEventPrivacyLevel, GuildScheduledEventEntityType, ChannelType, ChatInputCommandInteraction, GuildScheduledEventCreateOptions, GuildScheduledEvent } from 'discord.js';
+import { SlashCommandBuilder, PermissionFlagsBits, GuildScheduledEventPrivacyLevel, GuildScheduledEventEntityType, ChannelType, ChatInputCommandInteraction, GuildScheduledEventCreateOptions, GuildScheduledEvent } from 'discord.js';
 import { Command } from "../types";
 import { cooldowns, general } from '../config';
 import { database } from '..';
@@ -43,20 +43,20 @@ export default {
                 .setNameLocalizations({
                     nl: "omschrijving"
                 })
-                .setDescription('The description for the event. What is your event all about? Max 600 characters.')
+                .setDescription('The description for the event. What is your event all about? Max 950 characters.')
                 .setDescriptionLocalizations({
-                    nl: "De omschrijving van uw evenement. Waar gaat het over? Maximaal 600 karakters."
+                    nl: "De omschrijving van uw evenement. Waar gaat het over? Maximaal 950 karakters."
                 })
                 .setRequired(true)
-                .setMaxLength(600))
+                .setMaxLength(950))
             .addStringOption(option => option
                 .setName('date')
                 .setNameLocalizations({
                     nl: "datum"
                 })
-                .setDescription('The date for your event. Format: 05/02/2023.')
+                .setDescription('The date for your event. Format: DD/MM/YYYY.')
                 .setDescriptionLocalizations({
-                    nl: "De datum van uw evenement. Formaat: 05/02/2023."
+                    nl: "De datum van uw evenement. Formaat: DD/MM/YYYY."
                 })
                 .setRequired(true)
                 .setMinLength(10)
@@ -66,9 +66,9 @@ export default {
                 .setNameLocalizations({
                     nl: "tijd"
                 })
-                .setDescription('The time when your event starts. Use the 24 hour time scale. Format: 09:15.')
+                .setDescription('The time when your event starts. Use the 24 hour time scale. Format: HH:MM.')
                 .setDescriptionLocalizations({
-                    nl: "De tijd wanneer uw evenement begint. Gebruik de 24 uur tijd schaal. Formaat: 09:15."
+                    nl: "De tijd wanneer uw evenement begint. Gebruik de 24 uur tijd schaal. Formaat: HH:MM."
                 })
                 .setRequired(true)
                 .setMinLength(5)
@@ -107,20 +107,20 @@ export default {
                 .setNameLocalizations({
                     nl: "omschrijving"
                 })
-                .setDescription('The description for the event. What is your event all about? Max 600 characters.')
+                .setDescription('The description for the event. What is your event all about? Max 950 characters.')
                 .setDescriptionLocalizations({
-                    nl: "De omschrijving van uw evenement. Waar gaat het over? Maximaal 600 karakters."
+                    nl: "De omschrijving van uw evenement. Waar gaat het over? Maximaal 950 karakters."
                 })
                 .setRequired(true)
-                .setMaxLength(600))
+                .setMaxLength(950))
             .addStringOption(option => option
                 .setName('date')
                 .setNameLocalizations({
                     nl: "datum"
                 })
-                .setDescription('The date for your event. Format: 05/02/2023.')
+                .setDescription('The date for your event. Format: DD/MM/YYYY.')
                 .setDescriptionLocalizations({
-                    nl: "De datum van uw evenement. Formaat: 05/02/2023."
+                    nl: "De datum van uw evenement. Formaat: DD/MM/YYYY."
                 })
                 .setRequired(true)
                 .setMinLength(10)
@@ -130,9 +130,9 @@ export default {
                 .setNameLocalizations({
                     nl: "tijd"
                 })
-                .setDescription('The time when your event starts. Use the 24 hour time scale. Format: 09:15.')
+                .setDescription('The time when your event starts. Use the 24 hour time scale. Format: HH:MM.')
                 .setDescriptionLocalizations({
-                    nl: "De tijd wanneer uw evenement begint. Gebruik de 24 uur tijd schaal. Formaat: 09:15."
+                    nl: "De tijd wanneer uw evenement begint. Gebruik de 24 uur tijd schaal. Formaat: HH:MM."
                 })
                 .setRequired(true)
                 .setMinLength(5)
@@ -177,20 +177,20 @@ export default {
                 .setNameLocalizations({
                     nl: "omschrijving"
                 })
-                .setDescription('The description for the event. What is your event all about? Max 600 characters.')
+                .setDescription('The description for the event. What is your event all about? Max 950 characters.')
                 .setDescriptionLocalizations({
-                    nl: "De omschrijving van uw evenement. Waar gaat het over? Maximaal 600 karakters."
+                    nl: "De omschrijving van uw evenement. Waar gaat het over? Maximaal 950 karakters."
                 })
                 .setRequired(true)
-                .setMaxLength(600))
+                .setMaxLength(950))
             .addStringOption(option => option
                 .setName('date')
                 .setNameLocalizations({
                     nl: "datum"
                 })
-                .setDescription('The date for your event. Format: 05/02/2023.')
+                .setDescription('The date for your event. Format: DD/MM/YYYY.')
                 .setDescriptionLocalizations({
-                    nl: "De datum van uw evenement. Formaat: 05/02/2023."
+                    nl: "De datum van uw evenement. Formaat: DD/MM/YYYY."
                 })
                 .setRequired(true)
                 .setMinLength(10)
@@ -200,9 +200,9 @@ export default {
                 .setNameLocalizations({
                     nl: "starttijd"
                 })
-                .setDescription('The time when your event starts. Use the 24 hour time scale. Format: 09:15.')
+                .setDescription('The time when your event starts. Use the 24 hour time scale. Format: HH:MM.')
                 .setDescriptionLocalizations({
-                    nl: "De tijd wanneer uw evenement begint. Gebruik de 24 uur tijd schaal. Formaat: 09:15."
+                    nl: "De tijd wanneer uw evenement begint. Gebruik de 24 uur tijd schaal. Formaat: HH:MM."
                 })
                 .setRequired(true)
                 .setMinLength(5)
@@ -212,9 +212,9 @@ export default {
                 .setNameLocalizations({
                     nl: "eindtijd"
                 })
-                .setDescription('The time when your event ends. Use the 24 hour time scale. Format: 09:15.')
+                .setDescription('The time when your event ends. Use the 24 hour time scale. Format: HH:MM.')
                 .setDescriptionLocalizations({
-                    nl: "De tijd wanneer uw evenement eindigt. Gebruik de 24 uur tijd schaal. Formaat: 09:15."
+                    nl: "De tijd wanneer uw evenement eindigt. Gebruik de 24 uur tijd schaal. Formaat: HH:MM."
                 })
                 .setRequired(true)
                 .setMinLength(5)
@@ -259,7 +259,7 @@ export default {
                 name: title,
                 scheduledStartTime: parsedDate,
                 privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly,
-                description: description,
+                description: description + " - Created by ",
                 reason: `Scheduled Event ${general.name} Command`
             }
 

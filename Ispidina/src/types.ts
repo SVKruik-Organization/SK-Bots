@@ -120,3 +120,26 @@ export type OperatorCheck = {
 export type Settings = {
     acknowledgeHighTemperature: boolean
 }
+
+export type HoistedOptions = {
+    name: string,
+    value: string,
+    type: number
+}
+
+export type UplinkMessage = {
+    sender: string,
+    recipient: string,
+    trigger_source: string,
+    reason: string,
+    task: string,
+    content: string | SensorMessage,
+    timestamp: Date
+}
+
+export type SensorMessage = {
+    cpuData: any,
+    temperatureData: any,
+    memoryData: any,
+    deviceName: string
+}

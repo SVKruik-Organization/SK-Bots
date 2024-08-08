@@ -17,7 +17,8 @@ export default {
         .setDMPermission(true),
     async execute(interaction: ChatInputCommandInteraction) {
         try {
-            return await interaction.reply({ content: `🎲 ${Math.floor(Math.random() * 6) + "!"}` });
+            const { random, round } = await import('mathjs');
+            return await interaction.reply({ content: `🎲 ${round(random(1, 7)) + "!"}` });
         } catch (error: any) {
             logError(error);
         }

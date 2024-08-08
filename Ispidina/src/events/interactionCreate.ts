@@ -13,7 +13,7 @@ import { findGuildById } from '../utils/guild';
 import { getDate } from '../utils/date';
 import { handleDeclineCancel, handleDeclineFinal, handleDeclineSelect, handleModifyMenu, handleModifyRemoveMenu, handleSelectionMenu } from '../handlers/operatorHandler';
 import { closeChannel } from '../handlers/ticketHandler';
-import { BotEvent } from '../types';
+import { BotEvent, HoistedOptions } from '../types';
 
 export default {
     name: Events.InteractionCreate,
@@ -174,8 +174,11 @@ export default {
         }
 
         // Logging
-        let options: Array<string> = [];
-        interaction.options.data.forEach(element => {
+        const interactionOptions = interaction.options as unknown as any;
+        const rawOptions: Array<HoistedOptions> = interactionOptions._hoistedOptions as Array<HoistedOptions>;
+        const options: Array<string> = [];
+        if (interactionOptions._subcommand) options.push(`subcommand: ${interactionOptions._subcommand}`);
+        rawOptions.forEach(element => {
             options.push(`${element.name}: ${element.value}`);
         });
         const processedOptions = ` with the following options: ${JSON.stringify(options)}`;

@@ -6,7 +6,7 @@ import { general } from "../config";
  * @param preferredLocale Overwrite default locale.
  * @returns Object with date, time and now.
  */
-export function getDate(datetime: Date | null, preferredLocale: string | null): { date: string, time: string, today: Date } {
+export function getDate(datetime: Date | null, preferredLocale: string | null): { date: string, time: string, today: Date, fullDate: string } {
     let targetDate: Date = new Date();
     if (datetime) targetDate = new Date(datetime);
     let locale: string = "en-US";
@@ -34,7 +34,8 @@ export function getDate(datetime: Date | null, preferredLocale: string | null): 
         return value < 10 ? "0" + value : value.toString();
     }
 
-    return { date, time, today };
+    const fullDate: string = `${time} ${date}`;
+    return { date, time, today, fullDate };
 }
 
 /**

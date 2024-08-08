@@ -236,7 +236,7 @@ module.exports = {
                         },
                         {
                             name: 'Advanced Config',
-                            value: `When you try to update the configuration, you might notice the lack of customization. This is because it would not be UIX friendly to show 30 different options in only one command or to have multiple commands for different settings. To fix this, another standalone desktop and weba application have been built. These apps enables you to customize the bot to your liking including custom pricing and viewing statistics. For more information, checkout my [website](${config.urls.website}).`
+                            value: `When you try to update the configuration, you might notice the lack of customization. This is because it would not be UIX friendly to show 30 different options in only one command or to have multiple commands for different settings. To fix this, another standalone desktop and web application have been built. These apps enables you to customize the bot to your liking including custom pricing and viewing statistics. For more information, checkout my [website](${config.urls.website}).`
                         }
                     ], ["server"]);
                 interaction.reply({ embeds: [embed], ephemeral: true });

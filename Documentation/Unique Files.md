@@ -10,5 +10,5 @@ Stelleri and Apricaria are essentially the same bots, apart from Stelleri's fast
 | 4 | Root | `package.json` | Bot Name |
 | 5 | Root | `server.js` | JWT System |
 | 6 | Root | `index.js` | Interest Rate |
-| 7 | `assets` | `config.js` | Bot Name, Color, ID |
+| 7 | Root | `config.js` | Bot Name, Color, ID |
 | 8 | Root | `uplink.js` | Uplink Tasks |

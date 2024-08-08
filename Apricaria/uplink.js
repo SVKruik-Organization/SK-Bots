@@ -18,7 +18,7 @@ async function init() {
     channel.bindQueue(queue.queue, exchange.exchange, config.general.name);
 
     // Listen
-    logger.log(`Uplink listening on ${exchange.exchange}`, "info");
+    logger.log(`Uplink listening on '${exchange.exchange}'@'${config.general.name}'`, "info");
     channel.consume(queue.queue, async (message) => {
         const messageContent = JSON.parse(message.content.toString());
         logger.log(`New Uplink message from || ${messageContent.sender} ||`, "info");

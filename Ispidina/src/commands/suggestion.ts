@@ -33,12 +33,12 @@ export default {
             .setNameLocalizations({
                 nl: "omschrijving"
             })
-            .setDescription('The description. Pitch your idea, explain why and how to implement. Max 600 characters.')
+            .setDescription('The description. Pitch your idea, explain why and how to implement. Max 950 characters.')
             .setDescriptionLocalizations({
-                nl: "De omschrijving. Pitch uw idee, leg uit waarom en hoe te implementeren. Max 600 karakters."
+                nl: "De omschrijving. Pitch uw idee, leg uit waarom en hoe te implementeren. Max 950 karakters."
             })
             .setRequired(true)
-            .setMaxLength(600)),
+            .setMaxLength(950)),
     async execute(interaction: ChatInputCommandInteraction) {
         try {
             // Init

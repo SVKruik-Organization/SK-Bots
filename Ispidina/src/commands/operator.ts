@@ -53,7 +53,7 @@ export default {
 
             // Setup
             const actionType: string = interaction.options.getSubcommand();
-            const targetMember: User = interaction.options.getUser("target", true);
+            const targetMember: User | null = interaction.options.getUser("target");
             if (targetMember && targetMember.id === interaction.user.id) return await interaction.reply({
                 content: `You cannot ${actionType} yourself ${actionType === "add" ? "to" : "from"} a team that you are already a member of via commands. To transfer ownership and use other advanced operations, please use the [SK Commander](${urls.skCommander}) application or the [website](${urls.website}).`,
                 ephemeral: true
@@ -79,7 +79,7 @@ export default {
                         .setPlaceholder('Make a selection.')
                         .addOptions(stringOptions);
 
-                    const replyContent: string = (actionType === "overview" ? "Select which team you want to view the overview of." : `Select for which team you want to manage <@${targetMember.id}>.`);
+                    const replyContent: string = (actionType === "overview" ? "Select which team you want to view the overview of." : `Select for which team you want to manage <@${targetMember?.id}>.`);
                     await interaction.deferReply({ ephemeral: true });
                     await interaction.editReply({
                         content: `${replyContent} Note that you have to be the owner of the team in order to perform this action.`,

@@ -46,12 +46,12 @@ export default {
                 .setNameLocalizations({
                     nl: "omschrijving"
                 })
-                .setDescription('The description for the event. What is your event all about? Max 600 characters.')
+                .setDescription('The description for the event. What is your event all about? Max 950 characters.')
                 .setDescriptionLocalizations({
-                    nl: "De omschrijving van uw evenement. Waar gaat het over? Maximaal 600 karakters."
+                    nl: "De omschrijving van uw evenement. Waar gaat het over? Maximaal 950 karakters."
                 })
                 .setRequired(true)
-                .setMaxLength(600))
+                .setMaxLength(950))
             .addStringOption(option => option
                 .setName('location')
                 .setNameLocalizations({
@@ -68,9 +68,9 @@ export default {
                 .setNameLocalizations({
                     nl: "datum"
                 })
-                .setDescription('The date for your event. Format: 05/02/2023.')
+                .setDescription('The date for your event. Format: DD/MM/YYYY.')
                 .setDescriptionLocalizations({
-                    nl: "De datum van uw evenement. Formaat: 05/02/2023."
+                    nl: "De datum van uw evenement. Formaat: DD/MM/YYYY."
                 })
                 .setRequired(true)
                 .setMinLength(10)
@@ -80,9 +80,9 @@ export default {
                 .setNameLocalizations({
                     nl: "tijd"
                 })
-                .setDescription('The time when your event starts. Use the 24 hour time scale. Format: 09:15.')
+                .setDescription('The time when your event starts. Use the 24 hour time scale. Format: HH:MM.')
                 .setDescriptionLocalizations({
-                    nl: "De tijd wanneer uw evenement begint. Gebruik de 24 uur tijd schaal. Formaat: 09:15."
+                    nl: "De tijd wanneer uw evenement begint. Gebruik de 24 uur tijd schaal. Formaat: HH:MM."
                 })
                 .setRequired(true)
                 .setMinLength(5)
@@ -112,12 +112,12 @@ export default {
                 .setNameLocalizations({
                     nl: "omschrijving"
                 })
-                .setDescription('The description for the event. What is your event all about? Max 600 characters.')
+                .setDescription('The description for the event. What is your event all about? Max 950 characters.')
                 .setDescriptionLocalizations({
-                    nl: "De omschrijving van uw evenement. Waar gaat het over? Maximaal 600 karakters."
+                    nl: "De omschrijving van uw evenement. Waar gaat het over? Maximaal 950 karakters."
                 })
                 .setRequired(true)
-                .setMaxLength(600))
+                .setMaxLength(950))
             .addChannelOption(option => option
                 .setName('location')
                 .setNameLocalizations({
@@ -134,9 +134,9 @@ export default {
                 .setNameLocalizations({
                     nl: "datum"
                 })
-                .setDescription('The date for your event. Format: 05/02/2023.')
+                .setDescription('The date for your event. Format: DD/MM/YYYY.')
                 .setDescriptionLocalizations({
-                    nl: "De datum van uw evenement. Formaat: 05/02/2023."
+                    nl: "De datum van uw evenement. Formaat: DD/MM/YYYY."
                 })
                 .setRequired(true)
                 .setMinLength(10)
@@ -146,9 +146,9 @@ export default {
                 .setNameLocalizations({
                     nl: "tijd"
                 })
-                .setDescription('The time when your event starts. Use the 24 hour time scale. Format: 09:15.')
+                .setDescription('The time when your event starts. Use the 24 hour time scale. Format: HH:MM.')
                 .setDescriptionLocalizations({
-                    nl: "De tijd wanneer uw evenement begint. Gebruik de 24 uur tijd schaal. Formaat: 09:15."
+                    nl: "De tijd wanneer uw evenement begint. Gebruik de 24 uur tijd schaal. Formaat: HH:MM."
                 })
                 .setRequired(true)
                 .setMinLength(5)

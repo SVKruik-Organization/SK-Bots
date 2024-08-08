@@ -197,7 +197,7 @@ export async function handleSelectionMenu(interaction: StringSelectMenuInteracti
                         { name: 'Team Tag', value: `\`${data[0].team_tag}\``, inline: true },
                         { name: 'Edition', value: `\`${data[0].edition}\``, inline: true },
                         { name: 'Creation Date', value: time(data[0].date_creation), inline: true },
-                        { name: 'Update Date', value: time(data[0].date_update), inline: true },
+                        { name: 'Update Date', value: data[0].date_update ? time(data[0].date_update) : "Never", inline: true },
                         { name: 'Note', value: `Changing your subscription details and advanced settings can be done with the [SK Commander](${urls.skCommander}) application or the [website](${urls.website}). If you have any questions or concerns, don't hesitate to reach out to <@${general.authorId}>.` })
                     .setTimestamp()
                     .setFooter({ text: `Embed created by ${general.name}` });
@@ -287,7 +287,7 @@ export async function handleModifyMenu(interaction: StringSelectMenuInteraction)
                                 });
                             });
                     }).catch(async (error: any) => {
-                        if (error.interaction.includes("operator_invite_unique")) {
+                        if (error.sqlMessage && error.sqlMessage.includes("operator_invite_unique")) {
                             return await interaction.update({
                                 content: `You have already invited <@${targetMember.id}>, and your request is now pending. Please be patient while they consider your request, or DM them to hurry up.`,
                                 components: []

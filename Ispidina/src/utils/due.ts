@@ -57,7 +57,7 @@ function dueAdd(interaction: ChatInputCommandInteraction | ButtonInteraction, ty
                     if (!data.affectedRows) return logMessage(`Could not update due date, as user '${interaction.user.id}' does not have an account yet.`, "warning");
 
                     const expiryDateObject = getDate(expiry, null);
-                    logMessage(`Recorded Daily Reward cooldown for user '${interaction.user.username}'@'${interaction.user.id}' ${type}@${expiryDateObject.today.toLocaleString()}.`, "info");
+                    logMessage(`Recorded Daily Reward cooldown for user '${interaction.user.username}'@'${interaction.user.id}' ${type}@${getDate(expiryDateObject.today, null).fullDate}.`, "info");
                     dueDates.push({
                         "snowflake": interaction.user.id,
                         "expiry": expiryDateObject.today,

@@ -53,6 +53,6 @@ export function write(data: string): void {
  * @param next Send downstream.
  */
 export function apiMiddleware(req: any, _res: Response, next: NextFunction) {
-    logMessage(`API Request || Agent: ${req.headers.get("user-agent")} || HTTP ${req.httpVersion} ${req.method} ${req.url} || Body: ${!!req._body}`, "info");
+    logMessage(`API Request || Agent: ${req.headers["user-agent"]} || ${req.method} ${req.url} || Body: ${req.body ? `(100 char limit) ${JSON.stringify(req.body).slice(0, 100)}` : "None"}`, "info");
     next();
 }

@@ -3,16 +3,19 @@ import mariadb, { Pool } from 'mariadb';
 import { initEventHandler } from './handlers/eventHandler';
 import { initCommandHandler } from './handlers/commandHandler';
 import { Command } from './types';
+import { readdirSync } from "fs";
 import { Collection, Client as DiscordClient, GatewayIntentBits, Partials } from 'discord.js';
-require('events').EventEmitter.prototype._maxListeners = 20;
+import { initInterestHandler } from "./handlers/interestHandler";
+import { initServer } from "./server";
+import { initUplink } from "./uplink";
+require('events').EventEmitter.prototype._maxListeners = readdirSync(`${__dirname}/events`).filter((file) => file.endsWith(".js")).length;
 
+// Adding Collections
 interface CustomClientProperties {
     commands: Collection<string, Command>;
     cooldowns: Collection<string, Collection<string, Date>>;
 }
 interface CustomClient extends DiscordClient, CustomClientProperties { }
-
-// Create a client instance using the extended interface
 const customClient = new DiscordClient({
     intents: [
         GatewayIntentBits.Guilds,
@@ -47,6 +50,9 @@ const database: Pool = mariadb.createPool({
 // Handlers
 initEventHandler(customClient);
 initCommandHandler(customClient);
+initInterestHandler();
+initServer();
+initUplink();
 
 // Exporting Values & Boot
 export { customClient, database }

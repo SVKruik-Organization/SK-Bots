@@ -12,10 +12,8 @@ const commands: Array<RESTPostAPIChatInputApplicationCommandsJSONBody> = [];
 for (const file of commandFiles) {
     try {
         if (file === "reload.js") continue;
-        const command: CommandWrapper = require(`../commands/${file}`);
-        if (command && ('data' in command.default)) {
-            commands.push(command.default.data.toJSON());
-        } else logMessage(`Reload error at ${file}`, "error");
+        const command: CommandWrapper = require(`${__dirname}/../commands/${file}`);
+        commands.push(command.default.data.toJSON());
     } catch (error: any) {
         logError(error);
     }
