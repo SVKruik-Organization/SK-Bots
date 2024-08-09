@@ -1,11 +1,11 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
-import { database } from '..';
-import { cooldowns } from '../config';
-import { logError, logMessage } from '../utils/logger';
-import { findGuildById } from '../utils/guild';
-import { dueAdd, dueDates } from '../utils/due';
-import { Difference, difference, getDate } from '../utils/date';
-import { Command, DueDate, GuildFull } from '../types';
+import { database } from '../index.js';
+import { cooldowns } from '../config.js';
+import { logError, logMessage } from '../utils/logger.js';
+import { findGuildById } from '../utils/guild.js';
+import { dueAdd, dueDates } from '../utils/due.js';
+import { Difference, difference, getDate } from '../utils/date.js';
+import { Command, DueDate, GuildFull } from '../types.js';
 
 export default {
     cooldown: cooldowns.A,
@@ -43,32 +43,31 @@ export default {
             if (jackpotBoolean) dailyreward += jackpotValue;
 
             // Process
-            database.query("UPDATE economy SET wallet = wallet + ? WHERE snowflake = ?;", [dailyreward, interaction.user.id])
-                .then(async (data) => {
-                    // Validation
-                    if (!data.affectedRows) return await interaction.reply({
-                        content: "This command requires you to have an account. Create an account with the `/register` command.",
-                        ephemeral: true
-                    });
-
-                    // + 24 Hours
-                    const newDate: Date = getDate(null, null).today;
-                    newDate.setDate(newDate.getDate() + 1);
-                    dueAdd(interaction, "daily", newDate, null);
-                    if (jackpotBoolean) {
-                        await interaction.reply({ content: `💎 You hit the JACKPOT! 💎 You received a grand total of \`${dailyreward}\` Bits. Congratulations! 🎉` });
-                        logMessage(`'${interaction.user.username}@${interaction.user.id}' hit the daily reward jackpot worth ${jackpotValue}. Their dailyreward was worth ${dailyreward - jackpotValue}. They received a total of ${dailyreward} Bits.\n`, "warning");
-                    } else return await interaction.reply({
-                        content: `Successfully collected your daily reward: \`${dailyreward}\` Bits. Be sure to come back tomorrow!`,
-                        ephemeral: true
-                    });
-                }).catch(async (error: any) => {
-                    logError(error);
-                    return await interaction.reply({
-                        content: "Something went wrong while updating your information. Please try again later.",
-                        ephemeral: true
-                    });
+            try {
+                const data: { affectedRows: number } = await database.query("UPDATE economy SET wallet = wallet + ? WHERE snowflake = ?;", [dailyreward, interaction.user.id]);
+                if (!data.affectedRows) return await interaction.reply({
+                    content: "This command requires you to have an account. Create an account with the `/register` command.",
+                    ephemeral: true
                 });
+
+                // + 24 Hours
+                const newDate: Date = getDate(null, null).today;
+                newDate.setDate(newDate.getDate() + 1);
+                dueAdd(interaction, "daily", newDate, null);
+                if (jackpotBoolean) {
+                    await interaction.reply({ content: `💎 You hit the JACKPOT! 💎 You received a grand total of \`${dailyreward}\` Bits. Congratulations! 🎉` });
+                    logMessage(`'${interaction.user.username}@${interaction.user.id}' hit the daily reward jackpot worth ${jackpotValue}. Their dailyreward was worth ${dailyreward - jackpotValue}. They received a total of ${dailyreward} Bits.\n`, "warning");
+                } else return await interaction.reply({
+                    content: `Successfully collected your daily reward: \`${dailyreward}\` Bits. Be sure to come back tomorrow!`,
+                    ephemeral: true
+                });
+            } catch (error: any) {
+                logError(error);
+                return await interaction.reply({
+                    content: "Something went wrong while updating your information. Please try again later.",
+                    ephemeral: true
+                });
+            }
         } catch (error: any) {
             logError(error);
         }

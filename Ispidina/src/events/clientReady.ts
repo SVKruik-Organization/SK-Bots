@@ -1,8 +1,8 @@
 import { Events } from 'discord.js';
-import { general } from "../config"
-import { logMessage } from '../utils/logger';
-import { getDate } from '../utils/date';
-import { BotEvent } from '../types';
+import { general } from '../config.js'
+import { logMessage } from '../utils/logger.js';
+import { getDate } from '../utils/date.js';
+import { BotEvent } from '../types.js';
 
 export default {
     name: Events.ClientReady,

@@ -1,9 +1,9 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
-import { cooldowns, general } from '../config';
-import { database } from '..';
-import { create } from '../utils/embed';
-import { logError } from '../utils/logger';
-import { Command } from '../types';
+import { cooldowns, general } from '../config.js';
+import { database } from '../index.js';
+import { create } from '../utils/embed.js';
+import { logError } from '../utils/logger.js';
+import { Command } from '../types.js';
 
 export default {
     cooldown: cooldowns.C,
@@ -78,65 +78,65 @@ export default {
             });
 
             if (actionType === "withdraw") {
-                if (amount > userData[0].bank) return await interaction.reply({
-                    content: `You do not have enough Bits to perform this command. You have \`${userData[0].bank}\` Bits saved inside your Bank account, but you tried to withdraw \`${amount}\` Bits.`,
-                    ephemeral: true
-                });
-                database.query("UPDATE economy SET wallet = wallet + ?, bank = bank - ? WHERE snowflake = ?; INSERT INTO purchase (snowflake, balance_change, product, quantity, type, remaining_bits, method, guild_snowflake) VALUES (?, ?, 'withdraw', 1, 'Economy Command Withdraw', ?, ?, ?);",
-                    [amount, amount, snowflake, snowflake, amount, userData[0].wallet + amount, `${general.name} Discord Bot`, interaction.guild ? interaction.guild.id : "DM_COMMAND"])
-                    .then(async () => {
-                        return await interaction.reply({
-                            content: `Successfully withdrew \`${amount}\` Bits.`,
-                            ephemeral: true
-                        });
-                    }).catch(async (error: any) => {
-                        logError(error);
-                        return await interaction.reply({
-                            content: "Something went wrong while updating your information. Please try again later.",
-                            ephemeral: true
-                        });
+                try {
+                    if (amount > userData[0].bank) return await interaction.reply({
+                        content: `You do not have enough Bits to perform this command. You have \`${userData[0].bank}\` Bits saved inside your Bank account, but you tried to withdraw \`${amount}\` Bits.`,
+                        ephemeral: true
                     });
+                    await database.query("UPDATE economy SET wallet = wallet + ?, bank = bank - ? WHERE snowflake = ?; INSERT INTO purchase (snowflake, balance_change, product, quantity, type, remaining_bits, method, guild_snowflake) VALUES (?, ?, 'withdraw', 1, 'Economy Command Withdraw', ?, ?, ?);",
+                        [amount, amount, snowflake, snowflake, amount, userData[0].wallet + amount, `${general.name} Discord Bot`, interaction.guild ? interaction.guild.id : "DM_COMMAND"]);
+                    return await interaction.reply({
+                        content: `Successfully withdrew \`${amount}\` Bits.`,
+                        ephemeral: true
+                    });
+                } catch (error: any) {
+                    logError(error);
+                    return await interaction.reply({
+                        content: "Something went wrong while updating your information. Please try again later.",
+                        ephemeral: true
+                    });
+                }
             } else if (actionType === "deposit") {
-                if (amount > userData[0].wallet) return await interaction.reply({
-                    content: `You do not have enough Bits to perform this command. You have \`${userData[0].wallet}\` Bits saved inside your Wallet account, but you tried to withdraw \`${amount}\` Bits.`,
-                    ephemeral: true
-                });
-                database.query("UPDATE economy SET wallet = wallet - ?, bank = bank + ? WHERE snowflake = ?; INSERT INTO purchase (snowflake, balance_change, product, quantity, type, remaining_bits, method, guild_snowflake) VALUES (?, ?, 'deposit', 1, 'Economy Command Deposit', ?, ?, ?);",
-                    [amount, amount, snowflake, snowflake, -1 * amount, userData[0].wallet - amount, `${general.name} Discord Bot`, interaction.guild ? interaction.guild.id : "DM_COMMAND"])
-                    .then(async () => {
-                        return await interaction.reply({
-                            content: `Successfully deposited \`${amount}\` Bits.`,
-                            ephemeral: true
-                        });
-                    }).catch(async (error: any) => {
-                        logError(error);
-                        return await interaction.reply({
-                            content: "Something went wrong while trying to update your information. Please try again later.",
-                            ephemeral: true
-                        });
+                try {
+                    if (amount > userData[0].wallet) return await interaction.reply({
+                        content: `You do not have enough Bits to perform this command. You have \`${userData[0].wallet}\` Bits saved inside your Wallet account, but you tried to withdraw \`${amount}\` Bits.`,
+                        ephemeral: true
                     });
+                    await database.query("UPDATE economy SET wallet = wallet - ?, bank = bank + ? WHERE snowflake = ?; INSERT INTO purchase (snowflake, balance_change, product, quantity, type, remaining_bits, method, guild_snowflake) VALUES (?, ?, 'deposit', 1, 'Economy Command Deposit', ?, ?, ?);",
+                        [amount, amount, snowflake, snowflake, -1 * amount, userData[0].wallet - amount, `${general.name} Discord Bot`, interaction.guild ? interaction.guild.id : "DM_COMMAND"])
+                    return await interaction.reply({
+                        content: `Successfully deposited \`${amount}\` Bits.`,
+                        ephemeral: true
+                    });
+                } catch (error: any) {
+                    logError(error);
+                    return await interaction.reply({
+                        content: "Something went wrong while trying to update your information. Please try again later.",
+                        ephemeral: true
+                    });
+                }
             } else if (actionType === "balance") {
-                database.query("SELECT wallet, bank, (wallet + bank) AS 'total' FROM economy WHERE snowflake = ?;", [snowflake])
-                    .then(async (data) => {
-                        if (data.length === 0) return await interaction.reply({
-                            content: "This command requires you to have an account. Create an account with the `/register` command.",
-                            ephemeral: true
-                        });
-                        const embed: EmbedBuilder = create("Bits Balance", "Economy Accounts", interaction.user,
-                            [
-                                { name: 'Wallet', value: `\`${data[0].wallet}\``, inline: false },
-                                { name: 'Bank', value: `\`${data[0].bank}\``, inline: false },
-                                { name: "-----", value: `Summary`, inline: false },
-                                { name: 'Combined', value: `\`${data[0].total}\``, inline: false }
-                            ], ["shop"]);
-                        return await interaction.reply({ embeds: [embed], ephemeral: true });
-                    }).catch(async (error: any) => {
-                        logError(error);
-                        return await interaction.reply({
-                            content: "Something went wrong while retrieving the required information. Please try again later.",
-                            ephemeral: true
-                        });
+                try {
+                    const data: Array<{ wallet: number, bank: number, total: number }> = await database.query("SELECT wallet, bank, (wallet + bank) AS 'total' FROM economy WHERE snowflake = ?;", [snowflake]);
+                    if (data.length === 0) return await interaction.reply({
+                        content: "This command requires you to have an account. Create an account with the `/register` command.",
+                        ephemeral: true
                     });
+                    const embed: EmbedBuilder = create("Bits Balance", "Economy Accounts", interaction.user,
+                        [
+                            { name: 'Wallet', value: `\`${data[0].wallet}\``, inline: false },
+                            { name: 'Bank', value: `\`${data[0].bank}\``, inline: false },
+                            { name: "-----", value: `Summary`, inline: false },
+                            { name: 'Combined', value: `\`${data[0].total}\``, inline: false }
+                        ], ["shop"]);
+                    return await interaction.reply({ embeds: [embed], ephemeral: true });
+                } catch (error: any) {
+                    logError(error);
+                    return await interaction.reply({
+                        content: "Something went wrong while retrieving the required information. Please try again later.",
+                        ephemeral: true
+                    });
+                }
             }
         } catch (error: any) {
             logError(error);

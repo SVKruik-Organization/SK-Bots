@@ -1,9 +1,9 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
-import { database } from '..';
-import { cooldowns } from '../config';
-import { sendConfirmButtons } from '../handlers/closeInteractionHandler';
-import { logError } from '../utils/logger';
-import { Command } from '../types';
+import { database } from '../index.js';
+import { cooldowns } from '../config.js';
+import { sendConfirmButtons } from '../handlers/closeInteractionHandler.js';
+import { logError } from '../utils/logger.js';
+import { Command } from '../types.js';
 
 export default {
     cooldown: cooldowns.D,
@@ -32,22 +32,22 @@ export default {
             const snowflake: string = interaction.user.id;
             const inputPincode: string = interaction.options.getString("pincode") as string;
 
-            database.query("SELECT pincode AS 'pin' FROM user_general WHERE snowflake = ?;", [snowflake])
-                .then(async (data) => {
-                    const dataPincode: string = data[0].pin;
-                    if (inputPincode === dataPincode) {
-                        sendConfirmButtons(interaction);
-                    } else return await interaction.reply({
-                        content: "Your pincode is not correct. If you forgot your pincode, you can request it with `/pincode`.",
-                        ephemeral: true
-                    });
-                }).catch(async (error: any) => {
-                    logError(error);
-                    return await interaction.reply({
-                        content: "Something went wrong while closing your account. Please try again later.",
-                        ephemeral: true
-                    });
+            try {
+                const data: Array<{ pincode: string }> = await database.query("SELECT pincode FROM user_general WHERE snowflake = ?;", [snowflake]);
+                const dataPincode: string = data[0].pincode;
+                if (inputPincode === dataPincode) {
+                    sendConfirmButtons(interaction);
+                } else return await interaction.reply({
+                    content: "Your pincode is not correct. If you forgot your pincode, you can request it with `/pincode`.",
+                    ephemeral: true
                 });
+            } catch (error: any) {
+                logError(error);
+                return await interaction.reply({
+                    content: "Something went wrong while closing your account. Please try again later.",
+                    ephemeral: true
+                });
+            }
         } catch (error: any) {
             logError(error);
         }

@@ -1,10 +1,10 @@
 import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction, User } from 'discord.js';
-import { database } from '..';
-import { cooldowns } from '../config';
-import { logError, logMessage } from '../utils/logger';
-import { findGuildById } from '../utils/guild';
-import { checkAdmin } from '../utils/user';
-import { Command, GuildFull } from "../types";
+import { database } from '../index.js';
+import { cooldowns } from '../config.js';
+import { logError, logMessage } from '../utils/logger.js';
+import { findGuildById } from '../utils/guild.js';
+import { checkAdmin } from '../utils/user.js';
+import { Command, GuildFull } from '../types.js';
 
 export default {
     cooldown: cooldowns.A,
@@ -52,23 +52,22 @@ export default {
             const targetUser: User = interaction.options.getUser("target") as User;
             let reason: string = interaction.options.getString("reason") ?? 'No reason provided';
 
-            database.query("INSERT INTO warning (snowflake, snowflake_recv, reason, date, guild_snowflake) VALUES (?, ?, ?, CURRENT_TIMESTAMP(), ?);", [interaction.user.id, targetUser.id, reason, interaction.guild.id])
-                .then(async () => {
-                    if (!interaction.guild) return;
-                    const targetGuild: GuildFull | undefined = findGuildById(interaction.guild.id);
-                    if (targetGuild && targetGuild.channel_admin) targetGuild.channel_admin.send({ content: `User <@${interaction.user.id}> has **warned** <@${targetUser.id}> for: \`${reason}\`` });
-                    logMessage(`'${interaction.user.username}@${interaction.user.id}' has warned '${targetUser.username}@${targetUser.id}' for ${reason}`, "warning");
+            try {
+                await database.query("INSERT INTO warning (snowflake, snowflake_recv, reason, date, guild_snowflake) VALUES (?, ?, ?, CURRENT_TIMESTAMP(), ?);", [interaction.user.id, targetUser.id, reason, interaction.guild.id]);
+                const targetGuild: GuildFull | undefined = findGuildById(interaction.guild.id);
+                if (targetGuild && targetGuild.channel_admin) targetGuild.channel_admin.send({ content: `User <@${interaction.user.id}> has **warned** <@${targetUser.id}> for: \`${reason}\`` });
 
-                    return await interaction.reply({
-                        content: `User <@${targetUser.id}> has been warned for: \`${reason}\``
-                    });
-                }).catch(async (error: any) => {
-                    logError(error);
-                    return await interaction.reply({
-                        content: "Something went wrong while warning this user. Please try again later.",
-                        ephemeral: true
-                    });
+                logMessage(`'${interaction.user.username}@${interaction.user.id}' has warned '${targetUser.username}@${targetUser.id}' for ${reason}`, "warning");
+                return await interaction.reply({
+                    content: `User <@${targetUser.id}> has been warned for: \`${reason}\``
                 });
+            } catch (error: any) {
+                logError(error);
+                return await interaction.reply({
+                    content: "Something went wrong while warning this user. Please try again later.",
+                    ephemeral: true
+                });
+            }
         } catch (error: any) {
             logError(error);
         }

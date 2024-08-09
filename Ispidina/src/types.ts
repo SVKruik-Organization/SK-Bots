@@ -1,5 +1,5 @@
 import { CategoryChannel, Guild, Role, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder, TextBasedChannel } from 'discord.js';
-import { cooldowns } from "./config"
+import { cooldowns } from "./config.js"
 
 export type CommandWrapper = {
     default: Command

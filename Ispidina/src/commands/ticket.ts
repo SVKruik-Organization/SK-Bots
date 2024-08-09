@@ -1,9 +1,9 @@
-import { SlashCommandBuilder, ChannelType, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction } from 'discord.js';
-import { cooldowns } from '../config';
-import { logError } from '../utils/logger';
-import { createTicket } from '../utils/ticket';
-import { findGuildById } from '../utils/guild';
-import { Command, GuildFull } from "../types";
+import { SlashCommandBuilder, ChannelType, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, TextChannel } from 'discord.js';
+import { cooldowns } from '../config.js';
+import { logError } from '../utils/logger.js';
+import { createTicket } from '../utils/ticket.js';
+import { findGuildById } from '../utils/guild.js';
+import { Command, GuildFull } from '../types.js';
 
 export default {
     cooldown: cooldowns.D,
@@ -31,25 +31,26 @@ export default {
                 ephemeral: true
             });
 
-            interaction.guild.channels.create({
-                name: `${createTicket()} - ${interaction.user.username}`,
-                type: ChannelType.GuildText,
-                parent: targetGuild.channel_ticket.id,
-                permissionOverwrites: [
-                    {
-                        id: interaction.guild.id,
-                        deny: [PermissionFlagsBits.ViewChannel],
-                    },
-                    {
-                        id: interaction.user.id,
-                        allow: [PermissionFlagsBits.ViewChannel],
-                    },
-                    {
-                        id: targetGuild.role_support,
-                        allow: [PermissionFlagsBits.ViewChannel],
-                    }
-                ]
-            }).then(async (data) => {
+            try {
+                const data: TextChannel = await interaction.guild.channels.create({
+                    name: `${createTicket()} - ${interaction.user.username}`,
+                    type: ChannelType.GuildText,
+                    parent: targetGuild.channel_ticket.id,
+                    permissionOverwrites: [
+                        {
+                            id: interaction.guild.id,
+                            deny: [PermissionFlagsBits.ViewChannel],
+                        },
+                        {
+                            id: interaction.user.id,
+                            allow: [PermissionFlagsBits.ViewChannel],
+                        },
+                        {
+                            id: targetGuild.role_support,
+                            allow: [PermissionFlagsBits.ViewChannel],
+                        }
+                    ]
+                });
                 const close: ButtonBuilder = new ButtonBuilder()
                     .setCustomId('closeTicketChannel')
                     .setLabel("Close")
@@ -65,12 +66,12 @@ export default {
                 return interaction.editReply({
                     content: `Successfully created your support channel. Check it out here <#${data.id}>. A support agent should be right with you.`,
                 });
-            }).catch(async (error: any) => {
+            } catch (error: any) {
                 logError(error);
                 return interaction.editReply({
                     content: "Something went wrong while creating your channel. Please try again later.",
                 });
-            });
+            }
         } catch (error: any) {
             logError(error);
         }

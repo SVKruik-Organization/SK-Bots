@@ -1,9 +1,9 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
-import { cooldowns } from '../config';
-import { findGuildById } from '../utils/guild';
-import { create } from '../utils/embed';
-import { logError } from '../utils/logger';
-import { Command, GuildFull } from "../types";
+import { cooldowns } from '../config.js';
+import { findGuildById } from '../utils/guild.js';
+import { create } from '../utils/embed.js';
+import { logError } from '../utils/logger.js';
+import { Command, GuildFull } from '../types.js';
 
 export default {
     cooldown: cooldowns.C,

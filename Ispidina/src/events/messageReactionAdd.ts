@@ -1,10 +1,10 @@
 import { Client, Events, Guild, Interaction, MessageReaction, User } from 'discord.js';
-import { logError } from '../utils/logger';
-import { customClient } from '..';
-import { tier } from '../config';
-import { findGuildById } from '../utils/guild';
-import { increaseXp } from '../handlers/userIncreaseHandler';
-import { BotEvent } from '../types';
+import { logError } from '../utils/logger.js';
+import { customClient } from '../index.js';
+import { tier } from '../config.js';
+import { findGuildById } from '../utils/guild.js';
+import { increaseXp } from '../handlers/userIncreaseHandler.js';
+import { BotEvent } from '../types.js';
 
 export default {
     name: Events.MessageReactionAdd,

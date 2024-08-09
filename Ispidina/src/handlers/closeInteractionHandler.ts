@@ -1,7 +1,6 @@
-import { ButtonInteraction, ChatInputCommandInteraction, InteractionResponse } from 'discord.js';
-import { database } from '..';
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { logError } from '../utils/logger';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ButtonInteraction, ChatInputCommandInteraction, InteractionResponse } from 'discord.js';
+import { database } from '../index.js';
+import { logError } from '../utils/logger.js';
 
 /**
  * Send a pair of confirmation buttons.
@@ -28,25 +27,25 @@ export async function sendConfirmButtons(interaction: ChatInputCommandInteractio
  * Confirm account deletion.
  * @param interaction Discord Interaction Object
  */
-export function confirmAccountClose(interaction: ButtonInteraction): void {
-    database.query("DELETE FROM user_general WHERE snowflake = ?;", [interaction.user.id])
-        .then(async (data) => {
-            if (!data.affectedRows) return await interaction.update({
-                content: "This command requires you to have an account. Create an account with the `/register` command.",
-                components: []
-            });
-
-            return await interaction.update({
-                content: "Your account has been successfully closed. If you ever change your mind, you can always create a new account with the `/register` command. Cya!",
-                components: []
-            });
-        }).catch(async (error: any) => {
-            logError(error);
-            return await interaction.update({
-                content: "Something went wrong while closing your account. Please try again later.",
-                components: []
-            });
+export async function confirmAccountClose(interaction: ButtonInteraction): Promise<InteractionResponse> {
+    try {
+        const data: { affectedRows: number } = await database.query("DELETE FROM user_general WHERE snowflake = ?;", [interaction.user.id]);
+        if (!data.affectedRows) return await interaction.update({
+            content: "This command requires you to have an account. Create an account with the `/register` command.",
+            components: []
         });
+
+        return await interaction.update({
+            content: "Your account has been successfully closed. If you ever change your mind, you can always create a new account with the `/register` command. Cya!",
+            components: []
+        });
+    } catch (error: any) {
+        logError(error);
+        return await interaction.update({
+            content: "Something went wrong while closing your account. Please try again later.",
+            components: []
+        });
+    }
 }
 
 /**

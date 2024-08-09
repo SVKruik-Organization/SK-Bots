@@ -1,9 +1,9 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, TextBasedChannel } from 'discord.js';
-import { cooldowns } from '../config';
+import { cooldowns } from '../config.js';
 import prettier from 'prettier';
-import { findGuildById } from '../utils/guild';
-import { logError } from '../utils/logger';
-import { Command } from "../types";
+import { findGuildById } from '../utils/guild.js';
+import { logError } from '../utils/logger.js';
+import { Command } from '../types.js';
 
 export default {
     cooldown: cooldowns.B,

@@ -1,9 +1,9 @@
 import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction, Role, GuildMember } from 'discord.js';
-import { cooldowns, general } from '../config';
-import { database } from '..';
-import { logMessage, logError } from '../utils/logger';
-import { checkAdmin } from '../utils/user';
-import { Command } from '../types';
+import { cooldowns, general } from '../config.js';
+import { database } from '../index.js';
+import { logMessage, logError } from '../utils/logger.js';
+import { checkAdmin } from '../utils/user.js';
+import { Command } from '../types.js';
 
 export default {
     cooldown: cooldowns.A,
@@ -107,60 +107,58 @@ export default {
 
             // Handle
             if (actionType === "add") {
-                database.query("INSERT INTO user_administrator (user_snowflake, user_username, guild_snowflake) VALUES (?, ?, ?);", [guildMember.id, guildMember.user.username, interaction.guild.id])
-                    .then(async () => {
-                        if (!interaction.guild) return;
-                        guildMember.roles.add(adminRole);
-                        logMessage(`${guildMember.user.username} has been granted Administrator privileges by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "info");
+                try {
+                    await database.query("INSERT INTO user_administrator (user_snowflake, user_username, guild_snowflake) VALUES (?, ?, ?);", [guildMember.id, guildMember.user.username, interaction.guild.id]);
+                    guildMember.roles.add(adminRole);
+                    logMessage(`${guildMember.user.username} has been granted Administrator privileges by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "info");
+                    return await interaction.reply({
+                        content: `Successfully added user <@${guildMember.id}> to the Administrators of this server. They can now use commands that require elevated permissions.`,
+                        ephemeral: true
+                    });
+                } catch (error: any) {
+                    if (error.code === "ER_DUP_ENTRY") {
                         return await interaction.reply({
-                            content: `Successfully added user <@${guildMember.id}> to the Administrators of this server. They can now use commands that require elevated permissions.`,
+                            content: `User <@${guildMember.id}> is an Administrator already.`,
                             ephemeral: true
                         });
-                    }).catch(async (error: any) => {
-                        if (error.code === "ER_DUP_ENTRY") {
-                            return await interaction.reply({
-                                content: `User <@${guildMember.id}> is an Administrator already.`,
-                                ephemeral: true
-                            });
-                        } else {
-                            logError(error);
-                            return await interaction.reply({
-                                content: "Something went wrong while giving this user elevated permissions. Please try again later.",
-                                ephemeral: true
-                            });
-                        }
-                    });
+                    } else {
+                        logError(error);
+                        return await interaction.reply({
+                            content: "Something went wrong while giving this user elevated permissions. Please try again later.",
+                            ephemeral: true
+                        });
+                    }
+                }
             } else if (actionType === "remove") {
-                database.query("DELETE FROM user_administrator WHERE user_snowflake = ? AND guild_snowflake = ?;", [guildMember.id, interaction.guild.id])
-                    .then(async () => {
-                        if (!interaction.guild) return;
-                        logMessage(`${guildMember.user.username}'s Administrator privileges were removed by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "info");
-                        guildMember.roles.remove(adminRole);
-                        return await interaction.reply({
-                            content: `Successfully removed user <@${guildMember.id}> from the Administrators of this server. They can no longer use commands that require elevated permissions.`,
-                            ephemeral: true
-                        });
-                    }).catch(async (error: any) => {
-                        logError(error);
-                        return await interaction.reply({
-                            content: "Something went wrong while removing elevated permissions of this user. Please try again later.",
-                            ephemeral: true
-                        });
+                try {
+                    await database.query("DELETE FROM user_administrator WHERE user_snowflake = ? AND guild_snowflake = ?;", [guildMember.id, interaction.guild.id]);
+                    logMessage(`${guildMember.user.username}'s Administrator privileges were removed by '${interaction.user.username}@${interaction.user.id}' in server '${interaction.guild.name}@${interaction.guild.id}'.`, "info");
+                    guildMember.roles.remove(adminRole);
+                    return await interaction.reply({
+                        content: `Successfully removed user <@${guildMember.id}> from the Administrators of this server. They can no longer use commands that require elevated permissions.`,
+                        ephemeral: true
                     });
+                } catch (error: any) {
+                    logError(error);
+                    return await interaction.reply({
+                        content: "Something went wrong while removing elevated permissions of this user. Please try again later.",
+                        ephemeral: true
+                    });
+                }
             } else if (actionType === "check") {
-                database.query("SELECT user_snowflake FROM user_administrator WHERE user_snowflake = ?;", [guildMember.id])
-                    .then(async (data) => {
-                        return await interaction.reply({
-                            content: `Administrator status of user <@${guildMember.id}>: \`${data.length === 0 ? "false" : "true"}\``,
-                            ephemeral: true
-                        });
-                    }).catch(async (error: any) => {
-                        logError(error);
-                        return await interaction.reply({
-                            content: "Something went wrong while checking the Administrator status of this user. Please try again later.",
-                            ephemeral: true
-                        });
+                try {
+                    const data: Array<{ user_snowflake: string }> = await database.query("SELECT user_snowflake FROM user_administrator WHERE user_snowflake = ?;", [guildMember.id]);
+                    return await interaction.reply({
+                        content: `Administrator status of user <@${guildMember.id}>: \`${data.length === 0 ? "false" : "true"}\``,
+                        ephemeral: true
                     });
+                } catch (error: any) {
+                    logError(error);
+                    return await interaction.reply({
+                        content: "Something went wrong while checking the Administrator status of this user. Please try again later.",
+                        ephemeral: true
+                    });
+                }
             }
         } catch (error: any) {
             logError(error);

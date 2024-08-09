@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction } from 'discord.js';
-import { cooldowns, colors, general } from '../config';
-import { Command } from '../types';
+import { cooldowns, colors, general } from '../config.js';
+import { Command } from '../types.js';
 
 export default {
     cooldown: cooldowns.B,

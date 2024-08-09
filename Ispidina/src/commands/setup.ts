@@ -1,11 +1,11 @@
 import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, ChatInputCommandInteraction, TextBasedChannel, Role, CategoryChannel } from 'discord.js';
-import { cooldowns, urls } from '../config';
-import { database } from '..';
-import { create } from '../utils/embed';
-import { guilds, findGuildById, setGuilds, addGuild } from '../utils/guild';
-import { checkOperator } from '../utils/user';
-import { logError } from '../utils/logger';
-import { Command } from '../types';
+import { cooldowns, urls } from '../config.js';
+import { database } from '../index.js';
+import { create } from '../utils/embed.js';
+import { guilds, findGuildById, setGuilds, addGuild } from '../utils/guild.js';
+import { checkOperator } from '../utils/user.js';
+import { logError } from '../utils/logger.js';
+import { Command } from '../types.js';
 
 export default {
     cooldown: cooldowns.C,
@@ -152,62 +152,61 @@ export default {
 
             // Update
             if (actionType === "register") {
-                database.query("UPDATE guild SET channel_admin = ?, channel_broadcast = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ?, role_support = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE guild_snowflake = ?;",
-                    [channel_admin ? channel_admin.id : null, channel_broadcast ? channel_broadcast.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, channel_ticket ? channel_ticket.id : null, role_blinded ? role_blinded.id : null, role_support ? role_support.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id])
-                    .then(async () => {
-                        if (!interaction.guild) return;
-                        const filteredGuild = guilds.filter(guild => guild.guild_object.id === interaction.guild?.id)[0];
-                        setGuilds(guilds.filter(guild => guild.guild_object.id !== interaction.guild?.id));
-                        addGuild({
-                            // Guild
-                            "guild_object": interaction.guild,
-                            "team_tag": filteredGuild.team_tag,
-                            "name": interaction.guild.name,
-                            "channel_admin": channel_admin,
-                            "channel_event": channel_event,
-                            "channel_suggestion": channel_suggestion,
-                            "channel_snippet": channel_snippet,
-                            "channel_broadcast": channel_broadcast,
-                            "channel_rules": channel_rules,
-                            "channel_ticket": channel_ticket,
-                            "role_blinded": role_blinded,
-                            "role_support": role_support,
-                            "disabled": false,
+                try {
+                    await database.query("UPDATE guild SET channel_admin = ?, channel_broadcast = ?, channel_event = ?, channel_suggestion = ?, channel_snippet = ?, channel_rules = ?, role_blinded = ?, role_support = ? WHERE snowflake = ?; UPDATE guild_settings SET role_cosmetic_power = ? WHERE guild_snowflake = ?;",
+                        [channel_admin ? channel_admin.id : null, channel_broadcast ? channel_broadcast.id : null, channel_event ? channel_event.id : null, channel_suggestion ? channel_suggestion.id : null, channel_snippet ? channel_snippet.id : null, channel_rules ? channel_rules.id : null, channel_ticket ? channel_ticket.id : null, role_blinded ? role_blinded.id : null, role_support ? role_support.id : null, interaction.guild.id, role_cosmetic_power, interaction.guild.id]);
+                    const filteredGuild = guilds.filter(guild => guild.guild_object.id === interaction.guild?.id)[0];
+                    setGuilds(guilds.filter(guild => guild.guild_object.id !== interaction.guild?.id));
+                    addGuild({
+                        // Guild
+                        "guild_object": interaction.guild,
+                        "team_tag": filteredGuild.team_tag,
+                        "name": interaction.guild.name,
+                        "channel_admin": channel_admin,
+                        "channel_event": channel_event,
+                        "channel_suggestion": channel_suggestion,
+                        "channel_snippet": channel_snippet,
+                        "channel_broadcast": channel_broadcast,
+                        "channel_rules": channel_rules,
+                        "channel_ticket": channel_ticket,
+                        "role_blinded": role_blinded,
+                        "role_support": role_support,
+                        "disabled": false,
 
-                            // Settings
-                            "xp15": filteredGuild.xp15 || 1200,
-                            "xp50": filteredGuild.xp50 || 3500,
-                            "level_up_reward_base": filteredGuild.level_up_reward_base || 20,
-                            "role_cosmetic_price": filteredGuild.role_cosmetic_price || 11000,
-                            "role_cosmetic_power": filteredGuild.role_cosmetic_power || 3,
-                            "role_level_power": filteredGuild.role_level_power || 5,
-                            "role_level_max": filteredGuild.role_level_max || 1000,
-                            "role_level_enable": filteredGuild.role_level_enable || true,
-                            "role_level_color": filteredGuild.role_level_color || "FC6736",
-                            "jackpot": filteredGuild.jackpot || 10000,
-                            "welcome": filteredGuild.welcome || true,
-                            "xp_increase_reaction": filteredGuild.xp_increase_reaction || 1,
-                            "xp_increase_poll": filteredGuild.xp_increase_poll || 3,
-                            "xp_increase_message": filteredGuild.xp_increase_message || 5,
-                            "xp_increase_slash": filteredGuild.xp_increase_slash || 15,
-                            "xp_increase_purchase": filteredGuild.xp_increase_purchase || 25,
-                            "xp_formula": filteredGuild.xp_formula || "20,300",
-                            "guild_date_creation": filteredGuild.guild_date_creation,
-                            "guild_date_update": filteredGuild.guild_date_update
-                        });
-
-                        return await interaction.reply({
-                            content: `Setup update successful. Additional commands reloaded and ready for action. For other settings like welcome messages and other parameters, please use the [SK Commander](${urls.skCommander}) application or the [website](${urls.website}).`,
-                            ephemeral: true
-                        });
-                    }).catch(async (error: any) => {
-                        logError(error);
-                        setGuilds(guildSnapshot);
-                        return await interaction.reply({
-                            content: "Something went wrong while updating the server configuration. Please try again later.",
-                            ephemeral: true
-                        });
+                        // Settings
+                        "xp15": filteredGuild.xp15 || 1200,
+                        "xp50": filteredGuild.xp50 || 3500,
+                        "level_up_reward_base": filteredGuild.level_up_reward_base || 20,
+                        "role_cosmetic_price": filteredGuild.role_cosmetic_price || 11000,
+                        "role_cosmetic_power": filteredGuild.role_cosmetic_power || 3,
+                        "role_level_power": filteredGuild.role_level_power || 5,
+                        "role_level_max": filteredGuild.role_level_max || 1000,
+                        "role_level_enable": filteredGuild.role_level_enable || true,
+                        "role_level_color": filteredGuild.role_level_color || "FC6736",
+                        "jackpot": filteredGuild.jackpot || 10000,
+                        "welcome": filteredGuild.welcome || true,
+                        "xp_increase_reaction": filteredGuild.xp_increase_reaction || 1,
+                        "xp_increase_poll": filteredGuild.xp_increase_poll || 3,
+                        "xp_increase_message": filteredGuild.xp_increase_message || 5,
+                        "xp_increase_slash": filteredGuild.xp_increase_slash || 15,
+                        "xp_increase_purchase": filteredGuild.xp_increase_purchase || 25,
+                        "xp_formula": filteredGuild.xp_formula || "20,300",
+                        "guild_date_creation": filteredGuild.guild_date_creation,
+                        "guild_date_update": filteredGuild.guild_date_update
                     });
+
+                    return await interaction.reply({
+                        content: `Setup update successful. Additional commands reloaded and ready for action. For other settings like welcome messages and other parameters, please use the [SK Commander](${urls.skCommander}) application or the [website](${urls.website}).`,
+                        ephemeral: true
+                    });
+                } catch (error: any) {
+                    logError(error);
+                    setGuilds(guildSnapshot);
+                    return await interaction.reply({
+                        content: "Something went wrong while updating the server configuration. Please try again later.",
+                        ephemeral: true
+                    });
+                }
 
                 // Check
             } else if (actionType === "check") {

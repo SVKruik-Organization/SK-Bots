@@ -1,9 +1,9 @@
 import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction, User } from 'discord.js';
-import { database } from '..';
-import { cooldowns } from '../config';
-import { checkAdmin } from '../utils/user';
-import { logError } from '../utils/logger';
-import { Command } from '../types';
+import { database } from '../index.js';
+import { cooldowns } from '../config.js';
+import { checkAdmin } from '../utils/user.js';
+import { logError } from '../utils/logger.js';
+import { Command } from '../types.js';
 
 export default {
     cooldown: cooldowns.A,
@@ -112,25 +112,25 @@ export default {
                 action = ` ${row} * ${amount}`;
             } else if (actionType === "div") action = ` ${row} / ${amount}`;
 
-            database.query(`UPDATE ${table}${action}${where}`)
-                .then(async (data) => {
-                    // Validation
-                    if (!data.affectedRows) return await interaction.reply({
-                        content: "This user does not have an account yet.",
-                        ephemeral: true
-                    });
-
-                    return await interaction.reply({
-                        content: "Account data has been successfully changed.",
-                        ephemeral: true
-                    });
-                }).catch(async (error: any) => {
-                    logError(error);
-                    return await interaction.reply({
-                        content: "Something went wrong while trying to update their information. Please try again later.",
-                        ephemeral: true
-                    });
+            try {
+                const data: { affectedRows: number } = await database.query(`UPDATE ${table}${action}${where}`);
+                // Validation
+                if (!data.affectedRows) return await interaction.reply({
+                    content: "This user does not have an account yet.",
+                    ephemeral: true
                 });
+
+                return await interaction.reply({
+                    content: "Account data has been successfully changed.",
+                    ephemeral: true
+                });
+            } catch (error: any) {
+                logError(error);
+                return await interaction.reply({
+                    content: "Something went wrong while trying to update their information. Please try again later.",
+                    ephemeral: true
+                });
+            }
         } catch (error: any) {
             logError(error);
         }

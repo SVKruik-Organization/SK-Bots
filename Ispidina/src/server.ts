@@ -22,7 +22,9 @@ app.get("/", (_req, res) => {
     res.json({ message: `Default ${general.name} Endpoint` });
 });
 
-// Init
+/**
+ * Initialize the API server for incoming requests.
+ */
 export function initServer(): void {
     app.listen(port, () => {
         logMessage(`${general.name} API server listening on port ${port}.`, "info");

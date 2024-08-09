@@ -1,11 +1,11 @@
 import { SlashCommandBuilder, PermissionFlagsBits, GuildScheduledEventPrivacyLevel, GuildScheduledEventEntityType, ChannelType, ChatInputCommandInteraction, GuildScheduledEventCreateOptions, GuildScheduledEvent } from 'discord.js';
-import { Command } from "../types";
-import { cooldowns, general } from '../config';
-import { database } from '..';
-import { logError } from '../utils/logger';
-import { checkAdmin } from '../utils/user';
-import { datetimeParser } from '../utils/date';
-import { createTicket } from '../utils/ticket';
+import { Command } from '../types.js';
+import { cooldowns, general } from '../config.js';
+import { database } from '../index.js';
+import { logError } from '../utils/logger.js';
+import { checkAdmin } from '../utils/user.js';
+import { datetimeParser } from '../utils/date.js';
+import { createTicket } from '../utils/ticket.js';
 
 export default {
     cooldown: cooldowns.A,
@@ -294,23 +294,22 @@ export default {
             const processedOnline = onlineTypes.includes(eventType) ? 1 : 0;
 
             // Creation
-            const eventPayload: GuildScheduledEventCreateOptions = eventObject;
-            interaction.guild.scheduledEvents.create(eventPayload)
-                .then(async (data: GuildScheduledEvent) => {
-                    if (!interaction.guild) return;
-                    interaction.followUp({
-                        content: "Scheduled event successfully created. You can view it at the top-left of the screen. There, you can register for this event.",
-                        ephemeral: true
-                    });
-                    database.query("INSERT INTO event (ticket, payload, guild_snowflake, creator_snowflake, title, description, location, online, scheduled, date_start) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", [createTicket(), data.id, interaction.guild.id, interaction.user.id, title, description, processedLocation, processedOnline, 1, parsedDate])
-                        .catch((error) => logError(error));
-                }).catch(async (error: any) => {
-                    logError(error);
-                    interaction.followUp({
-                        content: "Something went wrong while creating the scheduled event. Please try again later.",
-                        ephemeral: true
-                    });
+            try {
+                const eventPayload: GuildScheduledEventCreateOptions = eventObject;
+                const data: GuildScheduledEvent = await interaction.guild.scheduledEvents.create(eventPayload);
+                if (!interaction.guild) return;
+                interaction.followUp({
+                    content: "Scheduled event successfully created. You can view it at the top-left of the screen. There, you can register for this event.",
+                    ephemeral: true
                 });
+                await database.query("INSERT INTO event (ticket, payload, guild_snowflake, creator_snowflake, title, description, location, online, scheduled, date_start) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", [createTicket(), data.id, interaction.guild.id, interaction.user.id, title, description, processedLocation, processedOnline, 1, parsedDate]);
+            } catch (error: any) {
+                logError(error);
+                interaction.followUp({
+                    content: "Something went wrong while creating the scheduled event. Please try again later.",
+                    ephemeral: true
+                });
+            }
         } catch (error: any) {
             logError(error);
         }

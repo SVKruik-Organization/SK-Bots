@@ -1,9 +1,9 @@
 import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction } from 'discord.js';
-import { cooldowns, general } from '../config';
+import { cooldowns, general } from '../config.js';
 import { REST, Routes } from 'discord.js';
 const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN as string);
-import { logError } from '../utils/logger';
-import { Command } from '../types';
+import { logError } from '../utils/logger.js';
+import { Command } from '../types.js';
 
 export default {
     cooldown: cooldowns.A,

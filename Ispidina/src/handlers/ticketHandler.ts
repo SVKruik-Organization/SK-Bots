@@ -1,5 +1,5 @@
 import { ButtonInteraction, InteractionResponse } from 'discord.js';
-import { logError } from '../utils/logger';
+import { logError } from '../utils/logger.js';
 
 /**
  * Close the ticket channel where the button was pressed.

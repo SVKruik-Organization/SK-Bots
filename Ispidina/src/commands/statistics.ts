@@ -1,9 +1,10 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
-import { cooldowns, general, urls } from '../config';
+import { cooldowns, general, urls } from '../config.js';
 import { readFileSync, readdirSync } from 'fs';
-import { create } from '../utils/embed';
-import { logError } from '../utils/logger';
-import { Command } from "../types";
+import { create } from '../utils/embed.js';
+import { logError } from '../utils/logger.js';
+import { Command } from '../types.js';
+import { getDirname } from '../utils/file.js';
 
 export default {
     cooldown: cooldowns.C,
@@ -23,7 +24,7 @@ export default {
             const hours: number = Math.floor(interaction.client.uptime / 3600000) % 24;
             const minutes: number = Math.floor(interaction.client.uptime / 60000) % 60;
             const uptime: string = `\`${hours}\` hours and \`${minutes}\` minutes.`;
-            const version: string = JSON.parse(readFileSync(`${__dirname}/../package.json`, "utf-8")).version;
+            const version: string = JSON.parse(readFileSync(`${getDirname(import.meta.url)}/../package.json`, "utf-8")).version;
 
             const embed: EmbedBuilder = create("Bot Statistics", `${general.name} Information`, interaction.user,
                 [

@@ -1,10 +1,10 @@
-import { Events, PermissionFlagsBits, ChannelType, Guild, Role } from 'discord.js';
-import { general, colors } from '../config';
-import { logError, logMessage } from '../utils/logger';
-import { customClient, database } from '..';
-import { guilds } from '../utils/guild';
-import { findUserById } from '../utils/user';
-import { BotEvent } from '../types';
+import { Events, PermissionFlagsBits, ChannelType, Guild, Role, GuildMember } from 'discord.js';
+import { general, colors } from '../config.js';
+import { logError, logMessage } from '../utils/logger.js';
+import { customClient, database } from '../index.js';
+import { guilds } from '../utils/guild.js';
+import { findUserById } from '../utils/user.js';
+import { BotEvent } from '../types.js';
 
 export default {
     name: Events.GuildCreate,
@@ -34,12 +34,13 @@ export default {
                     position: fetchedGuild.roles.cache.size + 1
                 });
             } else await botColorRole.setPosition(fetchedGuild.roles.cache.size + 1);
-            guild.members.fetch(general.clientId)
-                .then(async (user) => user.roles.add(botColorRole))
-                .catch((error) => {
-                    if (error.status !== 403) logError(error);
-                });
 
+            try {
+                const user: GuildMember = await guild.members.fetch(general.clientId);
+                user.roles.add(botColorRole);
+            } catch (error: any) {
+                if (error.status !== 403) logError(error);
+            }
             // Blinded Role Creation
             let blindedRole: Role | undefined = fetchedGuild.roles.cache.find(role => role.name === "Blinded");
             if (!blindedRole) {
@@ -94,16 +95,17 @@ export default {
             } else await supportRole.setPosition(fetchedGuild.roles.cache.size + 1);
 
             // New Data
-            database.query("INSERT INTO guild (snowflake, name, role_blinded, role_support, channel_ticket) VALUES (?, ?, ?, ?); INSERT INTO guild_settings (guild_snowflake) VALUES (?); UPDATE bot SET guild_created = guild_created + 1 WHERE name = ?;", [guild.id, guild.name, blindedRole.id, supportRole.id, channel_ticket.id, guild.id, general.name])
-                .then(async () => logMessage(`${general.name} just joined a new Guild: '${guild.name}@${guild.id}'. Successfully generated data.`, "info"))
-                .catch((error) => {
-                    if (error.code === "ER_DUP_ENTRY") {
-                        logMessage(`Database data for Guild '${guild.name}@${guild.id}' was already present, but (re)generated roles.`, "info");
-                    } else {
-                        logError(error);
-                        logMessage(`Generating data for Guild '${guild.name}@${guild.id}' was not successful.`, "warning");
-                    }
-                });
+            try {
+                database.query("INSERT INTO guild (snowflake, name, role_blinded, role_support, channel_ticket) VALUES (?, ?, ?, ?); INSERT INTO guild_settings (guild_snowflake) VALUES (?); UPDATE bot SET guild_created = guild_created + 1 WHERE name = ?;", [guild.id, guild.name, blindedRole.id, supportRole.id, channel_ticket.id, guild.id, general.name]);
+                logMessage(`${general.name} just joined a new Guild: '${guild.name}@${guild.id}'. Successfully generated data.`, "info");
+            } catch (error: any) {
+                if (error.code === "ER_DUP_ENTRY") {
+                    logMessage(`Database data for Guild '${guild.name}@${guild.id}' was already present, but (re)generated roles.`, "info");
+                } else {
+                    logError(error);
+                    logMessage(`Generating data for Guild '${guild.name}@${guild.id}' was not successful.`, "warning");
+                }
+            }
 
             // Index New Guild
             guilds.push({

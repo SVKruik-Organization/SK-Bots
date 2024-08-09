@@ -1,13 +1,14 @@
-import { SensorMessage, UplinkMessage } from "./types";
+import { SensorMessage, UplinkMessage } from "./types.js";
 import { Channel, connect, Message, Replies } from 'amqplib';
-import { database, customClient } from '.';
-import { logError, logMessage } from './utils/logger';
-import { colors, general } from './config';
-import { findUserById } from './utils/user';
+import { database, customClient } from './index.js';
+import { logError, logMessage } from './utils/logger.js';
+import { colors, general } from './config.js';
+import { findUserById } from './utils/user.js';
 import fs from 'node:fs';
 import { EmbedBuilder, TextBasedChannel, User } from 'discord.js';
 import { time } from '@discordjs/formatters';
 import * as shell from 'shelljs';
+import { getDirname } from "./utils/file.js";
 
 export let channel: Channel | undefined = undefined;
 
@@ -140,7 +141,7 @@ async function broadcastHandler(data: any) {
 async function temperatureHandler(data: SensorMessage) {
     try {
         if (!(data satisfies SensorMessage)) return;
-        const sensorSettings: { acknowledgeHighTemperature: boolean } = JSON.parse(fs.readFileSync(`${__dirname}/../settings/sensors.json`, "utf-8"));
+        const sensorSettings: { acknowledgeHighTemperature: boolean } = JSON.parse(fs.readFileSync(`${getDirname(import.meta.url)}/../settings/sensors.json`, "utf-8"));
         if (data.temperatureData.main > 45 && sensorSettings.acknowledgeHighTemperature === false) {
             const author: User = await findUserById(general.authorId);
 

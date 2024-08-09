@@ -1,13 +1,13 @@
 import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ChannelType, ButtonStyle, ChatInputCommandInteraction, TextBasedChannel } from 'discord.js';
-import { cooldowns, colors, general } from '../config';
+import { cooldowns, colors, general } from '../config.js';
 import { EmbedBuilder } from 'discord.js';
-import { findGuildById } from '../utils/guild';
-import { database } from '..';
-import { createTicket } from '../utils/ticket';
-import { logError } from '../utils/logger';
+import { findGuildById } from '../utils/guild.js';
+import { database } from '../index.js';
+import { createTicket } from '../utils/ticket.js';
+import { logError } from '../utils/logger.js';
 import { time } from '@discordjs/formatters';
-import { datetimeParser } from '../utils/date';
-import { Command, GuildFull } from '../types';
+import { datetimeParser } from '../utils/date.js';
+import { Command, GuildFull } from '../types.js';
 
 export default {
     cooldown: cooldowns.D,
@@ -181,38 +181,38 @@ export default {
 
             const onlineBoolean = eventType === "online";
             const location: string = (eventType === "online" ? interaction.options.getChannel("location")?.id : interaction.options.getString("location")) as string;
-            database.query("INSERT INTO event (ticket, guild_snowflake, creator_snowflake, title, description, location, date_start, online, scheduled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0);", [newTicket, interaction.guild.id, interaction.user.id, title, description, location, fullDate, onlineBoolean])
-                .then(async () => {
-                    // Sign Up Button
-                    const signUpButton: ButtonBuilder = new ButtonBuilder()
-                        .setCustomId(`eventSignUp_${newTicket}`)
-                        .setLabel(`Sign Up`)
-                        .setStyle(ButtonStyle.Primary);
+            try {
+                await database.query("INSERT INTO event (ticket, guild_snowflake, creator_snowflake, title, description, location, date_start, online, scheduled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0);", [newTicket, interaction.guild.id, interaction.user.id, title, description, location, fullDate, onlineBoolean]);
+                // Sign Up Button
+                const signUpButton: ButtonBuilder = new ButtonBuilder()
+                    .setCustomId(`eventSignUp_${newTicket}`)
+                    .setLabel(`Sign Up`)
+                    .setStyle(ButtonStyle.Primary);
 
-                    // Success Confirmation
-                    const embed: EmbedBuilder = new EmbedBuilder()
-                        .setColor(colors.bot)
-                        .setTitle(title)
-                        .setAuthor({ name: username, iconURL: pfp })
-                        .setDescription(description)
-                        .addFields(
-                            { name: 'Location', value: eventType === "online" ? `<#${location}>` : location, inline: true },
-                            { name: 'Date', value: time(fullDate), inline: true })
-                        .addFields({ name: "-----", value: 'Meta' })
-                        .setTimestamp()
-                        .setFooter({ text: `Embed created by ${general.name}` });
-                    channel.send({ embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents(signUpButton)] });
-                    return await interaction.reply({
-                        content: `Event created. Check your event here: <#${channel.id}>.`,
-                        ephemeral: true
-                    });
-                }).catch(async (error: any) => {
-                    logError(error);
-                    return await interaction.reply({
-                        content: "Something went wrong while creating your event. Please try again later.",
-                        ephemeral: true
-                    });
+                // Success Confirmation
+                const embed: EmbedBuilder = new EmbedBuilder()
+                    .setColor(colors.bot)
+                    .setTitle(title)
+                    .setAuthor({ name: username, iconURL: pfp })
+                    .setDescription(description)
+                    .addFields(
+                        { name: 'Location', value: eventType === "online" ? `<#${location}>` : location, inline: true },
+                        { name: 'Date', value: time(fullDate), inline: true })
+                    .addFields({ name: "-----", value: 'Meta' })
+                    .setTimestamp()
+                    .setFooter({ text: `Embed created by ${general.name}` });
+                channel.send({ embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents(signUpButton)] });
+                return await interaction.reply({
+                    content: `Event created. Check your event here: <#${channel.id}>.`,
+                    ephemeral: true
                 });
+            } catch (error: any) {
+                logError(error);
+                return await interaction.reply({
+                    content: "Something went wrong while creating your event. Please try again later.",
+                    ephemeral: true
+                });
+            }
         } catch (error: any) {
             logError(error);
         }

@@ -1,8 +1,8 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
-import { database } from '..';
-import { cooldowns } from '../config';
-import { logError } from '../utils/logger';
-import { Command } from '../types';
+import { database } from '../index.js';
+import { cooldowns } from '../config.js';
+import { logError } from '../utils/logger.js';
+import { Command } from '../types.js';
 
 export default {
     cooldown: cooldowns.D,
@@ -34,27 +34,27 @@ export default {
             const username: string = interaction.user.username;
             const pincode: string = interaction.options.getString("pincode") as string;
 
-            database.query("INSERT INTO user_general (snowflake, username, pincode) VALUES (?, ?, ?); INSERT INTO tier (snowflake) VALUES (?); INSERT INTO economy (snowflake) VALUES (?); INSERT INTO user_inventory (snowflake) VALUES (?); INSERT INTO user_commands (snowflake) VALUES (?);",
-                [snowflake, username, pincode, snowflake, snowflake, snowflake, snowflake])
-                .then(async () => {
+            try {
+                await database.query("INSERT INTO user_general (snowflake, username, pincode) VALUES (?, ?, ?); INSERT INTO tier (snowflake) VALUES (?); INSERT INTO economy (snowflake) VALUES (?); INSERT INTO user_inventory (snowflake) VALUES (?); INSERT INTO user_commands (snowflake) VALUES (?);",
+                    [snowflake, username, pincode, snowflake, snowflake, snowflake, snowflake]);
+                return await interaction.reply({
+                    content: "Thank you for your registration! You can now use all commands.",
+                    ephemeral: true
+                });
+            } catch (error: any) {
+                if (error.code === "ER_DUP_ENTRY") {
                     return await interaction.reply({
-                        content: "Thank you for your registration! You can now use all commands.",
+                        content: "You already have an account. Display your statistics with `/economy` and `/tier`.",
                         ephemeral: true
                     });
-                }).catch(async (error: any) => {
-                    if (error.code === "ER_DUP_ENTRY") {
-                        return await interaction.reply({
-                            content: "You already have an account. Display your statistics with `/economy` and `/tier`.",
-                            ephemeral: true
-                        });
-                    } else {
-                        logError(error)
-                        return await interaction.reply({
-                            content: "Something went wrong while registering your account. Please try again later.",
-                            ephemeral: true
-                        });
-                    }
-                });
+                } else {
+                    logError(error)
+                    return await interaction.reply({
+                        content: "Something went wrong while registering your account. Please try again later.",
+                        ephemeral: true
+                    });
+                }
+            }
         } catch (error: any) {
             logError(error);
         }

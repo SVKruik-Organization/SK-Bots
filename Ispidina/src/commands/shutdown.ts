@@ -1,8 +1,8 @@
 import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction } from 'discord.js';
-import { cooldowns, general } from '../config';
-import { database } from '..';
-import { logError, logMessage } from '../utils/logger';
-import { Command } from "../types";
+import { cooldowns, general } from '../config.js';
+import { database } from '../index.js';
+import { logError, logMessage } from '../utils/logger.js';
+import { Command } from '../types.js';
 
 export default {
     cooldown: cooldowns.A,

@@ -1,8 +1,8 @@
-import { customClient, database } from '..';
-import { logError } from './logger';
-import { general } from '../config';
+import { customClient, database } from '../index.js';
+import { logError } from './logger.js';
+import { general } from '../config.js';
 import { ChatInputCommandInteraction, GuildMember, User } from 'discord.js';
-import { OperatorCheck } from '../types';
+import { OperatorCheck } from '../types.js';
 
 /**
  *

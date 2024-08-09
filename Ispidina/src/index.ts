@@ -1,14 +1,15 @@
 import "dotenv/config";
 import mariadb, { Pool } from 'mariadb';
-import { initEventHandler } from './handlers/eventHandler';
-import { initCommandHandler } from './handlers/commandHandler';
-import { Command } from './types';
+import { initEventHandler } from './handlers/eventHandler.js';
+import { initCommandHandler } from './handlers/commandHandler.js';
+import { Command } from './types.js';
 import { readdirSync } from "fs";
 import { Collection, Client as DiscordClient, GatewayIntentBits, Partials } from 'discord.js';
-import { initInterestHandler } from "./handlers/interestHandler";
-import { initServer } from "./server";
-import { initUplink } from "./uplink";
-require('events').EventEmitter.prototype._maxListeners = readdirSync(`${__dirname}/events`).filter((file) => file.endsWith(".js")).length;
+import { initInterestHandler } from "./handlers/interestHandler.js";
+import { initServer } from "./server.js";
+import { initUplink } from "./uplink.js";
+import { getDirname } from "./utils/file.js";
+((await import('events')).EventEmitter.prototype as any)._maxListeners = readdirSync(`${getDirname(import.meta.url)}/events`).filter((file) => file.endsWith(".js")).length;
 
 // Adding Collections
 interface CustomClientProperties {

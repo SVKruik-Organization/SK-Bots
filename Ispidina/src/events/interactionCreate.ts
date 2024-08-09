@@ -1,19 +1,19 @@
 import { ActionRow, ComponentType, Events, Interaction, MessageActionRowComponent } from 'discord.js';
-import { customClient, database } from '..';
+import { customClient, database } from '../index.js';
 import { Collection } from 'discord.js';
-import { general, tier } from '../config';
-import { logError, logMessage } from '../utils/logger';
-import { modal, modalInputHandler, purchaseOptions, shopOptions } from '../handlers/shopInteractionHandler';
-import { increaseXp, increaseCommand } from '../handlers/userIncreaseHandler';
-import { cancelActivate, confirmActivate, confirmActivateDialog } from '../handlers/boosterInteractionHandler';
-import { customShopCatalog } from '../utils/embed';
-import { cancelAccountClose, confirmAccountClose } from '../handlers/closeInteractionHandler';
-import { signUp } from '../handlers/eventSignUpHandler';
-import { findGuildById } from '../utils/guild';
-import { getDate } from '../utils/date';
-import { handleDeclineCancel, handleDeclineFinal, handleDeclineSelect, handleModifyMenu, handleModifyRemoveMenu, handleSelectionMenu } from '../handlers/operatorHandler';
-import { closeChannel } from '../handlers/ticketHandler';
-import { BotEvent, HoistedOptions } from '../types';
+import { general, tier } from '../config.js';
+import { logError, logMessage } from '../utils/logger.js';
+import { modal, modalInputHandler, purchaseOptions, shopOptions } from '../handlers/shopInteractionHandler.js';
+import { increaseXp, increaseCommand } from '../handlers/userIncreaseHandler.js';
+import { cancelActivate, confirmActivate, confirmActivateDialog } from '../handlers/boosterInteractionHandler.js';
+import { customShopCatalog } from '../utils/embed.js';
+import { cancelAccountClose, confirmAccountClose } from '../handlers/closeInteractionHandler.js';
+import { signUp } from '../handlers/eventSignUpHandler.js';
+import { findGuildById } from '../utils/guild.js';
+import { getDate } from '../utils/date.js';
+import { handleDeclineCancel, handleDeclineFinal, handleDeclineSelect, handleModifyMenu, handleModifyRemoveMenu, handleSelectionMenu } from '../handlers/operatorHandler.js';
+import { closeChannel } from '../handlers/ticketHandler.js';
+import { BotEvent, HoistedOptions } from '../types.js';
 
 export default {
     name: Events.InteractionCreate,

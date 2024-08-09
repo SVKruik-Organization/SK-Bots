@@ -1,10 +1,10 @@
 import { Interaction } from 'discord.js';
-import { database } from '..';
-import { logError, logMessage } from '../utils/logger';
-import { general } from '../config';
+import { database } from '../index.js';
+import { logError, logMessage } from '../utils/logger.js';
+import { general } from '../config.js';
 
 /**
- * Log a new purchase.
+ * Store a new purchase in the database.
  * @param cost The total cost of the purchase.
  * @param product The name of the bought product.
  * @param quantity The amount of products bought.

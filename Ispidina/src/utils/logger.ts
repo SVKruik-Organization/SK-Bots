@@ -1,4 +1,4 @@
-import { getDate } from './date';
+import { getDate } from './date.js';
 import { NextFunction, Response } from "express";
 import fs from 'node:fs';
 
@@ -22,7 +22,7 @@ export function logMessage(data: string, rawType: string): void {
         console.log(logData);
         if (type === "fatal") throw new Error("Fatal log type. Terminated process.");
     } catch (error: any) {
-        error(error);
+        logError(error);
     }
 }
 
@@ -52,7 +52,7 @@ export function write(data: string): void {
  * @param res The responds.
  * @param next Send downstream.
  */
-export function apiMiddleware(req: any, _res: Response, next: NextFunction) {
+export function apiMiddleware(req: any, _res: Response, next: NextFunction): void {
     logMessage(`API Request || Agent: ${req.headers["user-agent"]} || ${req.method} ${req.url} || Body: ${req.body ? `(100 char limit) ${JSON.stringify(req.body).slice(0, 100)}` : "None"}`, "info");
     next();
 }

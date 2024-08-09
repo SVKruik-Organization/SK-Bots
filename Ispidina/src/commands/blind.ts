@@ -1,9 +1,9 @@
 import { SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction, GuildMember, Role } from 'discord.js';
-import { cooldowns } from '../config';
-import { logError } from '../utils/logger';
-import { checkAdmin } from '../utils/user';
-import { findGuildById } from '../utils/guild';
-import { Command, GuildFull } from '../types';
+import { cooldowns } from '../config.js';
+import { logError } from '../utils/logger.js';
+import { checkAdmin } from '../utils/user.js';
+import { findGuildById } from '../utils/guild.js';
+import { Command, GuildFull } from '../types.js';
 
 export default {
     cooldown: cooldowns.A,

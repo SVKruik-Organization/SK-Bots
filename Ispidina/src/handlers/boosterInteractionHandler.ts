@@ -1,9 +1,9 @@
 import { ActionRow, ButtonInteraction, ComponentType, InteractionResponse, Message, MessageActionRowComponent, StringSelectMenuInteraction } from 'discord.js';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { logError, logMessage } from '../utils/logger';
-import { database } from '..';
-import { dueAdd } from '../utils/due';
-import { getDate } from '../utils/date';
+import { logError, logMessage } from '../utils/logger.js';
+import { database } from '../index.js';
+import { dueAdd } from '../utils/due.js';
+import { getDate } from '../utils/date.js';
 
 /**
  * Returns a set of disabled buttons.
@@ -84,32 +84,32 @@ export async function confirmActivate(interaction: ButtonInteraction): Promise<M
             components: [],
         });
 
-        database.query(`UPDATE user_inventory SET ${row} = ${row} - 1, xp_active = ?, xp_active_expiry = DATE_ADD(NOW(), INTERVAL 1 DAY) WHERE snowflake = ?;`, [boosterType, interaction.user.id])
-            .then(async (data) => {
-                // Validation
-                if (!data.affectedRows) return await interaction.reply({
-                    content: "This command requires you to have an account. Create an account with the `/register` command.",
-                    ephemeral: true
-                });
-
-                logMessage(`'${interaction.user.username}@${interaction.user.id}' has activated a XP-Booster ${boosterType} in guild '${interaction.guild ? interaction.guild.name : "DM_COMMAND"}@${interaction.guild ? interaction.guild.id : "DM_COMMAND"}'.`, "info");
-                // + 24 Hours
-                const newDate: Date = getDate(null, null).today;
-                newDate.setDate(newDate.getDate() + 1);
-                dueAdd(interaction, boosterType, newDate, null);
-                const buttons: ActionRowBuilder<ButtonBuilder> | undefined = disabledButtons(interaction);
-                if (!buttons) return;
-                return await interaction.update({
-                    content: `Success! Your XP-Booster has been activated for 24 hours, and is applied to all gained Experience.`,
-                    components: [buttons]
-                });
-            }).catch(async (error: any) => {
-                logError(error);
-                return await interaction.update({
-                    content: `Something went wrong while updating your information. Please try again later.`,
-                    components: [],
-                });
+        try {
+            const data: { affectedRows: number } = await database.query(`UPDATE user_inventory SET ${row} = ${row} - 1, xp_active = ?, xp_active_expiry = DATE_ADD(NOW(), INTERVAL 1 DAY) WHERE snowflake = ?;`, [boosterType, interaction.user.id]);
+            // Validation
+            if (!data.affectedRows) return await interaction.reply({
+                content: "This command requires you to have an account. Create an account with the `/register` command.",
+                ephemeral: true
             });
+
+            logMessage(`'${interaction.user.username}@${interaction.user.id}' has activated a XP-Booster ${boosterType} in guild '${interaction.guild ? interaction.guild.name : "DM_COMMAND"}@${interaction.guild ? interaction.guild.id : "DM_COMMAND"}'.`, "info");
+            // + 24 Hours
+            const newDate: Date = getDate(null, null).today;
+            newDate.setDate(newDate.getDate() + 1);
+            dueAdd(interaction, boosterType, newDate, null);
+            const buttons: ActionRowBuilder<ButtonBuilder> | undefined = disabledButtons(interaction);
+            if (!buttons) return;
+            return await interaction.update({
+                content: `Success! Your XP-Booster has been activated for 24 hours, and is applied to all gained Experience.`,
+                components: [buttons]
+            });
+        } catch (error: any) {
+            logError(error);
+            return await interaction.update({
+                content: `Something went wrong while updating your information. Please try again later.`,
+                components: [],
+            });
+        }
     } catch (error: any) {
         logError(error);
     }

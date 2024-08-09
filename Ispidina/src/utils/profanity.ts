@@ -1,11 +1,11 @@
-import { logError } from "./logger";
+import { logError } from './logger.js';
 
 /**
  * Chewck if a string has profanity words in it.
  * @param input The input string to check.
  * @returns On error or the parsed response body.
  */
-export async function checkProfanity(input: string) {
+export async function checkProfanity(input: string): Promise<string> {
     try {
         // Fetch
         if (input.length > 1000) return "Limit";
@@ -17,9 +17,10 @@ export async function checkProfanity(input: string) {
         });
 
         // Response
-        if (response.ok) return response.json();
+        if (response.ok) return await response.json() as string;
         return "Error";
     } catch (error: any) {
         logError(error);
+        return "Error";
     }
 }

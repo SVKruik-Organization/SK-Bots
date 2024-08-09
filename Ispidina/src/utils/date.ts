@@ -1,4 +1,4 @@
-import { general } from "../config";
+import { general } from '../config.js';
 
 /**
  * Timestamp Calculation

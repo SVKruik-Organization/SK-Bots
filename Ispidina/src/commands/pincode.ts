@@ -1,8 +1,8 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
-import { database } from '..';
-import { cooldowns, urls } from '../config';
-import { logError, logMessage } from '../utils/logger';
-import { Command } from '../types';
+import { database } from '../index.js';
+import { cooldowns, urls } from '../config.js';
+import { logError, logMessage } from '../utils/logger.js';
+import { Command } from '../types.js';
 
 export default {
     cooldown: cooldowns.D,
@@ -52,49 +52,49 @@ export default {
                 ephemeral: true
             });
 
-            database.query("SELECT pincode FROM user_general WHERE snowflake = ?;", [snowflake])
-                .then(async (data) => {
+            try {
+                const data: Array<{ pincode: string }> = await database.query("SELECT pincode FROM user_general WHERE snowflake = ?;", [snowflake]);
+                // Validation
+                if (data.length === 0) return await interaction.reply({
+                    content: "You do not have an account yet. Create an account with the `/register` command.",
+                    ephemeral: true
+                });
+
+                // User Validation
+                // TODO - Pincode Web Reset
+                if (parseInt(data[0].pincode) !== oldPincode) return await interaction.reply({
+                    content: `Your old pincode does not match the current one. Please try again. If you want to reset your pincode (in case you forgot your pincode), please follow this [link](${urls.website}).`,
+                    ephemeral: true
+                });
+
+                // Update
+                try {
+                    const data: { affectedRows: number } = await database.query("UPDATE user_general SET pincode = ? WHERE snowflake = ?;", [newPincode, snowflake]);
                     // Validation
-                    if (data.length === 0) return await interaction.reply({
-                        content: "You do not have an account yet. Create an account with the `/register` command.",
+                    if (!data.affectedRows) return await interaction.reply({
+                        content: "This command requires you to have an account. Create an account with the `/register` command.",
                         ephemeral: true
                     });
 
-                    // User Validation
-                    // TODO - Pincode Web Reset
-                    if (parseInt(data[0].pincode) !== oldPincode) return await interaction.reply({
-                        content: `Your old pincode does not match the current one. Please try again. If you want to reset your pincode (in case you forgot your pincode), please follow this [link](${urls.website}).`,
+                    await interaction.reply({
+                        content: `Your pincode has been updated successfully. New pincode: \`${newPincode}\`. Safe it save!`,
                         ephemeral: true
                     });
-
-                    // Update
-                    database.query("UPDATE user_general SET pincode = ? WHERE snowflake = ?;", [newPincode, snowflake])
-                        .then(async (data) => {
-                            // Validation
-                            if (!data.affectedRows) return await interaction.reply({
-                                content: "This command requires you to have an account. Create an account with the `/register` command.",
-                                ephemeral: true
-                            });
-
-                            await interaction.reply({
-                                content: `Your pincode has been updated successfully. New pincode: \`${newPincode}\`. Safe it save!`,
-                                ephemeral: true
-                            });
-                            logMessage(`${username} has changed their pincode.`, "info");
-                        }).catch(async (error: any) => {
-                            logError(error);
-                            return await interaction.reply({
-                                content: "Something went wrong while trying to update your information. Please try again later.",
-                                ephemeral: true
-                            });
-                        });
-                }).catch(async (error: any) => {
+                    logMessage(`${username} has changed their pincode.`, "info");
+                } catch (error: any) {
                     logError(error);
                     return await interaction.reply({
                         content: "Something went wrong while trying to update your information. Please try again later.",
                         ephemeral: true
                     });
+                }
+            } catch (error: any) {
+                logError(error);
+                return await interaction.reply({
+                    content: "Something went wrong while trying to update your information. Please try again later.",
+                    ephemeral: true
                 });
+            }
         } catch (error: any) {
             logError(error);
         }

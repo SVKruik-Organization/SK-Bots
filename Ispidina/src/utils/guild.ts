@@ -1,29 +1,25 @@
 import { CategoryChannel, Channel, Role, TextBasedChannel } from 'discord.js';
-import { database, customClient } from '..';
-import { GuildFull, GuildUnfetchedFull } from '../types';
-import { logMessage, logError } from '../utils/logger';
+import { database, customClient } from '../index.js';
+import { GuildFull, GuildUnfetchedFull } from '../types.js';
+import { logMessage, logError } from '../utils/logger.js';
 export let guilds: Array<GuildFull> = [];
 
 // Indexing Guilds & Settings
 try {
-    database.query("SELECT * FROM guild LEFT JOIN guild_settings ON guild_settings.guild_snowflake = guild.snowflake WHERE disabled = 0 AND production = 0;")
-        .then(async (data) => {
-            const guilds = [];
-            for (let i = 0; i <= data.length; i++) {
-                if (i === data.length) {
-                    logMessage("Fetched all guilds.", "info");
-                    module.exports.guilds = guilds;
-                } else {
-                    const guild_object = await guildConstructor(data[i]);
-                    if (guild_object) guilds.push(guild_object);
-                }
-            }
-        }).catch(async (error: any) => {
-            logError(error);
-            return logMessage("Loading Guild settings went wrong. Aborting.", "fatal");
-        });
+    const data: Array<GuildUnfetchedFull> = await database.query("SELECT * FROM guild LEFT JOIN guild_settings ON guild_settings.guild_snowflake = guild.snowflake WHERE disabled = 0 AND production = 0;")
+    const newGuilds: Array<GuildFull> = [];
+    for (let i = 0; i <= data.length; i++) {
+        if (i === data.length) {
+            logMessage("Fetched all guilds.", "info");
+            guilds = newGuilds;
+        } else {
+            const guild_object = await guildConstructor(data[i]);
+            if (guild_object) guilds.push(guild_object);
+        }
+    }
 } catch (error: any) {
     logError(error);
+    logMessage("Loading Guild settings went wrong. Aborting.", "fatal");
 }
 
 /**

@@ -1,4 +1,4 @@
-import { edition } from '../config';
+import { edition } from '../config.js';
 
 /**
  * Get the statistics & features for a specific subscription edition.
