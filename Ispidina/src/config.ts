@@ -1,7 +1,7 @@
 export const general = {
     name: "Ispidina",
     clientId: "1252669921242910831",
-    imageURL: "https://files.stefankruik.com/Bots/Ispidina.png",
+    imageURL: "https://files.stefankruik.com/Products/Ispidina.png",
     authorId: "422704748488163332",
     timezone: "Europe/Amsterdam",
 };

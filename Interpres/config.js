@@ -2,7 +2,7 @@ exports.general = {
     name: "Interpres",
     color: "#82A2AF",
     clientId: "1215398798529011762",
-    imageURL: "https://files.stefankruik.com/Bots/Interpres.png",
+    imageURL: "https://files.stefankruik.com/Products/Interpres.png",
     authorId: "422704748488163332",
     timezone: "Europe/Amsterdam",
 };

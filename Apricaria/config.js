@@ -1,7 +1,7 @@
 exports.general = {
     name: "Apricaria",
     clientId: "1150713787784110110",
-    imageURL: "https://files.stefankruik.com/Bots/Apricaria.png",
+    imageURL: "https://files.stefankruik.com/Products/Apricaria.png",
     authorId: "422704748488163332",
     timezone: "Europe/Amsterdam"
 };

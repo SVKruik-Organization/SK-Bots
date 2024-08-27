@@ -1,7 +1,7 @@
 exports.general = {
     name: "Name",
     clientId: "123456789012345678", // Snowflake ID of the bot itself.
-    imageURL: "https://files.stefankruik.com/Bots", // URL of the profile picture.
+    imageURL: "https://files.stefankruik.com/Products", // URL of the profile picture.
     authorId: "422704748488163332", // Snowflake ID of the author Complex/Stefan Kruik.
     timezone: "Europe/Amsterdam" // The timezone the bot should use for date calculations.
 };

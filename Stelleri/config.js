@@ -1,7 +1,7 @@
 exports.general = {
     name: "Stelleri",
     clientId: "1071428183003500544",
-    imageURL: "https://files.stefankruik.com/Bots/Stelleri.png",
+    imageURL: "https://files.stefankruik.com/Products/Stelleri.png",
     authorId: "422704748488163332",
     timezone: "Europe/Amsterdam",
 };
