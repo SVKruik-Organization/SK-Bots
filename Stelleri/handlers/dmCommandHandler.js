@@ -2,7 +2,7 @@ const logger = require('../utils/logger.js');
 const fs = require('node:fs');
 
 /**
- * Suppresses temperature warnings for one hour.
+ * Suppresses temperature warnings.
  * @param {object} message Discord Message Object
  */
 function handleAcknowledge(message) {
@@ -11,7 +11,6 @@ function handleAcknowledge(message) {
         switch (acknowledgeType) {
             case "temperature":
                 // Values
-                const duration = 1;
                 let value = message.content.split(" ")[2];
                 if (!value || value === "true") {
                     value = true;
@@ -22,7 +21,7 @@ function handleAcknowledge(message) {
                 const sensorSettings = JSON.parse(fs.readFileSync(__dirname + '/../settings/sensors.json', "utf-8"));
                 sensorSettings.acknowledgeHighTemperature = value;
                 fs.writeFileSync(__dirname + "/../settings/sensors.json", JSON.stringify(sensorSettings, null, 2), "utf-8");
-                return message.reply({ content: `Received. ${value ? `Suppressed high temperature notifications for \`${duration}\` hour.` : "Re-enabled high temperature notifications."}` });
+                return message.reply({ content: `Received. ${value ? `Suppressed high temperature notifications.` : "Re-enabled high temperature notifications."}` });
             default:
                 return message.reply({ content: `Hello there <@${message.author.id}>, \`${message.content}\` is not a valid Acknowledge type.` });
         }

@@ -2,7 +2,7 @@ const logger = require('../utils/logger.js');
 const fs = require('node:fs');
 
 /**
- * Suppresses temperature warnings for one hour.
+ * Suppresses temperature warnings.
  * @param {object} message Discord Message Object
  */
 function handleAcknowledge(message) {

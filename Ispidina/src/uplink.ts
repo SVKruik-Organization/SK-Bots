@@ -17,7 +17,7 @@ export let channel: Channel | undefined = undefined;
  */
 export async function initUplink() {
     try {
-        // Setup
+        // Connection Setup
         channel = await (await connect({
             "protocol": "amqp",
             "hostname": process.env.AMQP_HOST,
@@ -26,25 +26,23 @@ export async function initUplink() {
             "password": process.env.AMQP_PASSWORD
 
         })).createChannel();
+        if (!channel) return logError("Uplink connection could not be established. Starting session without it.");
 
-        const exchange: Replies.AssertExchange = await channel.assertExchange("bot-exchange", "direct", { durable: false });
-        const queue: Replies.AssertQueue = await channel.assertQueue("", { exclusive: true });
-        channel.bindQueue(queue.queue, exchange.exchange, general.name);
+        // Setup Direct
+        const directExchange: Replies.AssertExchange = await channel.assertExchange("unicast-bots", "direct", { durable: false });
+        const directQueue: Replies.AssertQueue = await channel.assertQueue("", { exclusive: true });
+        channel.bindQueue(directQueue.queue, directExchange.exchange, general.name);
+        logMessage(`Uplink listening on '${directExchange.exchange}'@'${general.name}'`, "info");
+        channel.consume(directQueue.queue, async (message: Message | null) => messageHandler(message), { noAck: false });
 
-        // Listen
-        logMessage(`Uplink listening on '${exchange.exchange}'@'${general.name}'`, "info");
-        channel.consume(queue.queue, async (message: Message | null) => {
-            // Setup
-            if (!message) return;
-            const messageContent: UplinkMessage = JSON.parse(message.content.toString());
-            logMessage(`New Uplink message from || ${messageContent.sender} ||`, "info");
-
-            // Handle
-            await messageHandler(messageContent);
-            if (channel) channel.ack(message);
-        }, { noAck: false });
+        // Setup Fanout
+        const fanoutExchange = await channel.assertExchange("broadcast-bots", "fanout", { durable: false });
+        const broadcastQueue = await channel.assertQueue("", { exclusive: true });
+        channel.bindQueue(broadcastQueue.queue, fanoutExchange.exchange, "");
+        logMessage(`Uplink listening on '${fanoutExchange.exchange}'@'${general.name}'`, "info");
+        channel.consume(broadcastQueue.queue, async (message) => messageHandler(message), { noAck: false });
     } catch (error: any) {
-        logError(error);
+        return logError("Uplink connection could not be established. Starting session without it.");
     }
 }
 
@@ -52,19 +50,23 @@ export async function initUplink() {
  * Switch the incoming tasks to the right handler.
  * @param message 
  */
-async function messageHandler(message: UplinkMessage) {
-    switch (message.task) {
+async function messageHandler(message: Message | null) {
+    if (!message) return;
+    if (channel) channel.ack(message);
+    const messageContent: UplinkMessage = JSON.parse(message.content.toString());
+    logMessage(`New Uplink message from '${messageContent.sender}' for reason ${messageContent.reason}'`, "info");
+
+    switch (messageContent.task) {
         case "Broadcast":
-            await broadcastHandler(JSON.parse(message.content as string));
+            await broadcastHandler(JSON.parse(messageContent.content as string));
             break;
         case "Temperature":
-            await temperatureHandler(message.content as SensorMessage);
+            await temperatureHandler(messageContent.content as SensorMessage);
             break;
         case "Deploy":
-            deploymentHandler(message);
+            deploymentHandler(messageContent);
             break;
         default:
-            console.log(message);
             break;
     }
 }

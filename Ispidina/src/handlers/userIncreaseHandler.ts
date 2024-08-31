@@ -33,8 +33,6 @@ export async function increaseXp(interaction: Interaction, amount: number) {
             const targetGuild: GuildFull | undefined = findGuildById(interaction.guild.id);
             if (!targetGuild) return;
             const tierData: any = await database.query("UPDATE tier SET xp = xp + ? WHERE snowflake = ?; SELECT * FROM tier WHERE snowflake = ?;", [Math.round(amount * xpMultiplier), interaction.user.id, interaction.user.id]);
-            // Validation
-            console.log(tierData);
             if (tierData[0] && !tierData[0].affectedRows) return;
 
             const responseData = tierData[1][0];

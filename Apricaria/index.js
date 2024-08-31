@@ -47,7 +47,7 @@ async function uplinkConnection() {
             "password": process.env.AMQP_PASSWORD
         })).createChannel();
     } catch (error) {
-        logger.error(error);
+        return logger.error("Uplink connection could not be established. Starting session without it.");
     }
 }
 uplinkConnection().then(async (channel) => {

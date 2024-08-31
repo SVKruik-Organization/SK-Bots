@@ -5,7 +5,7 @@ import { Settings } from '../types.js';
 import { getDirname } from '../utils/file.js';
 
 /**
- * Suppresses temperature warnings for one hour.
+ * Suppresses temperature warnings.
  * @param message Discord Message Object
  */
 export async function handleAcknowledge(message: Message): Promise<Message> {
@@ -14,7 +14,6 @@ export async function handleAcknowledge(message: Message): Promise<Message> {
         switch (acknowledgeType) {
             case "temperature":
                 // Values
-                const duration: number = 1;
                 let value: string | boolean = message.content.split(" ")[2];
                 if (!value || value === "true") {
                     value = true;
@@ -26,7 +25,7 @@ export async function handleAcknowledge(message: Message): Promise<Message> {
                 const sensorSettings: Settings = JSON.parse(fs.readFileSync(dirName + '/../settings/sensors.json', "utf-8"));
                 sensorSettings.acknowledgeHighTemperature = value;
                 fs.writeFileSync(dirName + "/../settings/sensors.json", JSON.stringify(sensorSettings, null, 2), "utf-8");
-                return await message.reply({ content: `Received. ${value ? `Suppressed high temperature notifications for \`${duration}\` hour.` : "Re-enabled high temperature notifications."}` });
+                return await message.reply({ content: `Received. ${value ? `Suppressed high temperature notifications.` : "Re-enabled high temperature notifications."}` });
             default:
                 return await message.reply({ content: `Hello there <@${message.author.id}>, \`${message.content}\` is not a valid Acknowledge type.` });
         }

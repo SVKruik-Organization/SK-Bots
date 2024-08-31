@@ -27,10 +27,10 @@ function log(data, rawType) {
 
 /**
  * Log error messages to the log file.
- * @param {Error} data The error to write to the file.
+ * @param {Error | string} data The error to write to the file.
  */
 function error(data) {
-    const logData = `${dateCalculation.getDate().time} [ERROR] ${data.stack}\n\n`;
+    const logData = `${dateCalculation.getDate().time} [ERROR] ${typeof data === "string" ? data : data.stack}\n`;
     write(logData);
     console.error(logData);
 }

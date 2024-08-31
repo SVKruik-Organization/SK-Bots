@@ -29,8 +29,8 @@ async function processCpuTemperature() {
             "username": process.env.AMQP_USERNAME,
             "password": process.env.AMQP_PASSWORD
         })).createChannel();
-        channel.assertExchange("bot-exchange", "direct", { durable: false });
-        channel.publish("bot-exchange", "Apricaria", Buffer.from(JSON.stringify({
+        channel.assertExchange("broadcast-bots", "fanout", { durable: false });
+        channel.publish("broadcast-bots", "", Buffer.from(JSON.stringify({
             sender: "SK-Bots/Monitor",
             recipient: "SK-Bots/Apricaria",
             trigger_source: "Temperature Sensor",

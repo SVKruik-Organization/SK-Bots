@@ -31,7 +31,7 @@ export function logMessage(data: string, rawType: string): void {
  * @param data The error to write to the file.
  */
 export function logError(data: any): void {
-    const logData: string = `${getDate(null, null).time} [ERROR] ${data.stack}\n\n`;
+    const logData: string = `${getDate(null, null).time} [ERROR] ${typeof data === "string" ? data : data.stack}\n`;
     write(logData);
     console.error(logData);
 }

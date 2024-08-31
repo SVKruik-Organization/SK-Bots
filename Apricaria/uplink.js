@@ -11,20 +11,23 @@ const shell = require('shelljs');
  * Initialize the Uplink listener to handle incoming tasks.
  */
 async function init() {
-    // Setup
+    // Setup Direct
     const channel = modules.uplink;
-    const exchange = await channel.assertExchange("bot-exchange", "direct", { durable: false });
-    const queue = await channel.assertQueue("", { exclusive: true });
-    channel.bindQueue(queue.queue, exchange.exchange, config.general.name);
+    if (!channel) return;
+    const directExchange = await channel.assertExchange("unicast-bots", "direct", { durable: false });
+    const directQueue = await channel.assertQueue("", { exclusive: true });
+    channel.bindQueue(directQueue.queue, directExchange.exchange, config.general.name);
+    logger.log(`Uplink listening on '${directExchange.exchange}'@'${config.general.name}'`, "info");
+    channel.consume(directQueue.queue, async (message) => await messageHandler(message, channel), {
+        noAck: false
+    });
 
-    // Listen
-    logger.log(`Uplink listening on '${exchange.exchange}'@'${config.general.name}'`, "info");
-    channel.consume(queue.queue, async (message) => {
-        const messageContent = JSON.parse(message.content.toString());
-        logger.log(`New Uplink message from || ${messageContent.sender} ||`, "info");
-        await messageHandler(messageContent);
-        channel.ack(message);
-    }, {
+    // Setup Broadcast
+    const fanoutExchange = await channel.assertExchange("broadcast-bots", "fanout", { durable: false });
+    const broadcastQueue = await channel.assertQueue("", { exclusive: true });
+    channel.bindQueue(broadcastQueue.queue, fanoutExchange.exchange, "");
+    logger.log(`Uplink listening on '${fanoutExchange.exchange}'@'${config.general.name}'`, "info");
+    channel.consume(broadcastQueue.queue, async (message) => await messageHandler(message, channel), {
         noAck: false
     });
 }
@@ -32,20 +35,24 @@ async function init() {
 /**
  * Switch the incoming tasks to the right handler.
  * @param {object} message 
+ * @param {object} channel
  */
-async function messageHandler(message) {
-    switch (message.task) {
+async function messageHandler(message, channel) {
+    channel.ack(message);
+    const messageContent = JSON.parse(message.content.toString());
+    logger.log(`New Uplink message from '${messageContent.sender}' for reason ${messageContent.reason}'`, "info");
+
+    switch (messageContent.task) {
         case "Broadcast":
-            await broadcastHandler(JSON.parse(message.content));
+            if (messageContent.content.length) await broadcastHandler(JSON.parse(messageContent.content));
             break;
         case "Temperature":
-            await temperatureHandler(message.content);
+            if (messageContent.content.length) await temperatureHandler(JSON.parse(messageContent.content));
             break;
         case "Deploy":
-            deploymentHandler(message);
+            deploymentHandler(messageContent);
             break;
         default:
-            console.log(message);
             break;
     }
 }

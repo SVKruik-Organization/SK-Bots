@@ -1,11 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const jwtUtils = require('../utils/jwt.js');
 const modules = require('..');
-const guildUtils = require('../utils/guild.js');
-const logger = require('../utils/logger.js');
 
-router.get('/picture', jwtUtils.authenticateJWT, async function (req, res) {
+router.get('/picture', async function (req, res) {
     const guilds = req.body;
     const pictures = [];
     for (let i = 0; i < guilds.length; i++) {
