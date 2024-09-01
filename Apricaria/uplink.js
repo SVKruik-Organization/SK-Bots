@@ -5,7 +5,7 @@ const { findUserById } = require('./utils/user.js');
 const fs = require('node:fs');
 const { EmbedBuilder } = require('discord.js');
 const { time } = require('@discordjs/formatters');
-const shell = require('shelljs');
+const exec = require('child_process').exec;
 
 /**
  * Initialize the Uplink listener to handle incoming tasks.
@@ -164,7 +164,9 @@ function deploymentHandler(messageContent) {
     try {
         if (process.platform !== "linux") return
         logger.log(`Received new deploy task from ${messageContent.sender}. Running deployment script for Apricaria & Stelleri.`, "alert");
-        shell.exec("bash deploy.sh");
+        exec("bash deploy.sh", (error, _stdout, _stderr) => {
+            if (error) logger.error(error);
+        });
     } catch (error) {
         logger.error(error);
     }

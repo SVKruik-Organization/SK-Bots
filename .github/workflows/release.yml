@@ -8,8 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
+          PAYLOAD=$(echo '${{ toJson(github.event.release) }}' | jq -c .)
           curl -X POST \
                -H "Content-Type: application/json" \
                -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_PASSWORD }}" \
-               -d '{"type":"release","repository":"SK-Bots", "payload":${{ github.event.release }}}' \
+               -d '{"type":"release","repository":"SK-Bots", "payload":'"$PAYLOAD"'}' \
                ${{ secrets.DEPLOYMENT_ENDPOINT }}

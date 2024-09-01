@@ -7,7 +7,7 @@ import { findUserById } from './utils/user.js';
 import fs from 'node:fs';
 import { EmbedBuilder, TextBasedChannel, User } from 'discord.js';
 import { time } from '@discordjs/formatters';
-import * as shell from 'shelljs';
+import { exec } from 'child_process';
 import { getDirname } from "./utils/file.js";
 
 export let channel: Channel | undefined = undefined;
@@ -174,8 +174,10 @@ async function temperatureHandler(data: SensorMessage) {
 function deploymentHandler(messageContent: UplinkMessage) {
     try {
         if (process.platform !== "linux") return;
-        logMessage(`Received new deploy task from ${messageContent.sender}. Running deployment script for Apricaria & Stelleri.`, "alert");
-        shell.exec("bash deploy.sh");
+        logMessage(`Received new deploy task from ${messageContent.sender}. Running deployment script for Ispidina & Interpres.`, "alert");
+        exec("bash deploy.sh", (error, _stdout, _stderr) => {
+            if (error) logError(error);
+        });
     } catch (error) {
         logError(error);
     }
