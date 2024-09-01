@@ -175,7 +175,8 @@ function deploymentHandler(messageContent: UplinkMessage) {
     try {
         if (process.platform !== "linux") return;
         logMessage(`Received new deploy task from ${messageContent.sender}. Running deployment script for Ispidina & Interpres.`, "alert");
-        exec("bash deploy.sh", (error, _stdout, _stderr) => {
+        exec("bash deploy.sh", (error, stdout, _stderr) => {
+            logMessage(stdout, "info");
             if (error) logError(error);
         });
     } catch (error) {

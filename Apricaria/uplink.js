@@ -164,7 +164,8 @@ function deploymentHandler(messageContent) {
     try {
         if (process.platform !== "linux") return
         logger.log(`Received new deploy task from ${messageContent.sender}. Running deployment script for Apricaria & Stelleri.`, "alert");
-        exec("bash deploy.sh", (error, _stdout, _stderr) => {
+        exec("bash deploy.sh", (error, stdout, _stderr) => {
+            logger.log(stdout, "info");
             if (error) logger.error(error);
         });
     } catch (error) {
