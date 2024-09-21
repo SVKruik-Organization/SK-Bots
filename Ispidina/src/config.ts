@@ -24,7 +24,7 @@ export enum colors {
 // Website Links
 export const urls = {
     website: "https://platform.stefankruik.com",
-    docs: "https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Ispidina",
+    docs: "https://platform.stefankruik.com/documentation/read/Doc/Products/Bots#Ispidina",
     skCommander: "https://platform.stefankruik.com" // TODO .com/products/commander
 }
 

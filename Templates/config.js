@@ -24,7 +24,7 @@ exports.colors = {
 // Website Links
 exports.urls = { // Links to several resources.
     website: "https://platform.stefankruik.com",
-    docs: "https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots",
+    docs: "https://platform.stefankruik.com/documentation/read/Doc/Products/Bots",
     skCommander: "https://platform.stefankruik.com"
 }
 

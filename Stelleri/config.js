@@ -24,7 +24,7 @@ exports.colors = {
 // Website Links
 exports.urls = {
     website: "https://platform.stefankruik.com",
-    docs: "https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Stelleri",
+    docs: "https://platform.stefankruik.com/documentation/read/Doc/Products/Bots#Stelleri",
     skCommander: "https://platform.stefankruik.com" // TODO .com/products/commander
 }
 

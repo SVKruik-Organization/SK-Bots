@@ -19,7 +19,7 @@ exports.cooldowns = {
 // Website Links
 exports.urls = {
     website: "https://platform.stefankruik.com",
-    docs: "https://platform.stefankruik.com/documentation/read/Doc/Products/Discord_Bots#Apricaria",
+    docs: "https://platform.stefankruik.com/documentation/read/Doc/Products/Bots#Apricaria",
     skCommander: "https://platform.stefankruik.com" // TODO .com/products/commander
 }
 
