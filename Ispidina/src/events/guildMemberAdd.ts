@@ -14,7 +14,7 @@ export default {
             const data: Array<{ welcome: boolean }> = await database.query("SELECT welcome FROM guild_settings WHERE guild_snowflake = ?;", [guildMember.guild.id]);
             if (data.length > 0 && data[0].welcome) {
                 const welcomeEmbed: EmbedBuilder = create(`Welcome to ${guildMember.guild.name}!`, "We are glad to have you!", guildMember.user, [
-                    { "name": "About Me", "value": `I am <@${general.clientId}>, a General Purpose bot made by <@${general.authorId}>. I am in charge of the Level and Economy system, and keeping the server tidy. I also have fun commands, like 'Rock, Paper, Scissor' and utility commands to make managment easier.`, inline: false },
+                    { "name": "About Me", "value": `I am <@${general.clientId}>, a General Purpose bot made by <@${general.authorId}>. I am in charge of the Level and Economy system, and keeping the server tidy. I also have fun commands, like 'Rock, Paper, Scissor' and utility commands to make management easier.`, inline: false },
                     { "name": "Level & Economy", "value": `Participating is entirely up to you! By default, you are not in this program. If you would like to opt-in, use the \`/register\` command! You can collect your daily reward by using \`/daily\` command. With Bits you can purchase cosmetics (role colors) and XP-Boosters.`, inline: false },
                     { "name": "Concluding", "value": `Well that's all from me I guess, if you have questions or concerns, you can contact <@${general.authorId}> and the moderators of **${guildMember.guild.name}**. We hope you like your stay, and GLHF!`, inline: false }
                 ], []);
