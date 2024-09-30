@@ -33,7 +33,7 @@ async function processCpuTemperature() {
         channel.publish("broadcast-bots", "", Buffer.from(JSON.stringify({
             sender: "SK-Bots/Monitor",
             recipient: "SK-Bots/Apricaria",
-            trigger_source: "Temperature Sensor",
+            triggerSource: "Temperature Sensor",
             reason: "High Tide CPU Temperature",
             task: "Temperature",
             content: {
