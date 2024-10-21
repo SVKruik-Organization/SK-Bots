@@ -25,7 +25,7 @@
         "discord.js": "14.15.3",
         "dotenv": "16.4.5",
         "events": "^3.3.0",
-        "express": "4.19.2",
+        "express": "4.20.0",
         "mariadb": "3.3.1",
         "mathjs": "13.0.3",
         "prettier": "3.3.3",
