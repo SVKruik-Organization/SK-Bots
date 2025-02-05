@@ -13,5 +13,5 @@ npm run smee -- --url SMEE_CHANNEL_HERE
 3. When done working on the webhook, revert the [webhook](https://github.com/organizations/SVKruik-Organization/settings/hooks) payload URL back to the following string:
 
 ```txt
-https://www.stefankruik.nl/api/interpres/github/webhook
+https://bots.stefankruik.com/interpres/github/webhook
 ```

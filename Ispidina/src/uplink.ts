@@ -136,7 +136,7 @@ async function broadcastHandler(data: any) {
 }
 
 /**
- * Send a message to the author when the temperature of the Tide computer is too high.
+ * Send a message to the author when the temperature of the server is too high.
  * @param data The sensor payload containing the temperature and CPU data.
  * @returns On error.
  */

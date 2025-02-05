@@ -22,13 +22,6 @@ npm install --omit=dev
 [ -d logs ] || mkdir logs
 echo "Stelleri update complete"
 
-# Monitor
-cd ../Monitor
-npm install --omit=dev
-[ -d logs ] || mkdir logs
-echo "Monitor update complete"
-
 echo "Setup complete. Reloading Apricaria & Stelleri."
 sudo systemctl restart stelleri-bot.service
-sudo systemctl restart bot-monitor.service
 sudo systemctl restart apricaria-bot.service

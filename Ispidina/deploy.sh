@@ -25,13 +25,6 @@ npm install
 [ -d logs ] || mkdir logs
 echo "Interpres update complete"
 
-# Monitor
-cd ../Monitor
-npm install --omit=dev
-[ -d logs ] || mkdir logs
-echo "Monitor update complete"
-
 echo "Setup complete. Reloading Ispidina."
-sudo systemctl restart bot-monitor.service
 # sudo systemctl restart interpres-bot.service
 sudo systemctl restart ispidina-bot.service
