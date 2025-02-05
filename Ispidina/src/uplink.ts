@@ -7,7 +7,6 @@ import { findUserById } from './utils/user.js';
 import fs from 'node:fs';
 import { EmbedBuilder, TextBasedChannel, User } from 'discord.js';
 import { time } from '@discordjs/formatters';
-import { exec } from 'child_process';
 import { getDirname } from "./utils/file.js";
 
 export let channel: Channel | undefined = undefined;
@@ -62,9 +61,6 @@ async function messageHandler(message: Message | null) {
             break;
         case "Temperature":
             await temperatureHandler(messageContent.content as SensorMessage);
-            break;
-        case "Deploy":
-            deploymentHandler(messageContent);
             break;
         default:
             break;
@@ -144,7 +140,7 @@ async function temperatureHandler(data: SensorMessage) {
     try {
         if (!(data satisfies SensorMessage)) return;
         const sensorSettings: { acknowledgeHighTemperature: boolean } = JSON.parse(fs.readFileSync(`${getDirname(import.meta.url)}/../settings/sensors.json`, "utf-8"));
-        if (data.temperatureData.main > 45 && sensorSettings.acknowledgeHighTemperature === false) {
+        if (sensorSettings.acknowledgeHighTemperature === false) {
             const author: User = await findUserById(general.authorId);
 
             const embed: EmbedBuilder = new EmbedBuilder()
@@ -159,26 +155,9 @@ async function temperatureHandler(data: SensorMessage) {
                     { name: "Temperature", value: `\`${data.temperatureData.main}\` °C`, inline: true },
                     { name: "Memory Usage", value: `\`${Math.round(data.memoryData.used / (1024 ** 3))}\`/\`${Math.round(data.memoryData.total / (1024 ** 3))}\` GiB`, inline: true })
                 .setTimestamp()
-                .setFooter({ text: "Send '/acknowledge temperature' to suppress." });
+                .setFooter({ text: "Send '/acknowledge temperature true' to suppress." });
             author.send({ embeds: [embed] });
         }
-    } catch (error) {
-        logError(error);
-    }
-}
-
-/**
- * Runs the deployment script that updates & restarts Apricaria, Stelleri and the Monitor.
- * @param messageContent The Uplink message
- */
-function deploymentHandler(messageContent: UplinkMessage) {
-    try {
-        if (process.platform !== "linux") return;
-        logMessage(`Received new deploy task from ${messageContent.sender}. Running deployment script for Ispidina & Interpres.`, "alert");
-        exec("bash deploy.sh", (error, stdout, _stderr) => {
-            logMessage(stdout, "info");
-            if (error) logError(error);
-        });
     } catch (error) {
         logError(error);
     }

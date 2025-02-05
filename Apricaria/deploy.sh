@@ -1,10 +1,9 @@
 #!/bin/sh
-export HOME=/home/SVKruik
-export PATH=/root/.nvm/versions/node/v20.15.1/bin:$PATH
+export HOME=/home/svkruik
 
 # Git
 cd ..
-git config --global --add safe.directory /home/SVKruik/Documents/GitHub/SK-Bots
+git config --global --add safe.directory "$HOME/Documents/GitHub/SK-Bots"
 git reset --hard
 git pull
 echo "Git setup complete"
@@ -22,6 +21,24 @@ npm install --omit=dev
 [ -d logs ] || mkdir logs
 echo "Stelleri update complete"
 
-echo "Setup complete. Reloading Apricaria & Stelleri."
+# Ispidina - bots.stefankruik.com/ispidina
+cd ../Ispidina
+npm install --omit=dev
+npm run build
+npm run update 9089
+[ -d logs ] || mkdir logs
+echo "Ispidina update complete"
+
+# Interpres - bots.stefankruik.com/interpres
+cd ../Interpres
+npm install --omit=dev
+# npm run build
+# npm run update 9090
+[ -d logs ] || mkdir logs
+echo "Interpres update complete"
+
+echo "Setup complete. Reloading the bots."
 sudo systemctl restart stelleri-bot.service
+sudo systemctl restart ispidina-bot.service
+# sudo systemctl restart interpres-bot.service
 sudo systemctl restart apricaria-bot.service

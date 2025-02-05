@@ -47,7 +47,7 @@ async function messageHandler(message, channel) {
             if (messageContent.content.length) await broadcastHandler(JSON.parse(messageContent.content));
             break;
         case "Temperature":
-            if (messageContent.content.length) await temperatureHandler(JSON.parse(messageContent.content));
+            await temperatureHandler(messageContent.content);
             break;
         case "Deploy":
             deploymentHandler(messageContent);
@@ -130,7 +130,7 @@ async function temperatureHandler(data) {
     try {
         if (!data || !("cpuData" in data) || !("temperatureData" in data)) return;
         const sensorSettings = JSON.parse(fs.readFileSync(__dirname + '/settings/sensors.json', "utf-8"));
-        if (data.temperatureData.main > 45 && sensorSettings.acknowledgeHighTemperature === false) {
+        if (sensorSettings.acknowledgeHighTemperature === false) {
             const author = await findUserById(config.general.authorId);
 
             const embed = new EmbedBuilder()
@@ -145,7 +145,7 @@ async function temperatureHandler(data) {
                     { name: "Temperature", value: `\`${data.temperatureData.main}\` °C`, inline: true },
                     { name: "Memory Usage", value: `\`${Math.round(data.memoryData.used / (1024 ** 3))}\`/\`${Math.round(data.memoryData.total / (1024 ** 3))}\` GiB`, inline: true })
                 .setTimestamp()
-                .setFooter({ text: "Send '/acknowledge temperature' to suppress." });
+                .setFooter({ text: "Send '/acknowledge temperature true' to suppress." });
 
             author.send({
                 embeds: [embed]
